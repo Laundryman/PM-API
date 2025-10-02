@@ -45,6 +45,8 @@ msbuild.wrn
 # Visual Studio 2015
 .vs/
 /.vs/
+/.vs/*
+/.vs/PlanMatr API/
 # .NET Core
 project.lock.json
 project.fragment.lock.json
