@@ -90,3 +90,7 @@ nunit-*.xml
 # /.vs/ProjectEvaluation/planmatr api.projects.v9.bin
 # /.vs/ProjectEvaluation/planmatr api.strings.v9.bin
 
+/.vs/PlanMatr API/CopilotIndices/17.13.430.18484/CodeChunks.db
+/.vs/PlanMatr API/CopilotIndices/17.13.430.18484/SemanticSymbols.db
+
+/logs/
