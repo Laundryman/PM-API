@@ -6,6 +6,7 @@ using PMApplication.Entities;
 using PMApplication.Entities.CountriesAggregate;
 using PMApplication.Entities.PartAggregate;
 using PMApplication.Entities.PlanogramAggregate;
+using PMApplication.Entities.OrderAggregate;
 using PMApplication.Specifications.Filters;
 
 namespace PlanMatr_API
@@ -35,6 +36,8 @@ namespace PlanMatr_API
             CreateMap<Region, RegionDto>();
             CreateMap<ShadeFilterDto, ShadeFilter>();
             CreateMap<Shade, ShadeDto>();
+            CreateMap<Sku, ExportSkuDto>();
+            CreateMap<Order, OrderDto>();
         }
     }
 }

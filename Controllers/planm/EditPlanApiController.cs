@@ -8,6 +8,7 @@ using PMApplication.Interfaces.ServiceInterfaces;
 using PMApplication.Dtos;
 using PMApplication.Dtos.PlanModels;
 using System.Net;
+using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using PlanMatr_API.Exceptions;
 using PMApplication.Entities.PlanogramAggregate;
@@ -15,15 +16,18 @@ using PlanMatr_API.Extensions;
 using PMApplication.Enums;
 using PMApplication.Services;
 using PMApplication.Specifications.Filters;
+using System.Web;
+using IronPdf.Engines.Chrome;
+using IronPdf.Rendering;
 
 namespace PlanMatr_API.Controllers.planm
 {
     [Route("api/countries/[action]")]
     [ApiController]
-    public class PlanMApiController : ControllerBase
+    public class EditPlanApiController : ControllerBase
     {
         private readonly IMapper _mapper;
-        private readonly ILogger<PartController> _logger;
+        private readonly ILogger<EditPlanApiController> _logger;
         private readonly IAIdentityService _identityService;
         private readonly IBrandService _brandService;
         private readonly IPartService _partService;
@@ -32,12 +36,13 @@ namespace PlanMatr_API.Controllers.planm
         private readonly ICountryService _countryService;
         private readonly ILmAuditService _auditService;
         private readonly IConfiguration _config;
+        private readonly IWebHostEnvironment _env;
         //private readonly ICategoryService _categoryService;
         //private readonly IAIdentityService _identityService;
         //private readonly IProductService _productService;
         private readonly IStandService _standService;
 
-        public PlanMApiController(IPartService partService,
+        public EditPlanApiController(IPartService partService,
                 //ICategoryService categoryService,
                 IStandService standService,
                 IBrandService brandService,
@@ -45,7 +50,7 @@ namespace PlanMatr_API.Controllers.planm
                 //IProductService productService,
                 IPlanogramService planogramService,
                 //IAIdentityService identityService, 
-                IMapper mapper, ILogger<PartController> logger, IAIdentityService identityService, ICountryService countryService, ILmAuditService auditService, IConfiguration config, IProductService productService)
+                IMapper mapper, ILogger<PartController> logger, IAIdentityService identityService, ICountryService countryService, ILmAuditService auditService, IConfiguration config, IProductService productService, IWebHostEnvironment env)
             //IPlanogramVersionService versionService)
         {
             this._partService = partService;
@@ -63,6 +68,7 @@ namespace PlanMatr_API.Controllers.planm
             _auditService = auditService;
             _config = config;
             _productService = productService;
+            _env = env;
             //this._versionService = versionService;
         }
 
@@ -112,7 +118,7 @@ namespace PlanMatr_API.Controllers.planm
 
             }
 
-}
+        }
 
 
         [Route("api/v2/planx/get-planogram/{PlanogramId}")]
@@ -130,7 +136,7 @@ namespace PlanMatr_API.Controllers.planm
                     sPad.DateUpdated = DateTime.Now;
                     _planogramService.CreateScratchPad(sPad);
                     planogram.ScratchPad = sPad;
-                    _planogramService.SavePlanogram();
+                    _planogramService.SavePlanogram(TODO);
                 }
                 //var planogramView = (PlanogramDTO)planogram;
                 var planogramView = _mapper.Map<PlanogramDto>(planogram);
@@ -323,7 +329,7 @@ namespace PlanMatr_API.Controllers.planm
                         _planogramService.GetPlanogramStatus((int)StatusEnums.PlanogramStatusEnum.Edit);
                     planogram.Status = status;
                 }
-                _planogramService.SavePlanogram();
+                _planogramService.SavePlanogram(planogram);
                 //Audit the action
                 var audit = new LMAuditLog
                 {
@@ -413,6 +419,225 @@ namespace PlanMatr_API.Controllers.planm
         }
 
 
+
+        [Route("api/v2/planx/save-planogram-jpeg-image")]
+        [HttpPost]
+        public async Task<IActionResult> SavePlanogramJPEG(PlanmImageDto planoJpeg)
+        {
+            try
+            {
+                Planogram planogram = await _planogramService.GetPlanogram((int)planoJpeg.PlanogramId);
+                var userProfile = await this.MappedUser(_identityService);
+
+                planogram.PlanogramPreviewSrc = planoJpeg.Image;
+                _planogramService.SavePlanogram(TODO);
+                HttpResponseMessage message = new HttpResponseMessage(HttpStatusCode.OK);
+                var audit = new LMAuditLog
+                {
+                    UserId = userProfile.Id,
+                    Date = DateTime.Now,
+                    BrandId = planogram.Stand.BrandId,
+                    Roles = userProfile.RoleIds,
+                    UserName = userProfile.DisplayName,
+                    Action = (int)LogActionEnum.EditPlano,
+                    Message = userProfile.DisplayName + " edited planogram with Id " + planogram.Id,
+                    PlanoId = planogram.Id
+                };
+
+                _auditService.AuditEvent(audit);
+
+                return Ok();
+
+            }
+            catch (Exception ex)
+            {
+                //log an error
+                _logger.LogError("Error saving planogram jpeg image " + planoJpeg.PlanogramId +
+                                 "---- error message - " +
+                                 ex.Message + " --- " + ex.StackTrace);
+                return StatusCode(500, "Internal server error saving jpeg");
+
+            }
+        }
+
+
+
+
+        [Route("api/v2/planx/save-planogram-svg-image")]
+        [HttpPut]
+        public async Task<IActionResult> SavePlanogramSVG(PlanmImageDto planoSvg)
+        {
+            if (planoSvg != null)
+            {
+                Planogram planogram = await _planogramService.GetPlanogram((int)planoSvg.PlanogramId);
+
+
+
+                bool isDevServer = _config["AppSettings:isDevServer"] == "True" ? true : false;
+
+                try
+                {
+                    return Ok();
+                }
+                catch (Exception ex)
+                {
+                    //log an error
+                    _logger.LogError("Error saving planogram svg image " + planoSvg.PlanogramId +
+                                     "---- error message - " +
+                                     ex.Message + " --- " + ex.StackTrace);
+                    return StatusCode(500, "Internal server error saving snapshot");
+
+                }
+            }
+            else
+            {
+
+                _logger.LogError("No Planogram Id Supplied");
+                return StatusCode(500, "Internal server error saving snapshot");
+
+            }
+        }
+
+
+        [Route("api/v2/planx/get-planogram-pdf")]
+        [HttpPost]
+        public async Task<IActionResult> PlanogramToPdf(PlanmImageDto planoSvg)
+        {
+            //var content = Request.Content.ReadAsStringAsync();
+
+            if (planoSvg != null)
+            {
+
+
+
+                Planogram planogram = await _planogramService.GetPlanogram((int)planoSvg.PlanogramId);
+                // we can retrieve the userId from the request
+                var skuCount = 0;
+                var shelfCount = 0;
+                foreach (var part in planogram.PlanogramParts)
+                {
+                    if (part.Part.PartTypeId == 4 || part.Part.PartTypeId == 10)
+                    {
+                        shelfCount += 1;
+                    }
+                    else
+                    {
+                        skuCount += (part.Part.Facings * part.Part.Stock);
+                    }
+                }
+
+                foreach (var shelf in planogram.PlanogramShelves)
+                {
+                    shelfCount += 1;
+                }
+
+                var pageHtmlTop =
+                    "<html><head><link rel=\"stylesheet\" href=\"https://use.typekit.net/oov2wcw.css\"><style>html { font-family: century-gothic, sans-serif; font-weight: 400; font-style: normal; } </style></head><body >";
+
+                var pageHtmlBottom = "</body></html>";
+
+
+                var headerHtml = "<div class=\"header-section\" style=\"width:100%;height:80px;font-size: 16px; \">" +
+                "<div class=\"row title-row\" style=\"width:100%\">" +
+                  //"<div class=\"user-name\" style=\"width:40%;float:left;\">" + planoSvg.UserName + "</div>" +
+                  "<div class=\"plano-name\" style=\"text-align:center;\"><div>" + planogram.Name + "</div><div>" + planogram.Stand.standType.Name + " | SKU " + skuCount + " | SHELVES " + shelfCount + "</div> </div>" +
+                "</div>" +
+                "<div class=\"row name-row\" style=\"width:100%;display:flex;grid-auto-column:50%;\">" +
+                  "<div class=\"view-name\" style=\"width:50%;text-align:left;\"><strong>Planogram</strong> View</div>" +
+                  "<div class=\"diam-logo\" style=\"width:50%; text-align:right;\"><img src = \"" + _config["AppSettings:BaseImageDomain"] + "/Content/images/DIAM_pdf_logo.png\" style=\"height:40px;\" /></div>" +
+                "</div>" +
+              "</div>";
+
+
+                try
+                {
+
+                    // Render any HTML fragment or document to HTML
+                    //var Renderer = new IronPdf.HtmlToPdf();
+                    ChromePdfRenderer Renderer = new ChromePdfRenderer();
+                    Renderer.RenderingOptions.Timeout = 200;
+                    Renderer.RenderingOptions.HtmlHeader = new HtmlHeaderFooter() { MaxHeight = 45, Spacing = 25, HtmlFragment = headerHtml, FontSize = 16, LoadStylesAndCSSFromMainHtmlDocument = true };
+                    //Renderer.RenderingOptions.PaperSize = PdfPrintOptions.PdfPaperSize.A4;
+                    Renderer.RenderingOptions.PaperOrientation = PdfPaperOrientation.Portrait;
+
+                    Renderer.RenderingOptions.MarginTop = 15;
+                    Renderer.RenderingOptions.MarginBottom = 5;
+                    Renderer.RenderingOptions.MarginLeft = 5;
+                    Renderer.RenderingOptions.MarginRight = 5;
+                    //Renderer.RenderingOptions.FirstPageNumber = 1;
+                    var imageHtml = "<div style=\"width:90%; margin:auto\"><image src=\"" +
+                                    HttpUtility.UrlDecode(planoSvg.Image) + "\" style=\"max-height:100%;max-width: 100%;\"></div>";
+
+                    Renderer.RenderingOptions.FitToPaperMode = FitToPaperModes.FixedPixelWidth;
+                    //Renderer.RenderingOptions.PaperFit.UseFitToPageRendering();
+                    //Renderer.RenderingOptions.PaperFit.UseChromeDefaultRendering();
+
+                    if (planogram.Stand.Width > planogram.Stand.Height)
+                    {
+                        //Renderer.RenderingOptions.FitToPaperMode = FitToPaperModes.FixedPixelWidth;
+                        Renderer.RenderingOptions.PaperOrientation = PdfPaperOrientation.Landscape;
+                        //Renderer.RenderingOptions.PaperFit.UseFitToPageRendering(550);
+                        imageHtml = "<div style=\"width:95%;margin:auto\"><image src=\"" +
+                                    HttpUtility.UrlDecode(planoSvg.Image) + "\" style=\"max-height:100%;max-width: 100%;\"></div>";
+
+                    }
+
+
+
+
+                    var htmlPage = pageHtmlTop + imageHtml + pageHtmlBottom;
+                    var PDF = Renderer.RenderHtmlAsPdf(htmlPage);
+                    if (PDF.PageCount > 2)
+                    {
+                        PDF.Pages.Remove(PDF.Pages.First());
+                    }
+                    string PdfFileLocation = "~/planogram/pdf/";
+
+                    var OutputPath = Path.Combine(_env.WebRootPath + "\n" + _env.ContentRootPath, planogram.Name + ".pdf");
+
+
+                    var stream = PDF.Stream.ToArray());
+
+                    var response = File(stream, "application/pdf");
+
+
+                    return response;
+                    // This neat trick opens our PDF file so we can see the result in our default PDF viewer
+                    //System.Diagnostics.Process.Start(OutputPath);
+                }
+                catch (Exception Ex)
+                {
+
+                    HttpResponseMessage message = new HttpResponseMessage(HttpStatusCode.BadRequest);
+
+                    _logger.LogError("Error generating PDF");
+                    if (Ex.InnerException != null)
+                    {
+                        message.Content = new StringContent(Ex.Message +
+                                                      Ex.InnerException.ToString());
+
+                        _logger.LogError(Ex.Message + Ex.InnerException.ToString());
+                    }
+                    else
+                    {
+                        message.Content = new StringContent(Ex.Message
+                                      + Ex.StackTrace);
+
+                        _logger.LogError(Ex.Message + Ex.StackTrace);
+                    }
+                    //message.ReasonPhrase = "Error creating pdf";
+                    //log an error
+
+                    return StatusCode(500, "Error generating pdf");
+
+                }
+            }
+            else
+            {
+                return StatusCode(500, "Error generating pdf");
+            }
+        }
+
         #region PlanogramFunctions
 
 
@@ -492,7 +717,7 @@ namespace PlanMatr_API.Controllers.planm
                     sPad.DateUpdated = DateTime.Now;
                     _planogramService.CreateScratchPad(sPad);
                     planogram.ScratchPad = sPad;
-                    _planogramService.SavePlanogram();
+                    _planogramService.SavePlanogram(TODO);
                 }
 
                 var scratchPadId = planogram.ScratchPadId;
