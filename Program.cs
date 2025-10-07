@@ -4,8 +4,22 @@ using PMApplication.Interfaces;
 using PMInfrastructure.Data;
 using PMInfrastructure.Repositories;
 using Serilog;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Identity.Web;
+using Microsoft.Extensions.Configuration;
+
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddMicrosoftIdentityWebApi(options =>
+        {
+            builder.Configuration.Bind("AzureAdB2C", options);
+
+            options.TokenValidationParameters.NameClaimType = "name";
+        },
+        options => { builder.Configuration.Bind("AzureAdB2C", options); });
+// End of the Microsoft Identity platform block    
 
 // Add services to the container.
 builder.Services.AddDbContext<PlanMatrContext>(options =>
@@ -33,8 +47,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-app.UseAuthorization();
+app.UseRouting();
+app.UseAuthentication();
+//app.UseAuthorization();
 
 app.MapControllers();
 

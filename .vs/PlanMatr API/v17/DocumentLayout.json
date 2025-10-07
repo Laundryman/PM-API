@@ -3,117 +3,28 @@
   "WorkspaceRootPath": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatrAPI\\PlanMatr API\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{E90BFAC8-78EE-4FA1-A937-CD17F827AE6B}|PlanMatr API.csproj|c:\\users\\nickr\\dropbox\\laundromat media\\projects\\diam\\upgrade 3\\planmatrapi\\planmatr api\\extensions\\currentuserextentions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{E90BFAC8-78EE-4FA1-A937-CD17F827AE6B}|PlanMatr API.csproj|solutionrelative:extensions\\currentuserextentions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{598FE22B-CEC2-20E8-94F3-C229E69DB01B}|..\\..\\PlanMatr\\Infrastructure\\PMInfrastructure.csproj|c:\\users\\nickr\\dropbox\\laundromat media\\projects\\diam\\upgrade 3\\planmatr\\infrastructure\\repositories\\planogramshelfrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{BD8B6969-D6BF-5E02-D876-ACD3BBE05DA9}|..\\..\\PlanMatr\\Application\\PMApplication.csproj|c:\\users\\nickr\\dropbox\\laundromat media\\projects\\diam\\upgrade 3\\planmatr\\application\\interfaces\\iplanogramshelfrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{598FE22B-CEC2-20E8-94F3-C229E69DB01B}|..\\..\\PlanMatr\\Infrastructure\\PMInfrastructure.csproj|c:\\users\\nickr\\dropbox\\laundromat media\\projects\\diam\\upgrade 3\\planmatr\\infrastructure\\repositories\\lmauditrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{598FE22B-CEC2-20E8-94F3-C229E69DB01B}|..\\..\\PlanMatr\\Infrastructure\\PMInfrastructure.csproj|c:\\users\\nickr\\dropbox\\laundromat media\\projects\\diam\\upgrade 3\\planmatr\\infrastructure\\repositories\\standrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{BD8B6969-D6BF-5E02-D876-ACD3BBE05DA9}|..\\..\\PlanMatr\\Application\\PMApplication.csproj|c:\\users\\nickr\\dropbox\\laundromat media\\projects\\diam\\upgrade 3\\planmatr\\application\\services\\productservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{BD8B6969-D6BF-5E02-D876-ACD3BBE05DA9}|..\\..\\PlanMatr\\Application\\PMApplication.csproj|c:\\users\\nickr\\dropbox\\laundromat media\\projects\\diam\\upgrade 3\\planmatr\\application\\services\\lmauditservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{BD8B6969-D6BF-5E02-D876-ACD3BBE05DA9}|..\\..\\PlanMatr\\Application\\PMApplication.csproj|c:\\users\\nickr\\dropbox\\laundromat media\\projects\\diam\\upgrade 3\\planmatr\\application\\services\\brandservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{E90BFAC8-78EE-4FA1-A937-CD17F827AE6B}|PlanMatr API.csproj|c:\\users\\nickr\\dropbox\\laundromat media\\projects\\diam\\upgrade 3\\planmatrapi\\planmatr api\\controllers\\planm\\planmapicontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{E90BFAC8-78EE-4FA1-A937-CD17F827AE6B}|PlanMatr API.csproj|solutionrelative:controllers\\planm\\planmapicontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{BD8B6969-D6BF-5E02-D876-ACD3BBE05DA9}|..\\..\\PlanMatr\\Application\\PMApplication.csproj|c:\\users\\nickr\\dropbox\\laundromat media\\projects\\diam\\upgrade 3\\planmatr\\application\\entities\\planogramaggregate\\planogramshelf.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{BD8B6969-D6BF-5E02-D876-ACD3BBE05DA9}|..\\..\\PlanMatr\\Application\\PMApplication.csproj|c:\\users\\nickr\\dropbox\\laundromat media\\projects\\diam\\upgrade 3\\planmatr\\application\\interfaces\\serviceinterfaces\\iplanogramservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{BD8B6969-D6BF-5E02-D876-ACD3BBE05DA9}|..\\..\\PlanMatr\\Application\\PMApplication.csproj|c:\\users\\nickr\\dropbox\\laundromat media\\projects\\diam\\upgrade 3\\planmatr\\application\\services\\planogramservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{E90BFAC8-78EE-4FA1-A937-CD17F827AE6B}|PlanMatr API.csproj|c:\\users\\nickr\\dropbox\\laundromat media\\projects\\diam\\upgrade 3\\planmatrapi\\planmatr api\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E90BFAC8-78EE-4FA1-A937-CD17F827AE6B}|PlanMatr API.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{E90BFAC8-78EE-4FA1-A937-CD17F827AE6B}|PlanMatr API.csproj|c:\\users\\nickr\\dropbox\\laundromat media\\projects\\diam\\upgrade 3\\planmatrapi\\planmatr api\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{E90BFAC8-78EE-4FA1-A937-CD17F827AE6B}|PlanMatr API.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{BD8B6969-D6BF-5E02-D876-ACD3BBE05DA9}|..\\..\\PlanMatr\\Application\\PMApplication.csproj|c:\\users\\nickr\\dropbox\\laundromat media\\projects\\diam\\upgrade 3\\planmatr\\application\\specifications\\filters\\planogrampartfilter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{E90BFAC8-78EE-4FA1-A937-CD17F827AE6B}|PlanMatr API.csproj|c:\\users\\nickr\\dropbox\\laundromat media\\projects\\diam\\upgrade 3\\planmatrapi\\planmatr api\\controllers\\manageplanogramsapicontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E90BFAC8-78EE-4FA1-A937-CD17F827AE6B}|PlanMatr API.csproj|solutionrelative:controllers\\manageplanogramsapicontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{BD8B6969-D6BF-5E02-D876-ACD3BBE05DA9}|..\\..\\PlanMatr\\Application\\PMApplication.csproj|c:\\users\\nickr\\dropbox\\laundromat media\\projects\\diam\\upgrade 3\\planmatr\\application\\entities\\planogramaggregate\\planogrampart.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{E90BFAC8-78EE-4FA1-A937-CD17F827AE6B}|PlanMatr API.csproj|c:\\users\\nickr\\dropbox\\laundromat media\\projects\\diam\\upgrade 3\\planmatrapi\\planmatr api\\controllers\\partscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E90BFAC8-78EE-4FA1-A937-CD17F827AE6B}|PlanMatr API.csproj|solutionrelative:controllers\\partscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{598FE22B-CEC2-20E8-94F3-C229E69DB01B}|..\\..\\PlanMatr\\Infrastructure\\PMInfrastructure.csproj|c:\\users\\nickr\\dropbox\\laundromat media\\projects\\diam\\upgrade 3\\planmatr\\infrastructure\\repositories\\planogrampartrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{E90BFAC8-78EE-4FA1-A937-CD17F827AE6B}|PlanMatr API.csproj|c:\\users\\nickr\\dropbox\\laundromat media\\projects\\diam\\upgrade 3\\planmatrapi\\planmatr api\\controllers\\planm\\editplanapicontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E90BFAC8-78EE-4FA1-A937-CD17F827AE6B}|PlanMatr API.csproj|solutionrelative:controllers\\planm\\editplanapicontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{BD8B6969-D6BF-5E02-D876-ACD3BBE05DA9}|..\\..\\PlanMatr\\Application\\PMApplication.csproj|c:\\users\\nickr\\dropbox\\laundromat media\\projects\\diam\\upgrade 3\\planmatr\\application\\specifications\\planogrampartfilterspecification.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{BD8B6969-D6BF-5E02-D876-ACD3BBE05DA9}|..\\..\\PlanMatr\\Application\\PMApplication.csproj|c:\\users\\nickr\\dropbox\\laundromat media\\projects\\diam\\upgrade 3\\planmatr\\application\\services\\partservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{BD8B6969-D6BF-5E02-D876-ACD3BBE05DA9}|..\\..\\PlanMatr\\Application\\PMApplication.csproj|c:\\users\\nickr\\dropbox\\laundromat media\\projects\\diam\\upgrade 3\\planmatr\\application\\dtos\\planmodels\\planmpartfacing.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{BD8B6969-D6BF-5E02-D876-ACD3BBE05DA9}|..\\..\\PlanMatr\\Application\\PMApplication.csproj|c:\\users\\nickr\\dropbox\\laundromat media\\projects\\diam\\upgrade 3\\planmatr\\application\\entities\\planogramaggregate\\planogrampartfacing.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{598FE22B-CEC2-20E8-94F3-C229E69DB01B}|..\\..\\PlanMatr\\Infrastructure\\PMInfrastructure.csproj|c:\\users\\nickr\\dropbox\\laundromat media\\projects\\diam\\upgrade 3\\planmatr\\infrastructure\\data\\configurations\\planogrampartfacingconfig.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{BD8B6969-D6BF-5E02-D876-ACD3BBE05DA9}|..\\..\\PlanMatr\\Application\\PMApplication.csproj|c:\\users\\nickr\\dropbox\\laundromat media\\projects\\diam\\upgrade 3\\planmatr\\application\\enums\\partenums.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{598FE22B-CEC2-20E8-94F3-C229E69DB01B}|..\\..\\PlanMatr\\Infrastructure\\PMInfrastructure.csproj|c:\\users\\nickr\\dropbox\\laundromat media\\projects\\diam\\upgrade 3\\planmatr\\infrastructure\\data\\configurations\\planogramshelfconfig.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{BD8B6969-D6BF-5E02-D876-ACD3BBE05DA9}|..\\..\\PlanMatr\\Application\\PMApplication.csproj|c:\\users\\nickr\\dropbox\\laundromat media\\projects\\diam\\upgrade 3\\planmatr\\application\\dtos\\planmodels\\planmpartinfo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{598FE22B-CEC2-20E8-94F3-C229E69DB01B}|..\\..\\PlanMatr\\Infrastructure\\PMInfrastructure.csproj|c:\\users\\nickr\\dropbox\\laundromat media\\projects\\diam\\upgrade 3\\planmatr\\infrastructure\\data\\planmatrcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{BD8B6969-D6BF-5E02-D876-ACD3BBE05DA9}|..\\..\\PlanMatr\\Application\\PMApplication.csproj|c:\\users\\nickr\\dropbox\\laundromat media\\projects\\diam\\upgrade 3\\planmatr\\application\\interfaces\\serviceinterfaces\\iproductservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{BD8B6969-D6BF-5E02-D876-ACD3BBE05DA9}|..\\..\\PlanMatr\\Application\\PMApplication.csproj|c:\\users\\nickr\\dropbox\\laundromat media\\projects\\diam\\upgrade 3\\planmatr\\application\\interfaces\\serviceinterfaces\\ibrandservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{BD8B6969-D6BF-5E02-D876-ACD3BBE05DA9}|..\\..\\PlanMatr\\Application\\PMApplication.csproj|c:\\users\\nickr\\dropbox\\laundromat media\\projects\\diam\\upgrade 3\\planmatr\\application\\interfaces\\serviceinterfaces\\iaidentityservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{BD8B6969-D6BF-5E02-D876-ACD3BBE05DA9}|..\\..\\PlanMatr\\Application\\PMApplication.csproj|c:\\users\\nickr\\dropbox\\laundromat media\\projects\\diam\\upgrade 3\\planmatr\\application\\interfaces\\iplanogrampartrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{BD8B6969-D6BF-5E02-D876-ACD3BBE05DA9}|..\\..\\PlanMatr\\Application\\PMApplication.csproj|c:\\users\\nickr\\dropbox\\laundromat media\\projects\\diam\\upgrade 3\\planmatr\\application\\interfaces\\ipartrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{BD8B6969-D6BF-5E02-D876-ACD3BBE05DA9}|..\\..\\PlanMatr\\Application\\PMApplication.csproj|c:\\users\\nickr\\dropbox\\laundromat media\\projects\\diam\\upgrade 3\\planmatr\\application\\dtos\\planmodels\\planmshelfinfo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{BD8B6969-D6BF-5E02-D876-ACD3BBE05DA9}|..\\..\\PlanMatr\\Application\\PMApplication.csproj|c:\\users\\nickr\\dropbox\\laundromat media\\projects\\diam\\upgrade 3\\planmatr\\application\\dtos\\planmodels\\planmplanograminfo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{BD8B6969-D6BF-5E02-D876-ACD3BBE05DA9}|..\\..\\PlanMatr\\Application\\PMApplication.csproj|c:\\users\\nickr\\dropbox\\laundromat media\\projects\\diam\\upgrade 3\\planmatr\\application\\entities\\scratchpad.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{E90BFAC8-78EE-4FA1-A937-CD17F827AE6B}|PlanMatr API.csproj|c:\\users\\nickr\\dropbox\\laundromat media\\projects\\diam\\upgrade 3\\planmatrapi\\planmatr api\\exceptions\\duplicatepartexception.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{E90BFAC8-78EE-4FA1-A937-CD17F827AE6B}|PlanMatr API.csproj|solutionrelative:exceptions\\duplicatepartexception.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{E90BFAC8-78EE-4FA1-A937-CD17F827AE6B}|PlanMatr API.csproj|c:\\users\\nickr\\dropbox\\laundromat media\\projects\\diam\\upgrade 3\\planmatrapi\\planmatr api\\extensions\\controllerextentions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{E90BFAC8-78EE-4FA1-A937-CD17F827AE6B}|PlanMatr API.csproj|solutionrelative:extensions\\controllerextentions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{BD8B6969-D6BF-5E02-D876-ACD3BBE05DA9}|..\\..\\PlanMatr\\Application\\PMApplication.csproj|c:\\users\\nickr\\dropbox\\laundromat media\\projects\\diam\\upgrade 3\\planmatr\\application\\dtos\\currentuser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{E90BFAC8-78EE-4FA1-A937-CD17F827AE6B}|PlanMatr API.csproj|c:\\users\\nickr\\dropbox\\laundromat media\\projects\\diam\\upgrade 3\\planmatrapi\\planmatr api\\controllers\\planm\\createplanapicontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E90BFAC8-78EE-4FA1-A937-CD17F827AE6B}|PlanMatr API.csproj|solutionrelative:controllers\\planm\\createplanapicontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -123,164 +34,8 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 44,
+          "SelectedChildIndex": 9,
           "Children": [
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "PlanogramShelfRepository.cs",
-              "DocumentMoniker": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Infrastructure\\Repositories\\PlanogramShelfRepository.cs",
-              "RelativeDocumentMoniker": "..\\..\\PlanMatr\\Infrastructure\\Repositories\\PlanogramShelfRepository.cs",
-              "ToolTip": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Infrastructure\\Repositories\\PlanogramShelfRepository.cs",
-              "RelativeToolTip": "..\\..\\PlanMatr\\Infrastructure\\Repositories\\PlanogramShelfRepository.cs",
-              "ViewState": "AgIAAAkAAABAMzMzM7MVwAkAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-16T15:21:05.764Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "StandRepository.cs",
-              "DocumentMoniker": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Infrastructure\\Repositories\\StandRepository.cs",
-              "RelativeDocumentMoniker": "..\\..\\PlanMatr\\Infrastructure\\Repositories\\StandRepository.cs",
-              "ToolTip": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Infrastructure\\Repositories\\StandRepository.cs",
-              "RelativeToolTip": "..\\..\\PlanMatr\\Infrastructure\\Repositories\\StandRepository.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAqwAsAAAARAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-16T15:19:48.143Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 13,
-              "Title": "PlanogramPartFilter.cs",
-              "DocumentMoniker": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Specifications\\Filters\\PlanogramPartFilter.cs",
-              "RelativeDocumentMoniker": "..\\..\\PlanMatr\\Application\\Specifications\\Filters\\PlanogramPartFilter.cs",
-              "ToolTip": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Specifications\\Filters\\PlanogramPartFilter.cs",
-              "RelativeToolTip": "..\\..\\PlanMatr\\Application\\Specifications\\Filters\\PlanogramPartFilter.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAFAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-16T14:53:52.688Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 16,
-              "Title": "PlanogramPartFilterSpecification.cs",
-              "DocumentMoniker": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Specifications\\PlanogramPartFilterSpecification.cs",
-              "RelativeDocumentMoniker": "..\\..\\PlanMatr\\Application\\Specifications\\PlanogramPartFilterSpecification.cs",
-              "ToolTip": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Specifications\\PlanogramPartFilterSpecification.cs",
-              "RelativeToolTip": "..\\..\\PlanMatr\\Application\\Specifications\\PlanogramPartFilterSpecification.cs",
-              "ViewState": "AgIAAA8AAACAmZmZmZkMwCAAAAA9AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-16T14:53:36.302Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 20,
-              "Title": "PlanogramPartFacingConfig.cs",
-              "DocumentMoniker": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Infrastructure\\Data\\Configurations\\PlanogramPartFacingConfig.cs",
-              "RelativeDocumentMoniker": "..\\..\\PlanMatr\\Infrastructure\\Data\\Configurations\\PlanogramPartFacingConfig.cs",
-              "ToolTip": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Infrastructure\\Data\\Configurations\\PlanogramPartFacingConfig.cs",
-              "RelativeToolTip": "..\\..\\PlanMatr\\Infrastructure\\Data\\Configurations\\PlanogramPartFacingConfig.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-16T14:27:20.271Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 18,
-              "Title": "PlanmPartFacing.cs",
-              "DocumentMoniker": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Dtos\\PlanModels\\PlanmPartFacing.cs",
-              "RelativeDocumentMoniker": "..\\..\\PlanMatr\\Application\\Dtos\\PlanModels\\PlanmPartFacing.cs",
-              "ToolTip": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Dtos\\PlanModels\\PlanmPartFacing.cs",
-              "RelativeToolTip": "..\\..\\PlanMatr\\Application\\Dtos\\PlanModels\\PlanmPartFacing.cs",
-              "ViewState": "AgIAAAYAAADAMjMzM7MRwBEAAAATAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-16T14:25:51.514Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 21,
-              "Title": "PartEnums.cs",
-              "DocumentMoniker": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Enums\\PartEnums.cs",
-              "RelativeDocumentMoniker": "..\\..\\PlanMatr\\Application\\Enums\\PartEnums.cs",
-              "ToolTip": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Enums\\PartEnums.cs",
-              "RelativeToolTip": "..\\..\\PlanMatr\\Application\\Enums\\PartEnums.cs",
-              "ViewState": "AgIAAAQAAAAAAAAAAAAQwA4AAAAWAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-16T14:08:45.579Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 12,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatrAPI\\PlanMatr API\\appsettings.json",
-              "RelativeDocumentMoniker": "appsettings.json",
-              "ToolTip": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatrAPI\\PlanMatr API\\appsettings.json",
-              "RelativeToolTip": "appsettings.json",
-              "ViewState": "AgIAACYAAAAAAAAAAAAQwDIAAAAFAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-09-16T13:31:38.607Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 23,
-              "Title": "PlanmPartInfo.cs",
-              "DocumentMoniker": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Dtos\\PlanModels\\PlanmPartInfo.cs",
-              "RelativeDocumentMoniker": "..\\..\\PlanMatr\\Application\\Dtos\\PlanModels\\PlanmPartInfo.cs",
-              "ToolTip": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Dtos\\PlanModels\\PlanmPartInfo.cs",
-              "RelativeToolTip": "..\\..\\PlanMatr\\Application\\Dtos\\PlanModels\\PlanmPartInfo.cs",
-              "ViewState": "AgIAABIAAADg/////78hwBIAAAApAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-16T13:08:51.181Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 22,
-              "Title": "PlanogramShelfConfig.cs",
-              "DocumentMoniker": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Infrastructure\\Data\\Configurations\\PlanogramShelfConfig.cs",
-              "RelativeDocumentMoniker": "..\\..\\PlanMatr\\Infrastructure\\Data\\Configurations\\PlanogramShelfConfig.cs",
-              "ToolTip": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Infrastructure\\Data\\Configurations\\PlanogramShelfConfig.cs",
-              "RelativeToolTip": "..\\..\\PlanMatr\\Infrastructure\\Data\\Configurations\\PlanogramShelfConfig.cs",
-              "ViewState": "AgIAACAAAACAMzMzM/MiwBcAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-16T12:45:47.508Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 25,
-              "Title": "IProductService.cs",
-              "DocumentMoniker": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Interfaces\\ServiceInterfaces\\IProductService.cs",
-              "RelativeDocumentMoniker": "..\\..\\PlanMatr\\Application\\Interfaces\\ServiceInterfaces\\IProductService.cs",
-              "ToolTip": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Interfaces\\ServiceInterfaces\\IProductService.cs",
-              "RelativeToolTip": "..\\..\\PlanMatr\\Application\\Interfaces\\ServiceInterfaces\\IProductService.cs",
-              "ViewState": "AgIAAAkAAAAA//////8owBcAAAAvAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-16T12:16:11.235Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "ProductService.cs",
-              "DocumentMoniker": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Services\\ProductService.cs",
-              "RelativeDocumentMoniker": "..\\..\\PlanMatr\\Application\\Services\\ProductService.cs",
-              "ToolTip": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Services\\ProductService.cs",
-              "RelativeToolTip": "..\\..\\PlanMatr\\Application\\Services\\ProductService.cs",
-              "ViewState": "AgIAAEwAAAAAAAAAAADwv2AAAAAwAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-16T12:09:38.087Z",
-              "EditorCaption": ""
-            },
             {
               "$type": "Bookmark",
               "Name": "ST:132:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
@@ -319,312 +74,80 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 30,
-              "Title": "PlanmShelfInfo.cs",
-              "DocumentMoniker": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Dtos\\PlanModels\\PlanmShelfInfo.cs",
-              "RelativeDocumentMoniker": "..\\..\\PlanMatr\\Application\\Dtos\\PlanModels\\PlanmShelfInfo.cs",
-              "ToolTip": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Dtos\\PlanModels\\PlanmShelfInfo.cs",
-              "RelativeToolTip": "..\\..\\PlanMatr\\Application\\Dtos\\PlanModels\\PlanmShelfInfo.cs",
-              "ViewState": "AgIAAAwAAAAAzszMzMwXwAoAAAARAAAAAAAAAA==",
+              "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatrAPI\\PlanMatr API\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatrAPI\\PlanMatr API\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AgIAACEAAAAAMzMzMzMmwDMAAAAZAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-12T14:24:23.611Z",
+              "WhenOpened": "2025-10-07T07:28:54.497Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "PlanMApiController.cs",
-              "DocumentMoniker": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatrAPI\\PlanMatr API\\Controllers\\planm\\PlanMApiController.cs",
-              "RelativeDocumentMoniker": "Controllers\\planm\\PlanMApiController.cs",
-              "ToolTip": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatrAPI\\PlanMatr API\\Controllers\\planm\\PlanMApiController.cs",
-              "RelativeToolTip": "Controllers\\planm\\PlanMApiController.cs",
-              "ViewState": "AgIAAG0DAAAAAAAAAIAwwHkDAAAhAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-03T14:39:05.941Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 31,
-              "Title": "PlanmPlanogramInfo.cs",
-              "DocumentMoniker": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Dtos\\PlanModels\\PlanmPlanogramInfo.cs",
-              "RelativeDocumentMoniker": "..\\..\\PlanMatr\\Application\\Dtos\\PlanModels\\PlanmPlanogramInfo.cs",
-              "ToolTip": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Dtos\\PlanModels\\PlanmPlanogramInfo.cs",
-              "RelativeToolTip": "..\\..\\PlanMatr\\Application\\Dtos\\PlanModels\\PlanmPlanogramInfo.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAARAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-03T14:47:07.553Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "IPlanogramService.cs",
-              "DocumentMoniker": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Interfaces\\ServiceInterfaces\\IPlanogramService.cs",
-              "RelativeDocumentMoniker": "..\\..\\PlanMatr\\Application\\Interfaces\\ServiceInterfaces\\IPlanogramService.cs",
-              "ToolTip": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Interfaces\\ServiceInterfaces\\IPlanogramService.cs",
-              "RelativeToolTip": "..\\..\\PlanMatr\\Application\\Interfaces\\ServiceInterfaces\\IPlanogramService.cs",
-              "ViewState": "AgIAACIAAADAy8zMzAwtwCgAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-10T10:13:55.075Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "PlanogramService.cs",
-              "DocumentMoniker": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Services\\PlanogramService.cs",
-              "RelativeDocumentMoniker": "..\\..\\PlanMatr\\Application\\Services\\PlanogramService.cs",
-              "ToolTip": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Services\\PlanogramService.cs",
-              "RelativeToolTip": "..\\..\\PlanMatr\\Application\\Services\\PlanogramService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAsAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-10T12:48:16.238Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 28,
-              "Title": "IPlanogramPartRepository.cs",
-              "DocumentMoniker": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Interfaces\\IPlanogramPartRepository.cs",
-              "RelativeDocumentMoniker": "..\\..\\PlanMatr\\Application\\Interfaces\\IPlanogramPartRepository.cs",
-              "ToolTip": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Interfaces\\IPlanogramPartRepository.cs",
-              "RelativeToolTip": "..\\..\\PlanMatr\\Application\\Interfaces\\IPlanogramPartRepository.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAADwvwsAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-12T15:13:12.061Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 15,
-              "Title": "PlanogramPartRepository.cs",
-              "DocumentMoniker": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Infrastructure\\Repositories\\PlanogramPartRepository.cs",
-              "RelativeDocumentMoniker": "..\\..\\PlanMatr\\Infrastructure\\Repositories\\PlanogramPartRepository.cs",
-              "ToolTip": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Infrastructure\\Repositories\\PlanogramPartRepository.cs",
-              "RelativeToolTip": "..\\..\\PlanMatr\\Infrastructure\\Repositories\\PlanogramPartRepository.cs",
-              "ViewState": "AgIAAAgAAABgMzMzMzMkwBQAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-12T15:05:10.535Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 17,
-              "Title": "PartService.cs",
-              "DocumentMoniker": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Services\\PartService.cs",
-              "RelativeDocumentMoniker": "..\\..\\PlanMatr\\Application\\Services\\PartService.cs",
-              "ToolTip": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Services\\PartService.cs",
-              "RelativeToolTip": "..\\..\\PlanMatr\\Application\\Services\\PartService.cs",
-              "ViewState": "AgIAADsAAAAAAAAAAADgv0EAAABeAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-12T15:31:11.383Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 29,
-              "Title": "IPartRepository.cs",
-              "DocumentMoniker": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Interfaces\\IPartRepository.cs",
-              "RelativeDocumentMoniker": "..\\..\\PlanMatr\\Application\\Interfaces\\IPartRepository.cs",
-              "ToolTip": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Interfaces\\IPartRepository.cs",
-              "RelativeToolTip": "..\\..\\PlanMatr\\Application\\Interfaces\\IPartRepository.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAADwvwcAAAAaAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-10T16:06:45.119Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 32,
-              "Title": "ScratchPad.cs",
-              "DocumentMoniker": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Entities\\ScratchPad.cs",
-              "RelativeDocumentMoniker": "..\\..\\PlanMatr\\Application\\Entities\\ScratchPad.cs",
-              "ToolTip": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Entities\\ScratchPad.cs",
-              "RelativeToolTip": "..\\..\\PlanMatr\\Application\\Entities\\ScratchPad.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAVAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-16T10:33:57.742Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 33,
-              "Title": "DuplicatePartException.cs",
-              "DocumentMoniker": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatrAPI\\PlanMatr API\\Exceptions\\DuplicatePartException.cs",
-              "RelativeDocumentMoniker": "Exceptions\\DuplicatePartException.cs",
-              "ToolTip": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatrAPI\\PlanMatr API\\Exceptions\\DuplicatePartException.cs",
-              "RelativeToolTip": "Exceptions\\DuplicatePartException.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAADwvwcAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-16T10:32:36.231Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "PlanogramShelf.cs",
-              "DocumentMoniker": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Entities\\PlanogramAggregate\\PlanogramShelf.cs",
-              "RelativeDocumentMoniker": "..\\..\\PlanMatr\\Application\\Entities\\PlanogramAggregate\\PlanogramShelf.cs",
-              "ToolTip": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Entities\\PlanogramAggregate\\PlanogramShelf.cs",
-              "RelativeToolTip": "..\\..\\PlanMatr\\Application\\Entities\\PlanogramAggregate\\PlanogramShelf.cs",
-              "ViewState": "AgIAAAkAAAAwMzMzM7M3wBIAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-16T10:18:55.904Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 24,
-              "Title": "PlanMatrContext.cs",
-              "DocumentMoniker": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Infrastructure\\Data\\PlanMatrContext.cs",
-              "RelativeDocumentMoniker": "..\\..\\PlanMatr\\Infrastructure\\Data\\PlanMatrContext.cs",
-              "ToolTip": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Infrastructure\\Data\\PlanMatrContext.cs",
-              "RelativeToolTip": "..\\..\\PlanMatr\\Infrastructure\\Data\\PlanMatrContext.cs",
-              "ViewState": "AgIAAJIDAAAA9MzMzGw0wIoDAAAnAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-16T10:20:50.103Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 14,
-              "Title": "PlanogramPart.cs",
-              "DocumentMoniker": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Entities\\PlanogramAggregate\\PlanogramPart.cs",
-              "RelativeDocumentMoniker": "..\\..\\PlanMatr\\Application\\Entities\\PlanogramAggregate\\PlanogramPart.cs",
-              "ToolTip": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Entities\\PlanogramAggregate\\PlanogramPart.cs",
-              "RelativeToolTip": "..\\..\\PlanMatr\\Application\\Entities\\PlanogramAggregate\\PlanogramPart.cs",
-              "ViewState": "AgIAAAUAAAAAAAAAACA0wBAAAAATAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-12T15:11:53.702Z",
+              "DocumentIndex": 1,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatrAPI\\PlanMatr API\\appsettings.json",
+              "RelativeDocumentMoniker": "appsettings.json",
+              "ToolTip": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatrAPI\\PlanMatr API\\appsettings.json",
+              "RelativeToolTip": "appsettings.json",
+              "ViewState": "AgIAABcAAAAAzszMzMwIwC4AAAAzAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-10-07T07:00:48.321Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "IPlanogramShelfRepository.cs",
-              "DocumentMoniker": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Interfaces\\IPlanogramShelfRepository.cs",
-              "RelativeDocumentMoniker": "..\\..\\PlanMatr\\Application\\Interfaces\\IPlanogramShelfRepository.cs",
-              "ToolTip": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Interfaces\\IPlanogramShelfRepository.cs",
-              "RelativeToolTip": "..\\..\\PlanMatr\\Application\\Interfaces\\IPlanogramShelfRepository.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAADwvwsAAAAAAAAAAAAAAA==",
+              "Title": "ManagePlanogramsApiController.cs",
+              "DocumentMoniker": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatrAPI\\PlanMatr API\\Controllers\\ManagePlanogramsApiController.cs",
+              "RelativeDocumentMoniker": "Controllers\\ManagePlanogramsApiController.cs",
+              "ToolTip": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatrAPI\\PlanMatr API\\Controllers\\ManagePlanogramsApiController.cs",
+              "RelativeToolTip": "Controllers\\ManagePlanogramsApiController.cs",
+              "ViewState": "AgIAACgAAAAAmJmZmVkgwCgAAAApAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-12T15:14:05.022Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 19,
-              "Title": "PlanogramPartFacing.cs",
-              "DocumentMoniker": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Entities\\PlanogramAggregate\\PlanogramPartFacing.cs",
-              "RelativeDocumentMoniker": "..\\..\\PlanMatr\\Application\\Entities\\PlanogramAggregate\\PlanogramPartFacing.cs",
-              "ToolTip": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Entities\\PlanogramAggregate\\PlanogramPartFacing.cs",
-              "RelativeToolTip": "..\\..\\PlanMatr\\Application\\Entities\\PlanogramAggregate\\PlanogramPartFacing.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAVAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-12T14:14:56.182Z",
+              "WhenOpened": "2025-10-04T14:18:34.783Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 3,
-              "Title": "LMAuditRepository.cs",
-              "DocumentMoniker": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Infrastructure\\Repositories\\LMAuditRepository.cs",
-              "RelativeDocumentMoniker": "..\\..\\PlanMatr\\Infrastructure\\Repositories\\LMAuditRepository.cs",
-              "ToolTip": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Infrastructure\\Repositories\\LMAuditRepository.cs",
-              "RelativeToolTip": "..\\..\\PlanMatr\\Infrastructure\\Repositories\\LMAuditRepository.cs",
-              "ViewState": "AgIAAAEAAABAMzMzM3MnwBIAAAAJAAAAAAAAAA==",
+              "Title": "PartsController.cs",
+              "DocumentMoniker": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatrAPI\\PlanMatr API\\Controllers\\PartsController.cs",
+              "RelativeDocumentMoniker": "Controllers\\PartsController.cs",
+              "ToolTip": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatrAPI\\PlanMatr API\\Controllers\\PartsController.cs",
+              "RelativeToolTip": "Controllers\\PartsController.cs",
+              "ViewState": "AgIAACUAAACAMzMzM7MkwDcAAABNAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-10T16:02:00.014Z",
+              "WhenOpened": "2025-10-03T12:20:36.184Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "LMAuditService.cs",
-              "DocumentMoniker": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Services\\LMAuditService.cs",
-              "RelativeDocumentMoniker": "..\\..\\PlanMatr\\Application\\Services\\LMAuditService.cs",
-              "ToolTip": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Services\\LMAuditService.cs",
-              "RelativeToolTip": "..\\..\\PlanMatr\\Application\\Services\\LMAuditService.cs",
-              "ViewState": "AgIAAAsAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA==",
+              "DocumentIndex": 5,
+              "Title": "CreatePlanApiController.cs",
+              "DocumentMoniker": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatrAPI\\PlanMatr API\\Controllers\\planm\\CreatePlanApiController.cs",
+              "RelativeDocumentMoniker": "Controllers\\planm\\CreatePlanApiController.cs",
+              "ToolTip": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatrAPI\\PlanMatr API\\Controllers\\planm\\CreatePlanApiController.cs",
+              "RelativeToolTip": "Controllers\\planm\\CreatePlanApiController.cs",
+              "ViewState": "AgIAAEcAAAAAAQAAAKAzwAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-10T15:59:05.067Z",
+              "WhenOpened": "2025-10-03T12:18:03.573Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 27,
-              "Title": "IAIdentityService.cs",
-              "DocumentMoniker": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Interfaces\\ServiceInterfaces\\IAIdentityService.cs",
-              "RelativeDocumentMoniker": "..\\..\\PlanMatr\\Application\\Interfaces\\ServiceInterfaces\\IAIdentityService.cs",
-              "ToolTip": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Interfaces\\ServiceInterfaces\\IAIdentityService.cs",
-              "RelativeToolTip": "..\\..\\PlanMatr\\Application\\Interfaces\\ServiceInterfaces\\IAIdentityService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAVAAAAAAAAAA==",
+              "DocumentIndex": 4,
+              "Title": "EditPlanApiController.cs",
+              "DocumentMoniker": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatrAPI\\PlanMatr API\\Controllers\\planm\\EditPlanApiController.cs",
+              "RelativeDocumentMoniker": "Controllers\\planm\\EditPlanApiController.cs",
+              "ToolTip": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatrAPI\\PlanMatr API\\Controllers\\planm\\EditPlanApiController.cs",
+              "RelativeToolTip": "Controllers\\planm\\EditPlanApiController.cs",
+              "ViewState": "AgIAANwAAACAmZmZmZkqwNwAAAApAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-10T10:12:06.669Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 35,
-              "Title": "CurrentUser.cs",
-              "DocumentMoniker": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Dtos\\CurrentUser.cs",
-              "RelativeDocumentMoniker": "..\\..\\PlanMatr\\Application\\Dtos\\CurrentUser.cs",
-              "ToolTip": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Dtos\\CurrentUser.cs",
-              "RelativeToolTip": "..\\..\\PlanMatr\\Application\\Dtos\\CurrentUser.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-10T10:18:04.459Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "BrandService.cs",
-              "DocumentMoniker": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Services\\BrandService.cs",
-              "RelativeDocumentMoniker": "..\\..\\PlanMatr\\Application\\Services\\BrandService.cs",
-              "ToolTip": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Services\\BrandService.cs",
-              "RelativeToolTip": "..\\..\\PlanMatr\\Application\\Services\\BrandService.cs",
-              "ViewState": "AgIAACQAAAAAAAAAAADgvy4AAAAhAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-10T09:21:09.858Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 26,
-              "Title": "IBrandService.cs",
-              "DocumentMoniker": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Interfaces\\ServiceInterfaces\\IBrandService.cs",
-              "RelativeDocumentMoniker": "..\\..\\PlanMatr\\Application\\Interfaces\\ServiceInterfaces\\IBrandService.cs",
-              "ToolTip": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatr\\Application\\Interfaces\\ServiceInterfaces\\IBrandService.cs",
-              "RelativeToolTip": "..\\..\\PlanMatr\\Application\\Interfaces\\ServiceInterfaces\\IBrandService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAADwvwAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-10T09:21:09.733Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 34,
-              "Title": "ControllerExtentions.cs",
-              "DocumentMoniker": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatrAPI\\PlanMatr API\\Extensions\\ControllerExtentions.cs",
-              "RelativeDocumentMoniker": "Extensions\\ControllerExtentions.cs",
-              "ToolTip": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatrAPI\\PlanMatr API\\Extensions\\ControllerExtentions.cs",
-              "RelativeToolTip": "Extensions\\ControllerExtentions.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB4AAAAoAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-10T09:11:54.839Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "CurrentUserExtentions.cs",
-              "DocumentMoniker": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatrAPI\\PlanMatr API\\Extensions\\CurrentUserExtentions.cs",
-              "RelativeDocumentMoniker": "Extensions\\CurrentUserExtentions.cs",
-              "ToolTip": "C:\\Users\\nickr\\Dropbox\\Laundromat Media\\Projects\\DIAM\\Upgrade 3\\PlanMatrAPI\\PlanMatr API\\Extensions\\CurrentUserExtentions.cs",
-              "RelativeToolTip": "Extensions\\CurrentUserExtentions.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAABZAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-03T15:37:24.575Z",
+              "WhenOpened": "2025-10-03T12:16:49.361Z",
               "EditorCaption": ""
             }
           ]
