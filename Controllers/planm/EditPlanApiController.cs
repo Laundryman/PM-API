@@ -50,7 +50,7 @@ namespace PlanMatr_API.Controllers.planm
                 //IProductService productService,
                 IPlanogramService planogramService,
                 //IAIdentityService identityService, 
-                IMapper mapper, ILogger<PartController> logger, IAIdentityService identityService, ICountryService countryService, ILmAuditService auditService, IConfiguration config, IProductService productService, IWebHostEnvironment env)
+                IMapper mapper, ILogger<EditPlanApiController> logger, IAIdentityService identityService, ICountryService countryService, ILmAuditService auditService, IConfiguration config, IProductService productService, IWebHostEnvironment env)
             //IPlanogramVersionService versionService)
         {
             this._partService = partService;
@@ -136,7 +136,7 @@ namespace PlanMatr_API.Controllers.planm
                     sPad.DateUpdated = DateTime.Now;
                     _planogramService.CreateScratchPad(sPad);
                     planogram.ScratchPad = sPad;
-                    _planogramService.SavePlanogram(TODO);
+                    _planogramService.SavePlanogram(planogram);
                 }
                 //var planogramView = (PlanogramDTO)planogram;
                 var planogramView = _mapper.Map<PlanogramDto>(planogram);
@@ -430,7 +430,7 @@ namespace PlanMatr_API.Controllers.planm
                 var userProfile = await this.MappedUser(_identityService);
 
                 planogram.PlanogramPreviewSrc = planoJpeg.Image;
-                _planogramService.SavePlanogram(TODO);
+                _planogramService.SavePlanogram(planogram);
                 HttpResponseMessage message = new HttpResponseMessage(HttpStatusCode.OK);
                 var audit = new LMAuditLog
                 {
@@ -596,7 +596,7 @@ namespace PlanMatr_API.Controllers.planm
                     var OutputPath = Path.Combine(_env.WebRootPath + "\n" + _env.ContentRootPath, planogram.Name + ".pdf");
 
 
-                    var stream = PDF.Stream.ToArray());
+                    var stream = PDF.Stream.ToArray();
 
                     var response = File(stream, "application/pdf");
 
@@ -717,7 +717,7 @@ namespace PlanMatr_API.Controllers.planm
                     sPad.DateUpdated = DateTime.Now;
                     _planogramService.CreateScratchPad(sPad);
                     planogram.ScratchPad = sPad;
-                    _planogramService.SavePlanogram(TODO);
+                    _planogramService.SavePlanogram(planogram);
                 }
 
                 var scratchPadId = planogram.ScratchPadId;
@@ -1100,7 +1100,7 @@ namespace PlanMatr_API.Controllers.planm
                 }
 
                 int scratchPadId = sPadId == null ? 0 : (int)sPadId;
-                var spad = _planogramService.GetScratchPad(scratchPadId);
+                var spad = await _planogramService.GetScratchPad(scratchPadId);
 
                 if (shelves != null)
                 {

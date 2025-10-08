@@ -221,7 +221,7 @@ namespace PlanMatr_API.Controllers
             var orderModel = _mapper.Map<OrderDto>(order);
 
             //var filter = new OrderItemFilter { OrderId = order.Id };
-            var allOrderItems = await _orderService.GetOrderItems(order.Id);
+            var allOrderItems = await _orderService.GetOrderItemInfos(order.Id);
 
             orderModel.HasLegacyItems = allOrderItems.Any(x => !x.Shoppable);
 

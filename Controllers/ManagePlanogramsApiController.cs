@@ -7,9 +7,11 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using AutoMapper;
 using PlanMatr_API.Controllers.planm;
+using PMApplication.Dtos;
 using PMApplication.Dtos.PlanModels;
 using PMApplication.Entities;
 using PMApplication.Services;
+using PMApplication.Specifications.Filters;
 
 namespace PlanMatr_API.Controllers
 {
@@ -123,7 +125,14 @@ namespace PlanMatr_API.Controllers
             try
             {
                 //We're not using the country and region here: but we need to think about how we might regarding users.
-                var planogramNotes = await _planogramService.GetPlanogramNotes(userProfile.Id, brandId, countryId, default(int), planogramId);
+                var noteFilter = new NoteFilter
+                {
+                    UserId = userProfile.Id,
+                    BrandId = brandId,
+                    CountryId = countryId,
+                    PlanogramId = planogramId
+                };
+                var planogramNotes = await _planogramService.GetPlanogramNotes(noteFilter);
                 var commentCount = planogramNotes.Count();
                 return Ok(commentCount);
             }
