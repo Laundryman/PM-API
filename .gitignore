@@ -94,3 +94,11 @@ nunit-*.xml
 /.vs/PlanMatr API/CopilotIndices/17.13.430.18484/SemanticSymbols.db
 
 /logs/
+/.vs/PlanMatr API/DesignTimeBuild/.dtbcache.v2
+/.vs/PlanMatr API/v17/.futdcache.v2
+/.vs/PlanMatr API/v17/.suo
+/.vs/PlanMatr API/v17/DocumentLayout.backup.json
+/.vs/PlanMatr API/v17/DocumentLayout.json
+/.vs/ProjectEvaluation/planmatr api.metadata.v9.bin
+/.vs/ProjectEvaluation/planmatr api.projects.v9.bin
+/.vs/ProjectEvaluation/planmatr api.strings.v9.bin
