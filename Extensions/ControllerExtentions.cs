@@ -22,7 +22,7 @@ namespace PlanMatr_API.Extensions
                 return await brandService.GetBrand(int.Parse(brandSelection));
             }
         }
-        public static Task<CurrentUser> MappedUser(this ControllerBase controller, IAIdentityService identityService)
+        public static Task<CurrentUser> MappedUser(this ControllerBase controller)
         {
             // we can retrieve the userId from the request
             var currentUser = controller.User;

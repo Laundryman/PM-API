@@ -11,14 +11,17 @@ using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddMicrosoftIdentityWebApi(options =>
-        {
-            builder.Configuration.Bind("AzureAdB2C", options);
+//builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+//    .AddMicrosoftIdentityWebApi(options =>
+//        {
+//            builder.Configuration.Bind("AzureAdB2C", options);
 
-            options.TokenValidationParameters.NameClaimType = "name";
-        },
-        options => { builder.Configuration.Bind("AzureAdB2C", options); });
+//            options.TokenValidationParameters.NameClaimType = "name";
+//        },
+//        options => { builder.Configuration.Bind("AzureAdB2C", options); });
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAdB2C"));
 // End of the Microsoft Identity platform block    
 
 // Add services to the container.
@@ -33,6 +36,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped(typeof(IAsyncRepository<>), typeof(EfRepository<>));
 builder.Services.AddScoped(typeof(IAsyncRepositoryLong<>), typeof(EfRepositoryLong<>));
 builder.Services.AddPMServices();
+builder.Services.AddRepositories();
 
 //Add support to logging with SERILOG
 builder.Host.UseSerilog((context, configuration) =>
@@ -47,9 +51,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseRouting();
 app.UseAuthentication();
-//app.UseAuthorization();
+app.UseAuthorization();
+//app.UseRouting();
 
 app.MapControllers();
 

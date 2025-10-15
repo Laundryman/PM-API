@@ -18,7 +18,6 @@ namespace PlanMatr_API.Controllers.planm
     {
         private readonly IMapper _mapper;
         private readonly ILogger<PartController> _logger;
-        private readonly IAIdentityService _identityService;
         private readonly IBrandService _brandService;
         private readonly IClusterService _clusterService;
         private readonly IStandService _standService;
@@ -26,15 +25,14 @@ namespace PlanMatr_API.Controllers.planm
         private readonly IProductService _productService;
         private readonly IPlanogramService _planogramService;
         private readonly ICountryService _countryService;
-        private readonly ILmAuditService _auditService;
+        private readonly IAuditService _auditService;
         private readonly IConfiguration _config;
         private readonly IWebHostEnvironment _env;
 
-        public CreatePlanApiController(IMapper mapper, ILogger<PartController> logger, IAIdentityService identityService, IBrandService brandService, IPartService partService, IProductService productService, IPlanogramService planogramService, ICountryService countryService, ILmAuditService auditService, IConfiguration config, IWebHostEnvironment env, IStandService standService, IClusterService clusterService)
+        public CreatePlanApiController(IMapper mapper, ILogger<PartController> logger, IBrandService brandService, IPartService partService, IProductService productService, IPlanogramService planogramService, ICountryService countryService, IAuditService auditService, IConfiguration config, IWebHostEnvironment env, IStandService standService, IClusterService clusterService)
         {
             _mapper = mapper;
             _logger = logger;
-            _identityService = identityService;
             _brandService = brandService;
             _partService = partService;
             _productService = productService;
@@ -107,7 +105,7 @@ namespace PlanMatr_API.Controllers.planm
         {
             try
             {
-                var userProfile = await this.MappedUser(_identityService);
+                var userProfile = await this.MappedUser();
 
                 string? userId = userProfile.Id;
 
@@ -128,7 +126,7 @@ namespace PlanMatr_API.Controllers.planm
                 }
 
                 //Audit the action
-                var audit = new LMAuditLog
+                var audit = new AuditLog
                 {
                     UserId = userId,
                     Date = DateTime.Now,

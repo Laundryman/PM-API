@@ -28,13 +28,12 @@ namespace PlanMatr_API.Controllers.planm
     {
         private readonly IMapper _mapper;
         private readonly ILogger<EditPlanApiController> _logger;
-        private readonly IAIdentityService _identityService;
         private readonly IBrandService _brandService;
         private readonly IPartService _partService;
         private readonly IProductService _productService;
         private readonly IPlanogramService _planogramService;
         private readonly ICountryService _countryService;
-        private readonly ILmAuditService _auditService;
+        private readonly IAuditService _auditService;
         private readonly IConfiguration _config;
         private readonly IWebHostEnvironment _env;
         //private readonly ICategoryService _categoryService;
@@ -50,7 +49,7 @@ namespace PlanMatr_API.Controllers.planm
                 //IProductService productService,
                 IPlanogramService planogramService,
                 //IAIdentityService identityService, 
-                IMapper mapper, ILogger<EditPlanApiController> logger, IAIdentityService identityService, ICountryService countryService, ILmAuditService auditService, IConfiguration config, IProductService productService, IWebHostEnvironment env)
+                IMapper mapper, ILogger<EditPlanApiController> logger, ICountryService countryService, IAuditService auditService, IConfiguration config, IProductService productService, IWebHostEnvironment env)
             //IPlanogramVersionService versionService)
         {
             this._partService = partService;
@@ -63,7 +62,6 @@ namespace PlanMatr_API.Controllers.planm
             //this._identityService = identityService;
             _mapper = mapper;
             _logger = logger;
-            _identityService = identityService;
             _countryService = countryService;
             _auditService = auditService;
             _config = config;
@@ -271,7 +269,7 @@ namespace PlanMatr_API.Controllers.planm
                 var planogram = await _planogramService.GetPlanogram(planogramId);
                 var planogramParts = planogram.PlanogramParts.ToList();
 
-                var userProfile = await this.MappedUser(_identityService);
+                var userProfile = await this.MappedUser();
                 //var userProfile = new UserViewModel();
                 //userProfile.Id = planogramData.UserId;
                 //userProfile.UserName = planogramData.UserName;
@@ -331,7 +329,7 @@ namespace PlanMatr_API.Controllers.planm
                 }
                 _planogramService.SavePlanogram(planogram);
                 //Audit the action
-                var audit = new LMAuditLog
+                var audit = new AuditLog
                 {
                     UserId = userProfile.Id,
                     Date = DateTime.Now,
@@ -427,12 +425,12 @@ namespace PlanMatr_API.Controllers.planm
             try
             {
                 Planogram planogram = await _planogramService.GetPlanogram((int)planoJpeg.PlanogramId);
-                var userProfile = await this.MappedUser(_identityService);
+                var userProfile = await this.MappedUser();
 
                 planogram.PlanogramPreviewSrc = planoJpeg.Image;
                 _planogramService.SavePlanogram(planogram);
                 HttpResponseMessage message = new HttpResponseMessage(HttpStatusCode.OK);
-                var audit = new LMAuditLog
+                var audit = new AuditLog
                 {
                     UserId = userProfile.Id,
                     Date = DateTime.Now,

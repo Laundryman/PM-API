@@ -4,6 +4,7 @@ using PMApplication.Dtos.Filters;
 using PMApplication.Dtos.PlanModels;
 using PMApplication.Entities;
 using PMApplication.Entities.CountriesAggregate;
+using PMApplication.Entities.JobsAggregate;
 using PMApplication.Entities.PartAggregate;
 using PMApplication.Entities.PlanogramAggregate;
 using PMApplication.Entities.OrderAggregate;
@@ -22,6 +23,7 @@ namespace PlanMatr_API
             CreateMap<Category, CategoryDto>();
             CreateMap<CountriesFilterDto, CountryFilter>();
             CreateMap<Country, CountryDto>();
+            CreateMap<JobFolderDto, JobFolder>();
             //.ForMember(dest => dest.Countries, opt => opt.MapFrom(src =>  src.Countries))
             CreateMap<PartFilterDto, PartFilter>();
             CreateMap<PartFilter, PartFilterDto>();

@@ -10,8 +10,10 @@ using PlanMatr_API.Controllers.planm;
 using PMApplication.Dtos;
 using PMApplication.Dtos.PlanModels;
 using PMApplication.Entities;
+using PMApplication.Helpers;
 using PMApplication.Services;
 using PMApplication.Specifications.Filters;
+using static PMApplication.Enums.StatusEnums;
 
 namespace PlanMatr_API.Controllers
 {
@@ -20,21 +22,19 @@ namespace PlanMatr_API.Controllers
 
         private readonly IMapper _mapper;
         private readonly ILogger<EditPlanApiController> _logger;
-        private readonly IAIdentityService _identityService;
         private readonly IBrandService _brandService;
         private readonly IPartService _partService;
         private readonly IProductService _productService;
         private readonly IPlanogramService _planogramService;
         private readonly ICountryService _countryService;
-        private readonly ILmAuditService _auditService;
+        private readonly IAuditService _auditService;
         private readonly IConfiguration _config;
         private readonly IWebHostEnvironment _env;
 
-        public ManagePlanogramsApiController(IMapper mapper, ILogger<EditPlanApiController> logger, IAIdentityService identityService, IBrandService brandService, IPartService partService, IProductService productService, IPlanogramService planogramService, ICountryService countryService, ILmAuditService auditService, IConfiguration config, IWebHostEnvironment env)
+        public ManagePlanogramsApiController(IMapper mapper, ILogger<EditPlanApiController> logger, IBrandService brandService, IPartService partService, IProductService productService, IPlanogramService planogramService, ICountryService countryService, IAuditService auditService, IConfiguration config, IWebHostEnvironment env)
         {
             _mapper = mapper;
             _logger = logger;
-            _identityService = identityService;
             _brandService = brandService;
             _partService = partService;
             _productService = productService;
@@ -54,7 +54,7 @@ namespace PlanMatr_API.Controllers
             //var planoRepoService = dpRes.GetService<IPlanogramRepository>();
             Planogram planogram = await _planogramService.GetPlanogram(planogramId);
             // we can retrieve the userId from the request
-            var userProfile = await this.MappedUser(_identityService);
+            var userProfile = await this.MappedUser();
             string userId = userProfile.Id;
 
 
@@ -87,7 +87,7 @@ namespace PlanMatr_API.Controllers
         public async Task<int> RenamePlanogram(int planogramId, string planoName)
         {
             // we can retrieve the userId from the request
-            var userProfile = await this.MappedUser(_identityService);
+            var userProfile = await this.MappedUser();
             string userId = userProfile.Id;
             var planogram = await _planogramService.GetPlanogram(planogramId);
             var brandId = planogram.Stand.BrandId;
@@ -96,7 +96,7 @@ namespace PlanMatr_API.Controllers
             _planogramService.SavePlanogram(planogram);
 
             //Audit the action
-            var audit = new LMAuditLog
+            var audit = new AuditLog
             {
                 UserId = userId,
                 Date = DateTime.Now,
@@ -119,7 +119,7 @@ namespace PlanMatr_API.Controllers
         public async Task<IActionResult> GetCommentCount(int planogramId, int brandId)
         {
             // we can retrieve the userId from the request
-            var userProfile = await this.MappedUser(_identityService);
+            var userProfile = await this.MappedUser();
 
             var countryId = userProfile.DiamCountryId;
             try
@@ -221,6 +221,53 @@ namespace PlanMatr_API.Controllers
             }
 
         }
+
+
+        [Authorize]
+        [Route("api/v2/planogram/get/yourplanograms/{status}/{countryId}/{regionId}/{standTypeId}/{brandId}")]
+        [HttpGet]
+        public async Task<IEnumerable<PlanogramInfo>> GetYourPlanograms(int status, int countryId, int regionId, int standTypeId, int brandId)
+        {
+            IEnumerable<PlanogramInfo> planograms;
+
+            try
+            {
+                // we can retrieve the userId from the request
+                var userProfile = await this.MappedUser();
+                var statusEnum = (PlanogramStatusEnum)status;
+                string userId = userProfile.Id;
+
+                if (RolesHelper.IsAdministrator(userProfile.RoleIds))
+                {
+                    planograms = await _planogramService.GetYourPlanograms((int)statusEnum, countryId, regionId, standTypeId, brandId);
+                }
+
+                else if (RolesHelper.IsValidator(userProfile.RoleIds))
+                {
+
+                    planograms = await _planogramService.GetYourPlanograms((int)statusEnum, userProfile.DiamCountryId, regionId, standTypeId, brandId);
+                }
+
+                else if (RolesHelper.IsApprover(userProfile.RoleIds))
+                {
+                    planograms = await _planogramService.GetYourPlanograms((int)statusEnum, brandId, countryId, regionId, standTypeId);
+                }
+                else
+                {
+                    planograms = await _planogramService.GetYourPlanograms((int)(int)statusEnum, userProfile.DiamCountryId, 0, standTypeId, brandId);
+                }
+
+
+                return planograms;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error getting planograms - message = {0}", ex.Message);
+                throw;
+            }
+
+        }
+
 
     }
 }

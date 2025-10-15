@@ -26,11 +26,11 @@ namespace PlanMatr_API.Controllers
         private readonly IProductService _productService;
         private readonly IPlanogramService _planogramService;
         private readonly ICountryService _countryService;
-        private readonly ILmAuditService _auditService;
+        private readonly IAuditService _auditService;
         private readonly IConfiguration _config;
         private readonly IWebHostEnvironment _env;
 
-        public OrdersApiController(IMapper mapper, ILogger<EditPlanApiController> logger, IAIdentityService identityService, IBrandService brandService, IOrderService orderService, IProductService productService, IPlanogramService planogramService, ICountryService countryService, ILmAuditService auditService, IConfiguration config, IWebHostEnvironment env)
+        public OrdersApiController(IMapper mapper, ILogger<EditPlanApiController> logger, IAIdentityService identityService, IBrandService brandService, IOrderService orderService, IProductService productService, IPlanogramService planogramService, ICountryService countryService, IAuditService auditService, IConfiguration config, IWebHostEnvironment env)
         {
             _mapper = mapper;
             _logger = logger;
@@ -116,13 +116,13 @@ namespace PlanMatr_API.Controllers
         public async Task<IActionResult> AddToOrder(int orderId, int planogramId, int quantity, string userId, bool isFullPlano, int brandid)
         {
             //var currentUser = HttpContext.Current.User;
-            var currentUseruserProfile = await this.MappedUser(_identityService);
+            var currentUseruserProfile = await this.MappedUser();
 
             try
             {
 
 
-                var userProfile = await this.MappedUser(_identityService);
+                var userProfile = await this.MappedUser();
 
                 _orderService.AddPartsToOrder(orderId, planogramId, quantity, userId, userProfile.UserName, isFullPlano);
                 //LOG SUCCESSFULL Planogram Save HERE
@@ -131,7 +131,7 @@ namespace PlanMatr_API.Controllers
 
 
                 //Audit the action
-                var audit = new LMAuditLog
+                var audit = new AuditLog
                 {
                     UserId = userProfile.Id,
                     Date = DateTime.Now,
@@ -158,7 +158,7 @@ namespace PlanMatr_API.Controllers
         public async Task<IActionResult> UpdateOrderItemQuantity(int orderItemId, int quantity, int brandId)
         {
             //var response = new ApiResponseModel();
-            var currentUser = await this.MappedUser(_identityService);
+            var currentUser = await this.MappedUser();
 
             try
             {
@@ -173,7 +173,7 @@ namespace PlanMatr_API.Controllers
                 _orderService.SaveOrderItem();
 
                 //LOG SUCCESSFULL Planogram Save HERE
-                var userProfile = await this.MappedUser(_identityService);
+                var userProfile = await this.MappedUser();
                 string userId = userProfile.Id;
                 //Get The Client Application Info
 
@@ -183,7 +183,7 @@ namespace PlanMatr_API.Controllers
                 //    HttpContext.Current.Request.UserHostAddress);
 
                 //Audit the action
-                var audit = new LMAuditLog
+                var audit = new AuditLog
                 {
                     UserId = userProfile.Id,
                     Date = DateTime.Now,
