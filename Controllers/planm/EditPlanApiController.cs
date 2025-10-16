@@ -19,10 +19,11 @@ using PMApplication.Specifications.Filters;
 using System.Web;
 using IronPdf.Engines.Chrome;
 using IronPdf.Rendering;
+using Microsoft.AspNetCore.Authorization;
 
 namespace PlanMatr_API.Controllers.planm
 {
-    [Route("api/countries/[action]")]
+    [Authorize]
     [ApiController]
     public class EditPlanApiController : ControllerBase
     {
@@ -75,7 +76,11 @@ namespace PlanMatr_API.Controllers.planm
         [HttpGet]
         public async Task<IActionResult> GetMenu(int planogramId)
         {
-            var planogram = await _planogramService.GetPlanogram(planogramId);
+            var filter = new PlanogramFilter
+            {
+                Id = planogramId
+            };
+            var planogram = await _planogramService.GetPlanogram(filter);
             var standTypeId = planogram.Stand.StandTypeId;
             var brandId = planogram.Stand.BrandId;
             var countryId = planogram.CountryId ?? 0;
@@ -121,7 +126,7 @@ namespace PlanMatr_API.Controllers.planm
 
         [Route("api/v2/planx/get-planogram/{PlanogramId}")]
         [HttpGet]
-        public async Task<IActionResult> GetPlanogram(int PlanogramId)
+        public async Task<IActionResult> GetPlanogram(long PlanogramId)
         {
             try
             {
@@ -137,24 +142,12 @@ namespace PlanMatr_API.Controllers.planm
                     _planogramService.SavePlanogram(planogram);
                 }
                 //var planogramView = (PlanogramDTO)planogram;
-                var planogramView = _mapper.Map<PlanogramDto>(planogram);
+                var planogramView = _mapper.Map<PlanmPlanogramDto>(planogram);
                 return Ok(planogramView);
             }
             catch (Exception ex)
             {
-                HttpResponseMessage message = new HttpResponseMessage(HttpStatusCode.BadRequest);
 
-                if (ex.InnerException != null)
-                {
-                    message.Content = new StringContent(ex.Message +
-                                                        ex.InnerException.ToString());
-                }
-                else
-                {
-                    message.Content = new StringContent(ex.Message
-                                                        + ex.StackTrace);
-                }
-                message.ReasonPhrase = "Error getting planogram";
                 //log an error
                 _logger.LogError("Error getting planogram for planogramId " + PlanogramId + "---- error message - " + ex.Message + " --- " + ex.StackTrace);
 
@@ -169,7 +162,11 @@ namespace PlanMatr_API.Controllers.planm
         {
             try
             {
-                var plano = await _planogramService.GetPlanogram(planogramId);
+                var filter = new PlanogramFilter
+                {
+                    Id = planogramId
+                };
+                var plano = await _planogramService.GetPlanogram(filter);
 
 
                 var planoCountryId = plano.CountryId;
@@ -230,27 +227,17 @@ namespace PlanMatr_API.Controllers.planm
                     standView.ShelfLock = true;
                 }
 
-                var standType = await _standService.GetStandType(standView.StandTypeId);
+                var filter = new StandTypeFilter
+                {
+                    Id = stand.StandTypeId,
+                };
+                var standType = await _standService.GetStandType(filter);
                 standView.StandTypeName = standType.Name;
                 standView.ParentStandTypeName = standType.ParentStandType.Name;
                 return Ok(standView);
             }
             catch (Exception ex)
             {
-                HttpResponseMessage message = new HttpResponseMessage(HttpStatusCode.BadRequest);
-                if (ex.InnerException != null)
-                {
-                    message.Content = new StringContent(ex.Message +
-                                                        ex.InnerException.ToString());
-                }
-                else
-                {
-                    message.Content = new StringContent(ex.Message
-                                                        + ex.StackTrace);
-                }
-                message.ReasonPhrase = "Error creating menu";
-                //log an error
-
                 _logger.LogError("Error getting stand for standId " + standId + "---- error message - " + ex.Message + " --- " + ex.StackTrace);
                 return StatusCode(500, "Internal server error getting stand");
             }
@@ -278,7 +265,7 @@ namespace PlanMatr_API.Controllers.planm
 
                 var currPlano = await _planogramService.GetPlanogram(planogramId);
 
-                var planoIsLocked = IsLocked(planogramId, userProfile);
+                var planoIsLocked = await IsLocked(planogramId, userProfile);
 
                 if (planoIsLocked)
                 {
@@ -645,9 +632,14 @@ namespace PlanMatr_API.Controllers.planm
         /// </summary>
         /// <param name="planogramId">The id of the planogram to check.</param>
         /// <returns>true or false.</returns>
-        private bool IsLocked(int planogramId, CurrentUser user)
+        private async Task<bool> IsLocked(int planogramId, CurrentUser user)
         {
-            return _planogramService.IsLocked(planogramId, user);
+            var filter = new PlanogramLockFilter
+            {
+                PlanogramId = planogramId,
+                User = user
+            };
+            return await _planogramService.IsLocked(filter);
         }
 
         private async Task SaveCassettes(long planogramId, List<PlanmPartInfo> cassettes, ScratchPad scratchPad = null)

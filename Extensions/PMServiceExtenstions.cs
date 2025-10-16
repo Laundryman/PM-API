@@ -6,6 +6,7 @@ using PMApplication.Interfaces.RepositoryInterfaces;
 using PMApplication.Interfaces.ServiceInterfaces;
 using PMInfrastructure.Repositories;
 using PMApplication.Services;
+using PMInfrastructure.Data;
 
 namespace PlanMatr_API.Extensions
 {
@@ -36,6 +37,7 @@ namespace PlanMatr_API.Extensions
 
         public static IServiceCollection AddRepositories(this IServiceCollection services)
         {
+            services.AddTransient<PlanMatrContext>();
             services.AddTransient<IAuditRepository, AuditRepository>();
             services.AddTransient<IBrandRepository, BrandRepository>();
             services.AddTransient<ICategoryRepository, CategoryRepository>();
@@ -54,7 +56,7 @@ namespace PlanMatr_API.Extensions
             services.AddTransient<IPartRepository, PartRepository>();
             services.AddTransient<IPartTypeRepository, PartTypeRepository>();
             services.AddTransient<IPlanogramRepository, PlanogramRepository>();
-            //services.AddTransient<IPlanogramLockRepository, PlanogramLockRepository>();
+            services.AddTransient<IPlanogramLockRepository, PlanogramLockRepository>();
             services.AddTransient<IPlanogramNoteRepository, PlanogramNoteRepository>();
             services.AddTransient<IPlanogramPartRepository, PlanogramPartRepository>();
             //services.AddTransient<IPlanogramPartFacingRepository, PlanogramPartFacingRepository>();

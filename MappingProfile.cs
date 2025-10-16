@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using PMApplication.Dtos;
 using PMApplication.Dtos.Filters;
 using PMApplication.Dtos.PlanModels;
@@ -8,6 +9,7 @@ using PMApplication.Entities.JobsAggregate;
 using PMApplication.Entities.PartAggregate;
 using PMApplication.Entities.PlanogramAggregate;
 using PMApplication.Entities.OrderAggregate;
+using PMApplication.Entities.StandAggregate;
 using PMApplication.Specifications.Filters;
 
 namespace PlanMatr_API
@@ -29,7 +31,14 @@ namespace PlanMatr_API
             CreateMap<PartFilter, PartFilterDto>();
             CreateMap<Part, PartListDto>();
             CreateMap<Part, PartDto>();
-            CreateMap<Planogram, PlanogramDto>();
+            CreateMap<Planogram, PlanmPlanogramDto>();
+            CreateMap<PlanmPlanogramDto, Planogram>();
+
+            CreateMap<PlanogramShelf, PartInfoDto>();
+            CreateMap<PlanogramShelf, PartInfoDto>();
+            CreateMap<PartInfoDto, PlanogramPart>();
+            CreateMap<PartInfoDto, PlanogramPart>();
+
             CreateMap<Product, ProductDto>();
             CreateMap<Product, ProductListDto>();
             CreateMap<Product, FullProductDto>();
@@ -38,6 +47,13 @@ namespace PlanMatr_API
             CreateMap<Region, RegionDto>();
             CreateMap<ShadeFilterDto, ShadeFilter>();
             CreateMap<Shade, ShadeDto>();
+            CreateMap<PlanmStandDto, Stand>();
+            CreateMap<Stand, PlanmStandDto>();
+            CreateMap<PlanmStandColumnDto, StandColumn>();
+            CreateMap<PlanmStandRowDto, StandRow>();
+            CreateMap<StandRow, PlanmStandRowDto>();
+            CreateMap<StandColumn,PlanmStandColumnDto>();
+            CreateMap<StandRow, PlanmStandRowDto>();
             CreateMap<Sku, ExportSkuDto>();
             CreateMap<Order, OrderDto>();
         }

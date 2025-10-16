@@ -50,6 +50,18 @@ namespace PlanMatr_API.Extensions
             //var mappedUser = mapper.Map<User, UserViewModel>(user);
             return Task.FromResult(user);
         }
+
+        public static List<Brand> MappedBrands(this ControllerBase controller, CurrentUser user, IBrandService brandService)
+        {
+            var brandIds = user.BrandIds.Split(',');
+            var brands = new List<Brand>();
+            for (int i = 0; i < brandIds.Length; i++)
+            {
+                var brand = brandService.GetBrand(int.Parse(brandIds[i])).Result;
+                brands.Add(brand);
+            }
+            return brands;
+        }
     }
 
 

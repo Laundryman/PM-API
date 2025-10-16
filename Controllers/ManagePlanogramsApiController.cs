@@ -61,7 +61,12 @@ namespace PlanMatr_API.Controllers
 
             try
             {
-                var isLocked = _planogramService.IsLocked(planogramId, userProfile);
+                var filter = new PlanogramLockFilter
+                {
+                    PlanogramId = planogramId,
+                    User = userProfile
+                };
+                var isLocked = await _planogramService.IsLocked(filter);
                 if (!isLocked)
                 {
                     //lock the planogram Now
@@ -266,6 +271,91 @@ namespace PlanMatr_API.Controllers
                 throw;
             }
 
+        }
+
+        [Authorize]
+        [Route("api/v2/planogram/get/archived/job/{isPowerUser}/{jobId}/{jobCode}/{brandId}/{countryId}/{regionId}/{standTypeId}/{isDiamUser}")]
+        [HttpGet]
+        public async Task<IEnumerable<PlanogramInfo>> GetArchivedPlanogramsByJob(int isPowerUser, int jobId, string jobCode, int brandId, int countryId, int regionId, int standTypeId, int isDiamUser)
+        {
+
+            // we can retrieve the userId from the request
+            try
+            {
+                // we can retrieve the userId from the request
+                var userProfile = await this.MappedUser();
+
+                //var userProfile = await this.MappedUser(_identityService);
+                string userId = String.Empty; //userProfile.Id;
+                var brand = await _brandService.GetBrand(brandId);
+                var userBrands = this.MappedBrands(userProfile, _brandService);
+
+                if (userBrands.Contains(brand))
+                {
+                    var hostUrl = Request.Scheme + "://" + Request.Host + "/user_uploads/planograms/";    //.RequestUri.Scheme + "://" + Request.RequestUri.Authority + "/user_uploads/planograms/";
+
+                    var planograms = await _planogramService.GetArchivedPlanograms(userId, jobId, brandId, countryId, regionId, standTypeId, isDiamUser == 1, hostUrl);
+                    return planograms;
+
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+
+        }
+
+        [Route("api/v2/planx/get-plano-lock/{planogramId}/{userId}/{userName}")]
+        [HttpGet]
+        public async Task<IActionResult> GetPlanoLock(int planogramId, string userId, string userName)
+        {
+            try
+            {
+                var userProfile = await this.MappedUser();
+                var filter = new PlanogramLockFilter
+                {
+                    PlanogramId = planogramId,
+                    User = userProfile
+                };
+                var isLocked = await _planogramService.IsLocked(filter);
+                HttpResponseMessage message = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+                if (!isLocked)
+                {
+                    message = new HttpResponseMessage(HttpStatusCode.OK);
+                    await _planogramService.LockPlanogram(filter);
+                    return Ok("unlocked");
+                }
+                return Ok("locked");
+            }
+            catch (Exception ex)
+            {
+                HttpResponseMessage message = new HttpResponseMessage(HttpStatusCode.BadRequest);
+
+                if (ex.InnerException != null)
+                {
+                    message.Content = new StringContent(ex.Message +
+                                                        ex.InnerException.ToString());
+                }
+                else
+                {
+                    message.Content = new StringContent(ex.Message
+                                                        + ex.StackTrace);
+                }
+                message.ReasonPhrase = "Error getting lock";
+                //log an error
+                _logger.LogError("Error getting lock - " + ex.Message + " -- stack trace is:  " + ex.StackTrace);
+
+                return BadRequest("Error getting lock info");
+            }
+            finally
+            {
+
+            }
         }
 
 

@@ -25,9 +25,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 // End of the Microsoft Identity platform block    
 
 // Add services to the container.
-builder.Services.AddDbContext<PlanMatrContext>(options =>
-    options.UseLazyLoadingProxies()
-        .UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+//builder.Services.AddDbContext<PlanMatrContext>(options =>
+//    options.UseLazyLoadingProxies()
+//        .UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddControllers();
