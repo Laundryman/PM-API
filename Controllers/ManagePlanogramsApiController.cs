@@ -45,48 +45,30 @@ namespace PlanMatr_API.Controllers
             _env = env;
         }
 
-        [Authorize]
-        [Route("api/v2/planogram/lock/{planogramId}")]
+        
+        [Route("api/v2/planx/get-planogram-preview/{planogramId}")]
         [HttpGet]
-
-        public async Task<IActionResult> LockPlanogram(long planogramId = 0)
+        public async Task<IActionResult> GetPlanogramPreview(int planogramId)
         {
-            //var planoRepoService = dpRes.GetService<IPlanogramRepository>();
-            Planogram planogram = await _planogramService.GetPlanogram(planogramId);
-            // we can retrieve the userId from the request
-            var userProfile = await this.MappedUser();
-            string userId = userProfile.Id;
-
-
-
             try
             {
-                var filter = new PlanogramLockFilter
+                var filter = new PlanogramFilter
                 {
-                    PlanogramId = planogramId,
-                    User = userProfile
+                    Id = planogramId
                 };
-                var isLocked = await _planogramService.IsLocked(filter);
-                if (!isLocked)
-                {
-                    //lock the planogram Now
-                    return Ok("success");
-                }
-                else
-                {
-                    //it's already locked by someone else.
-                    return Conflict("fail");
-                }
+                var preview = await _planogramService.GetPlanogramPreview(filter);
+                return Ok(preview.PreviewSrc);
             }
             catch (Exception Ex)
             {
-                return BadRequest(Ex.Message);
-            }
+                //log an error
 
+                _logger.LogError("Error getting image - " + Ex.Message + " -- stack trace is:  " + Ex.StackTrace);
+                return BadRequest("Error getting image");
+
+            }
         }
 
-
-        [Authorize]
         [Route("api/v2/planogram/rename/{planogramId}/{planoName}")]
         [HttpGet]
         public async Task<int> RenamePlanogram(int planogramId, string planoName)
@@ -118,7 +100,7 @@ namespace PlanMatr_API.Controllers
 
         }
 
-        [Authorize]
+        
         [Route("api/v2/planogram/getCommentCount/{planogramId}/{brandId}")]
         [HttpGet]
         public async Task<IActionResult> GetCommentCount(int planogramId, int brandId)
@@ -168,7 +150,7 @@ namespace PlanMatr_API.Controllers
 
         }
 
-        [Authorize]
+        
         [Route("api/v2/planogram/get/jsonskulist/{planogramId}")]
         [HttpGet]
 
@@ -228,7 +210,8 @@ namespace PlanMatr_API.Controllers
         }
 
 
-        [Authorize]
+        //[Authorize]
+        //
         [Route("api/v2/planogram/get/yourplanograms/{status}/{countryId}/{regionId}/{standTypeId}/{brandId}")]
         [HttpGet]
         public async Task<IEnumerable<PlanogramInfo>> GetYourPlanograms(int status, int countryId, int regionId, int standTypeId, int brandId)
@@ -273,7 +256,7 @@ namespace PlanMatr_API.Controllers
 
         }
 
-        [Authorize]
+        
         [Route("api/v2/planogram/get/archived/job/{isPowerUser}/{jobId}/{jobCode}/{brandId}/{countryId}/{regionId}/{standTypeId}/{isDiamUser}")]
         [HttpGet]
         public async Task<IEnumerable<PlanogramInfo>> GetArchivedPlanogramsByJob(int isPowerUser, int jobId, string jobCode, int brandId, int countryId, int regionId, int standTypeId, int isDiamUser)
@@ -306,6 +289,45 @@ namespace PlanMatr_API.Controllers
             catch (Exception ex)
             {
                 return null;
+            }
+
+        }
+
+        [Route("api/v2/planogram/lock/{planogramId}")]
+        [HttpGet]
+
+        public async Task<IActionResult> LockPlanogram(long planogramId = 0)
+        {
+            //var planoRepoService = dpRes.GetService<IPlanogramRepository>();
+            Planogram planogram = await _planogramService.GetPlanogram(planogramId);
+            // we can retrieve the userId from the request
+            var userProfile = await this.MappedUser();
+            string userId = userProfile.Id;
+
+
+
+            try
+            {
+                var filter = new PlanogramLockFilter
+                {
+                    PlanogramId = planogramId,
+                    User = userProfile
+                };
+                var isLocked = await _planogramService.IsLocked(filter);
+                if (!isLocked)
+                {
+                    //lock the planogram Now
+                    return Ok("success");
+                }
+                else
+                {
+                    //it's already locked by someone else.
+                    return Conflict("fail");
+                }
+            }
+            catch (Exception Ex)
+            {
+                return BadRequest(Ex.Message);
             }
 
         }

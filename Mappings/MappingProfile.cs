@@ -4,6 +4,7 @@ using PMApplication.Dtos;
 using PMApplication.Dtos.Filters;
 using PMApplication.Dtos.PlanModels;
 using PMApplication.Entities;
+using PMApplication.Entities.ClusterAggregate;
 using PMApplication.Entities.CountriesAggregate;
 using PMApplication.Entities.JobsAggregate;
 using PMApplication.Entities.PartAggregate;
@@ -12,7 +13,7 @@ using PMApplication.Entities.OrderAggregate;
 using PMApplication.Entities.StandAggregate;
 using PMApplication.Specifications.Filters;
 
-namespace PlanMatr_API
+namespace PlanMatr_API.Mappings
 {
     public class MappingProfile : Profile
     {
@@ -23,6 +24,9 @@ namespace PlanMatr_API
 
             CreateMap<CategoryFilterDto, CategoryFilter>();
             CreateMap<Category, CategoryDto>();
+
+            CreateMap<Category, CategoryMenuDto>();
+            CreateMap<Cluster, PlanmClusterDto>();
             CreateMap<CountriesFilterDto, CountryFilter>();
             CreateMap<Country, CountryDto>();
             CreateMap<JobFolderDto, JobFolder>();
@@ -34,12 +38,21 @@ namespace PlanMatr_API
             CreateMap<Planogram, PlanmPlanogramDto>();
             CreateMap<PlanmPlanogramDto, Planogram>();
 
-            CreateMap<PlanogramShelf, PartInfoDto>();
-            CreateMap<PlanogramShelf, PartInfoDto>();
-            CreateMap<PartInfoDto, PlanogramPart>();
-            CreateMap<PartInfoDto, PlanogramPart>();
+            //CreateMap<PlanogramShelf, PartInfoDto>();
+            //CreateMap<PlanogramShelf, PartInfoDto>();
+            //CreateMap<PartInfoDto, PlanogramPart>();
+            //CreateMap<PartInfoDto, PlanogramPart>();
+            //CreateMap<PlanogramPart, PlanmPartInfo>();
+            //CreateMap<PlanmPartInfo, PlanogramPart>();
+            //CreateMap<PlanogramShelf, PlanmPartInfo>().ReverseMap();
+            //CreateMap<PlanmPartInfo, PlanogramShelf>();
+
+            CreateMap<PlanmPartFacing, PlanogramPartFacing>();
+            //CreateMap<PlanogramPartFacing, PlanmPartFacing>();
+            CreateMap<Product, PlanmProductDto>();
 
             CreateMap<Product, ProductDto>();
+            //CreateMap<PartProduct, ProductDto>();
             CreateMap<Product, ProductListDto>();
             CreateMap<Product, FullProductDto>();
             CreateMap<ProductFilterDto, ProductFilter>();
@@ -47,6 +60,9 @@ namespace PlanMatr_API
             CreateMap<Region, RegionDto>();
             CreateMap<ShadeFilterDto, ShadeFilter>();
             CreateMap<Shade, ShadeDto>();
+            CreateMap<ShadeDto, Shade>();
+            CreateMap<PlanmShadeDto, Shade>();
+            CreateMap<Shade, PlanmShadeDto>();
             CreateMap<PlanmStandDto, Stand>();
             CreateMap<Stand, PlanmStandDto>();
             CreateMap<PlanmStandColumnDto, StandColumn>();

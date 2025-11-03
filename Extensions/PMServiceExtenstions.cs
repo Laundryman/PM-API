@@ -59,6 +59,8 @@ namespace PlanMatr_API.Extensions
             services.AddTransient<IPlanogramLockRepository, PlanogramLockRepository>();
             services.AddTransient<IPlanogramNoteRepository, PlanogramNoteRepository>();
             services.AddTransient<IPlanogramPartRepository, PlanogramPartRepository>();
+            services.AddTransient<IPlanogramPartFacingRepository, PlanogramPartFacingRepository>();
+            services.AddTransient<IPlanogramPreviewRepository, PlanogramPreviewRepository>();
             //services.AddTransient<IPlanogramPartFacingRepository, PlanogramPartFacingRepository>();
             services.AddTransient<IPlanogramShelfRepository, PlanogramShelfRepository>();
             //services.AddTransient<IPlanogramStatusRepository, PlanogramStatusRepository>();

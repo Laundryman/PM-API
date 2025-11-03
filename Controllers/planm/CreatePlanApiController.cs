@@ -57,7 +57,7 @@ namespace PlanMatr_API.Controllers.planm
 
         [Route("api/v2/stand/getBrandedWithClusters/{brandId}/{countryCode}/{standTypeId}")]
         [HttpGet]
-        public async Task<IReadOnlyList<SelectListItem>> GetBrandStandsWithClustersSecure(int brandId, int countryCode, int standTypeId)
+        public async Task<IActionResult> GetBrandStandsWithClustersSecure(int brandId, int countryCode, int standTypeId)
         {
             var country = await _countryService.GetCountry(countryCode);
             //var stands = _standService.GetBrandStandsWithClustersForCountry(brandId, country.CountryId, standTypeId).ToSelectListItems(-1);
@@ -67,8 +67,14 @@ namespace PlanMatr_API.Controllers.planm
             standFilter.CountryId = country.Id;
             standFilter.StandTypeId = standTypeId;
 
-            var stands = await _standService.GetStands(standFilter);
-            return (IReadOnlyList<SelectListItem>)stands.ToSelectListItems(-1);
+            var standList = await _standService.GetStands(standFilter);
+            if (countryCode != 0)
+            {
+                standList = standList.Where(s => s.Countries.Any()).ToList();
+            }
+
+            var stands = standList;
+            return Ok(stands.ToSelectListItems(-1));
 
         }
 
@@ -88,7 +94,7 @@ namespace PlanMatr_API.Controllers.planm
                 _mapper.Map(cluster, pm);
                 pm.Id = cluster.Id;
                 pm.standName = cluster.Stand.Name;
-                pm.standType = cluster.Stand.standType.Name;
+                pm.standType = cluster.Stand.StandType.Name;
                 pm.standWidth = cluster.Stand.Width;
                 pm.standHeight = cluster.Stand.Height;
                 clusterList.Add(pm);
@@ -101,7 +107,7 @@ namespace PlanMatr_API.Controllers.planm
         //[Authorize]
         [Route("api/v2/planogram/create/{clusterId}/{planoName}/{brandId}")]
         [HttpGet]
-        public async Task<long> CreatePlanogram(int clusterId, string planoName, int brandId)
+        public async Task<IActionResult> CreatePlanogram(long clusterId, string planoName, int brandId)
         {
             try
             {
@@ -109,8 +115,12 @@ namespace PlanMatr_API.Controllers.planm
 
                 string? userId = userProfile.Id;
 
+                var filter = new ClusterFilter
+                {
+                    Id = clusterId,
+                };
 
-                var planogramId = await _planogramService.CreatePlanogramFromCluster(clusterId, planoName, userProfile);
+                var planogramId = await _planogramService.CreatePlanogramFromCluster(filter, planoName, userProfile, brandId);
 
 
                 var planogram = await _planogramService.GetPlanogram(planogramId);
@@ -139,11 +149,11 @@ namespace PlanMatr_API.Controllers.planm
                 };
                 _auditService.AuditEvent(audit);
 
-                return planogramId;
+                return Ok(planogramId);
             }
             catch (Exception ex)
             {
-                return 0;
+                return BadRequest("Could not create Planogram");
             }
 
         }

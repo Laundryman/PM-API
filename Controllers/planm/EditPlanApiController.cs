@@ -20,10 +20,11 @@ using System.Web;
 using IronPdf.Engines.Chrome;
 using IronPdf.Rendering;
 using Microsoft.AspNetCore.Authorization;
+using PMApplication.Entities.CountriesAggregate;
 
 namespace PlanMatr_API.Controllers.planm
 {
-    [Authorize]
+    //[Authorize]
     [ApiController]
     public class EditPlanApiController : ControllerBase
     {
@@ -37,7 +38,7 @@ namespace PlanMatr_API.Controllers.planm
         private readonly IAuditService _auditService;
         private readonly IConfiguration _config;
         private readonly IWebHostEnvironment _env;
-        //private readonly ICategoryService _categoryService;
+        private readonly ICategoryService _categoryService;
         //private readonly IAIdentityService _identityService;
         //private readonly IProductService _productService;
         private readonly IStandService _standService;
@@ -50,7 +51,7 @@ namespace PlanMatr_API.Controllers.planm
                 //IProductService productService,
                 IPlanogramService planogramService,
                 //IAIdentityService identityService, 
-                IMapper mapper, ILogger<EditPlanApiController> logger, ICountryService countryService, IAuditService auditService, IConfiguration config, IProductService productService, IWebHostEnvironment env)
+                IMapper mapper, ILogger<EditPlanApiController> logger, ICountryService countryService, IAuditService auditService, IConfiguration config, IProductService productService, IWebHostEnvironment env, ICategoryService categoryService)
             //IPlanogramVersionService versionService)
         {
             this._partService = partService;
@@ -68,9 +69,78 @@ namespace PlanMatr_API.Controllers.planm
             _config = config;
             _productService = productService;
             _env = env;
+            _categoryService = categoryService;
             //this._versionService = versionService;
         }
 
+
+        [Route("api/v2/planx/get-menu-categories/{planogramId}")]
+        [HttpGet]
+        public async Task<IActionResult> GetMenuCategories(int planogramId)
+        {
+            var menu = new PlanmMenuDto();
+            try
+            {
+
+                var planogramFilter = new PlanogramFilter
+                {
+                    Id = planogramId
+                };
+                var planogram = await _planogramService.GetPlanogram(planogramFilter);
+                var standTypeId = planogram.Stand.StandTypeId;
+                var brandId = planogram.Stand.BrandId;
+                var countryId = planogram.CountryId ?? 0;
+
+                var partFilter = new PartFilter
+                {
+                    BrandId = brandId,
+                    CountryId = countryId,
+                    StandTypeId = standTypeId
+                };
+                var menuParts = await _partService.GetPlanmMenu(partFilter);
+                var menuCats = new List<Category>();
+                var currentCatId = 0;
+                foreach (var part in menuParts)
+                {
+                    if (part.ParentCategoryId != currentCatId)
+                    {
+                        currentCatId = part.ParentCategoryId;
+                        if (!menuCats.Any(c => c.ParentCategoryId == part.CategoryId))
+                        {
+                            var pcat = await _categoryService.GetCategory(part.ParentCategoryId);
+                            menuCats.Add(pcat);
+                        }
+                    }
+                }
+
+                //Get Parent Categories
+                var country = await _countryService.GetCountry(countryId);
+                var countryList = new List<Country>();
+                countryList.Add(country);
+                var menuCategories = new List<CategoryMenuDto>();
+                //loop through each category to build menu
+                foreach (var cat in menuCats)
+                {
+                    var menucat = _mapper.Map<CategoryMenuDto>(cat);
+                    menuCategories.Add(menucat);
+                }
+                menu.Categories = menuCategories;
+
+
+                //We're not using the country and region here: but we need to think about how we might regarding users.
+                return Ok(menu);
+            }
+            catch (Exception ex)
+            {
+                //log an error
+                _logger.LogError("Could not get menu");
+                return BadRequest("Could not get Menu");
+            }
+            finally
+            {
+
+            }
+        }
 
         [Route("api/v2/planx/get-menu/{planogramId}")]
         [HttpGet]
@@ -89,27 +159,18 @@ namespace PlanMatr_API.Controllers.planm
             try
             {
 
-
-                var menuParts = await _partService.GetPlanxMenu(brandId, countryId, standTypeId);
+                var partFilter = new PartFilter
+                {
+                    BrandId = brandId,
+                    CountryId = countryId,
+                    StandTypeId = standTypeId
+                };
+                var menuParts = await _partService.GetPlanmMenu(partFilter);
 
                 return Ok(menuParts);
             }
             catch (Exception ex)
             {
-                HttpResponseMessage message = new HttpResponseMessage(HttpStatusCode.BadRequest);
-
-                if (ex.InnerException != null)
-                {
-                    message.Content = new StringContent(ex.Message +
-                                                        ex.InnerException.ToString());
-                }
-                else
-                {
-                    message.Content = new StringContent(ex.Message
-                                                        + ex.StackTrace);
-                }
-
-                message.ReasonPhrase = "Error creating menu";
                 //log an error
                 _logger.LogError("Error getting menu for planogram - " + planogram.Id + " error message:  " +
                                  ex.Message);
@@ -131,15 +192,16 @@ namespace PlanMatr_API.Controllers.planm
             try
             {
                 var planogram = await _planogramService.GetPlanogram(PlanogramId);
-                if (planogram.ScratchPad == null)
+
+                if (planogram.ScratchPadId == null)
                 {
                     //we need to create a new scratchpad
                     ScratchPad sPad = new ScratchPad();
                     sPad.DateCreated = DateTime.Now;
                     sPad.DateUpdated = DateTime.Now;
-                    _planogramService.CreateScratchPad(sPad);
+                    await _planogramService.CreateScratchPad(sPad);
                     planogram.ScratchPad = sPad;
-                    _planogramService.SavePlanogram(planogram);
+                    await _planogramService.SavePlanogram(planogram);
                 }
                 //var planogramView = (PlanogramDTO)planogram;
                 var planogramView = _mapper.Map<PlanmPlanogramDto>(planogram);
@@ -155,54 +217,44 @@ namespace PlanMatr_API.Controllers.planm
             }
         }
 
-
         [Route("api/v2/planx/get-planogram-scratchpad/{planogramId}")]
         [HttpGet]
         public async Task<IActionResult> GetPlanogramScratchPad(int planogramId)
         {
             try
             {
-                var filter = new PlanogramFilter
-                {
-                    Id = planogramId
-                };
-                var plano = await _planogramService.GetPlanogram(filter);
 
+                var plano = await _planogramService.GetPlanogram(planogramId);
 
                 var planoCountryId = plano.CountryId;
 
+                var filter = new ScratchPadFilter
+                {
+                    Id = plano.ScratchPadId ?? 0
+                };
+                
+                var scratchPad = await _planogramService.GetScratchPad(filter);
 
-
-                var planoParts = _mapper.Map<List<PartInfoDto>>(plano.ScratchPad.PlanogramParts);
-                var planoShelves = _mapper.Map<List<PartInfoDto>>(plano.ScratchPad.PlanogramShelves);
+                var planoParts = _mapper.Map<List<PlanmPartInfo>>(scratchPad.PlanogramParts);
+                var planoShelves = _mapper.Map<List<PlanmPartInfo>>(scratchPad.PlanogramShelves);
                 var allScratch = planoParts.Concat(planoShelves);
 
                 var scratchParts = allScratch.ToList();
-                foreach (PartInfoDto prt in scratchParts)
+                foreach (PlanmPartInfo prt in scratchParts)
                 {
-                    if (!prt.CountryIds.Contains((int)planoCountryId))
+                    List<int> countryIds = prt.CountryList.Split(',').Select(int.Parse).ToList();
+                    prt.CountryIds = countryIds;
+                    if (!countryIds.Contains((int)planoCountryId))
                     {
                         prt.NonMarket = true;
                     }
                 }
 
                 return Ok(scratchParts);
+
             }
             catch (Exception ex)
             {
-                HttpResponseMessage message = new HttpResponseMessage(HttpStatusCode.BadRequest);
-
-                if (ex.InnerException != null)
-                {
-                    message.Content = new StringContent(ex.Message +
-                                                        ex.InnerException.ToString());
-                }
-                else
-                {
-                    message.Content = new StringContent(ex.Message
-                                                        + ex.StackTrace);
-                }
-                message.ReasonPhrase = "Error retrieving scratchpad";
                 //log an error
 
                 _logger.LogError("Error getting scratchpad for planogramId " + planogramId + "---- error message - " + ex.Message + " --- " + ex.StackTrace);
@@ -218,7 +270,12 @@ namespace PlanMatr_API.Controllers.planm
             //var stand = new PlanXStandViewModel();
             try
             {
-                var stand = await _standService.GetStand(standId, true);
+                var StandFilter = new StandFilter
+                {
+                    Id = standId,
+                    includeColumnUprights = true
+                };
+                var stand = await _standService.GetStand((StandFilter));
                 var brand = await _brandService.GetBrand(stand.BrandId);
                 var standView = _mapper.Map<PlanmStandDto>(stand);
 
@@ -244,6 +301,169 @@ namespace PlanMatr_API.Controllers.planm
 
         }
 
+        [Route("api/v2/planx/get-planogram-shelves/{planogramId}")]
+        [HttpGet]
+        public async Task<IActionResult> GetPlanogramShelves(int planogramId)
+        {
+            try
+            {
+                //var plano = await _planogramService.GetPlanogram(planogramId);
+                var filter = new PlanogramFilter()
+                {
+                    Id = planogramId
+                };
+                var shelves = await _planogramService.GetPlanogramShelves(filter);
+                var planoShelves = _mapper.Map<List<PlanmPartInfo>>(shelves);
+                //var planoShelves = plano.PlanogramShelves.Where(s => s.ScratchPadId == null || s.ScratchPadId == 0);
+
+                var shelfCatId = 0;
+
+                var response = _mapper.Map<List<PlanmPartInfo>>(planoShelves.ToList());
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                //log an error
+
+                return BadRequest("Error getting planogram shelves");
+            }
+            finally
+            {
+
+            }
+        }
+
+        [Route("api/v2/planx/get-planogram-parts/{planogramId}")]
+        [HttpGet]
+        public async Task<IActionResult> GetPlanogramParts(int planogramId)
+        {
+            var menu = new PlanmMenuDto();
+            try
+            {
+
+                var planoFilter = new PlanogramPartFilter
+                {
+                    PlanogramId = planogramId
+                };
+                var plano = await _planogramService.GetPlanogram(planogramId);
+                var planogramParts = await _planogramService.GetPlanogramParts(planoFilter);
+                var planoCountryId = plano.CountryId;
+                //var results = plano.PlanogramParts.Where(p => p.ScratchPadId == null).OrderBy(p => p.PositionX).ThenBy(p => p.PositionY);
+                //var results = plano.PlanogramParts;
+                var planoParts = _mapper.Map<List<PlanmPartInfo>>(planogramParts);
+                foreach (PlanmPartInfo prt in planoParts)
+                {
+                    List<int> countryIds = prt.CountryList.Split(',').Select(int.Parse).ToList();
+                    prt.CountryIds = countryIds;
+                    if (!countryIds.Contains((int)planoCountryId!))
+                    {
+                        prt.NonMarket = true;
+                    }
+                }
+
+                //We're not using the country and region here: but we need to think about how we might regarding users.
+                return Ok(planoParts.ToList());
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Error getting parts");
+            }
+            finally
+            {
+
+            }
+        }
+
+        [Route("api/v2/planx/get-new-parts/{planogramId}")]
+        [HttpGet]
+        public async Task<IActionResult> GetNewPlanogramParts(int planogramId)
+        {
+            //var menu = new PlanmMenuDto();
+            try
+            {
+                //var plano = _planogramService.GetPlanogram(planogramId);
+                var filter = new PlanogramPartFilter
+                {
+                    PlanogramId = planogramId,
+                    NewParts = true
+                };
+                var planoParts = await _planogramService.GetPlanogramParts(filter);
+                var partInfos = _mapper.Map<List<PlanmPartInfo>>(planoParts);
+                //var results = plano.PlanogramParts.Where(p => p.ScratchPadId == null && p.DateUpdated == null).OrderBy(p => p.Position_x).ThenBy(p => p.Position_y).Select(p => (PlanxPartInfo)p);
+
+                //var planoParts = results.ToList();
+
+                //We're not using the country and region here: but we need to think about how we might regarding users.
+                return Ok(partInfos);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error getting new parts for planogramId " + planogramId + "---- error message - " + ex.Message + " --- " + ex.StackTrace);
+                return StatusCode(500, "Error getting parts");
+
+            }
+            finally
+            {
+
+            }
+        }
+
+        [Route("api/v2/planx/get-part-products/{PartId}/{PlanogramId}")]
+        [HttpGet]
+        public async Task<IActionResult> GetPartProducts(int PartId, int PlanogramId)
+        {
+            try
+            {
+
+                var plano = await _planogramService.GetPlanogram(PlanogramId);
+
+
+                int planoCountryId = (int)plano.CountryId;
+                var country = await _countryService.GetCountry(planoCountryId);
+                var part = await _partService.GetPart(PartId);
+
+                var productFilter = new ProductFilter
+                {
+                    PartId = (int)part.Id,
+                    CountryId = planoCountryId,
+                    IsPublished = true
+                };
+                var products = await _productService.GetProducts(productFilter);
+
+                var planxPartProducts = new PartProductsDto();
+                planxPartProducts.PartId = part.Id;
+                var pvmList = _mapper.Map<List<ProductDto>>(products);
+                    //products.Select(p => (ProductViewModel)p).ToList();
+                //var pvmList = pVMs.ToList();
+                foreach (var product in pvmList)
+                {
+                    var shadeFilter = new ShadeFilter
+                    {
+                        ProductId = product.Id,
+                        Country = country,
+                        Published = true
+                    };
+                    var shades = await _productService.GetShades(shadeFilter);
+                    product.Shades = _mapper.Map<List<PlanmShadeDto>>(shades);
+                }
+
+                planxPartProducts.Products = pvmList;
+                return Ok(planxPartProducts);
+            }
+            catch (Exception ex)
+            {
+
+                //log an error
+                _logger.LogError("Error getting part products for partId " + PartId + " and planogramId " + PlanogramId + "---- error message - " + ex.Message + " --- " + ex.StackTrace);
+                return BadRequest("Error getting part products");
+
+            }
+            finally
+            {
+
+            }
+        }
+
         [Route("api/v2/planx/save-planogram")]
         [HttpPost]
         public async Task<IActionResult> SavePlanogram(PlanmPlanogramInfo planogramData)
@@ -255,14 +475,8 @@ namespace PlanMatr_API.Controllers.planm
                 var planogramId = planogramData.PlanogramId;
                 var planogram = await _planogramService.GetPlanogram(planogramId);
                 var planogramParts = planogram.PlanogramParts.ToList();
-
+                var brandId = planogramData.BrandId;
                 var userProfile = await this.MappedUser();
-                //var userProfile = new UserViewModel();
-                //userProfile.Id = planogramData.UserId;
-                //userProfile.UserName = planogramData.UserName;
-                //userProfile.Roles = planogramData.UserRoles;
-                //userProfile.DiamCountryId = planogramData.CountryId;
-
                 var currPlano = await _planogramService.GetPlanogram(planogramId);
 
                 var planoIsLocked = await IsLocked(planogramId, userProfile);
@@ -279,7 +493,7 @@ namespace PlanMatr_API.Controllers.planm
 
 
 
-                var planoCountryId = planogramData.CountryId;
+                var planoCountryId = (int)planogramData.CountryId;
                 var planoCountry = _countryService.GetCountry(planoCountryId);
                 //var userBrands = this.MappedBrands(userProfile, _brandService);
                 //TODO should we always be making plano country = to use country whatever happens?
@@ -291,7 +505,7 @@ namespace PlanMatr_API.Controllers.planm
                     }
                 }
 
-                var brand = _brandService.GetBrand(currPlano.Stand.BrandId);
+                var brand = _brandService.GetBrand((int)brandId);
 
                 //////////////////////////////////////////////////////////////////
                 //Finish user checks
@@ -302,7 +516,7 @@ namespace PlanMatr_API.Controllers.planm
                 planogram.LubName = userProfile.GivenName + " " + userProfile.Surname;
                 planogram.Name = planogramData.PlanogramName;
                 planogram.CurrentVersion += 1;
-
+                planogram.BrandId = brandId;
                 if (planogram.StatusId != (int)StatusEnums.PlanogramStatusEnum.Approved &&
                     planogram.StatusId != (int)StatusEnums.PlanogramStatusEnum.Archived &&
                     planogram.StatusId != (int)StatusEnums.PlanogramStatusEnum.Validated &&
@@ -310,17 +524,17 @@ namespace PlanMatr_API.Controllers.planm
                     planogram.StatusId != (int)StatusEnums.PlanogramStatusEnum.Submitted)
                 {
                     planogram.StatusId = (int)StatusEnums.PlanogramStatusEnum.Edit;
-                    PlanogramStatus status =
-                        _planogramService.GetPlanogramStatus((int)StatusEnums.PlanogramStatusEnum.Edit);
-                    planogram.Status = status;
+                    //PlanogramStatus status =
+                    //    await _planogramService.GetPlanogramStatus((int)StatusEnums.PlanogramStatusEnum.Edit);
+                    //planogram.Status = status; //redundant?
                 }
-                _planogramService.SavePlanogram(planogram);
+                await _planogramService.SavePlanogram(planogram);
                 //Audit the action
                 var audit = new AuditLog
                 {
                     UserId = userProfile.Id,
                     Date = DateTime.Now,
-                    BrandId = planogram.Stand.BrandId,
+                    BrandId = planogram.BrandId,
                     Roles = userProfile.RoleIds,
                     UserName = userProfile.DisplayName,
                     Action = (int)LogActionEnum.EditPlano,
@@ -328,22 +542,22 @@ namespace PlanMatr_API.Controllers.planm
                     PlanoId = (int)planogramId
                 };
 
-                _auditService.AuditEvent(audit);
+                await _auditService.AuditEvent(audit);
 
 
                 //Handle Deletions now
                 if (planogramData.DeletedInfo.partInfos != null)
                 {
-                    DeletePlanogramParts(planogramData.DeletedInfo.partInfos.ToList());
+                    await DeletePlanogramParts(planogramData.DeletedInfo.partInfos.ToList());
                 }
 
                 if (planogramData.DeletedInfo.shelfInfos != null)
                 {
-                    DeletePlanogramShelves(planogramData.DeletedInfo.shelfInfos.ToList());
+                    await DeletePlanogramShelves(planogramData.DeletedInfo.shelfInfos.ToList());
                 }
 
                 //Handle the scratchpad now
-                UpdateScratchPad(planogramData.PlanogramId, planogramData.ScratchPadInfo);
+                await UpdateScratchPad(planogramData.PlanogramId, planogramData.ScratchPadInfo);
 
 
                 //Handle the planogram now
@@ -366,13 +580,13 @@ namespace PlanMatr_API.Controllers.planm
                                 }
                             }
 
-                            SaveCassettes(planogramShelf.PlanogramId, shelf.Parts.ToList());
+                            await SaveCassettes(planogramShelf.PlanogramId, shelf.Parts.ToList());
                         }
                     }
                 }
 
                 //Now handle any parts not associated with shelves
-                SaveCassettes(planogramData.PlanogramId, planogramData.cassetteInfo.ToList());
+                await SaveCassettes(planogramData.PlanogramId, planogramData.cassetteInfo.ToList());
 
                 return Ok();
             }
@@ -421,7 +635,7 @@ namespace PlanMatr_API.Controllers.planm
                 {
                     UserId = userProfile.Id,
                     Date = DateTime.Now,
-                    BrandId = planogram.Stand.BrandId,
+                    BrandId = planogram.BrandId,
                     Roles = userProfile.RoleIds,
                     UserName = userProfile.DisplayName,
                     Action = (int)LogActionEnum.EditPlano,
@@ -429,7 +643,7 @@ namespace PlanMatr_API.Controllers.planm
                     PlanoId = planogram.Id
                 };
 
-                _auditService.AuditEvent(audit);
+                var auditEvent = await _auditService.AuditEvent(audit);
 
                 return Ok();
 
@@ -525,7 +739,7 @@ namespace PlanMatr_API.Controllers.planm
                 var headerHtml = "<div class=\"header-section\" style=\"width:100%;height:80px;font-size: 16px; \">" +
                 "<div class=\"row title-row\" style=\"width:100%\">" +
                   //"<div class=\"user-name\" style=\"width:40%;float:left;\">" + planoSvg.UserName + "</div>" +
-                  "<div class=\"plano-name\" style=\"text-align:center;\"><div>" + planogram.Name + "</div><div>" + planogram.Stand.standType.Name + " | SKU " + skuCount + " | SHELVES " + shelfCount + "</div> </div>" +
+                  "<div class=\"plano-name\" style=\"text-align:center;\"><div>" + planogram.Name + "</div><div>" + planogram.Stand.StandType.Name + " | SKU " + skuCount + " | SHELVES " + shelfCount + "</div> </div>" +
                 "</div>" +
                 "<div class=\"row name-row\" style=\"width:100%;display:flex;grid-auto-column:50%;\">" +
                   "<div class=\"view-name\" style=\"width:50%;text-align:left;\"><strong>Planogram</strong> View</div>" +
@@ -695,8 +909,8 @@ namespace PlanMatr_API.Controllers.planm
             {
                 Part part = null;
 
-                int planogramPartId = planoPart.PlanogramPartId;
-                int partId = planoPart.PartId;
+                int planogramPartId = (int)planoPart.PlanogramPartId;
+                int partId = (int)planoPart.PartId;
                 var planogram = await _planogramService.GetPlanogram(planogramId);
 
                 if (planogram.ScratchPad == null)
@@ -705,9 +919,9 @@ namespace PlanMatr_API.Controllers.planm
                     ScratchPad sPad = new ScratchPad();
                     sPad.DateCreated = DateTime.Now;
                     sPad.DateUpdated = DateTime.Now;
-                    _planogramService.CreateScratchPad(sPad);
+                    await _planogramService.CreateScratchPad(sPad);
                     planogram.ScratchPad = sPad;
-                    _planogramService.SavePlanogram(planogram);
+                    await _planogramService.SavePlanogram(planogram);
                 }
 
                 var scratchPadId = planogram.ScratchPadId;
@@ -717,13 +931,13 @@ namespace PlanMatr_API.Controllers.planm
 
                 if (partId != 0)
                 {
-                    part = _partService.GetPart(partId);
+                    part = await _partService.GetPart(partId);
                 }
                 else
                 {
                     if (!CassetteHasDuplicate(planoPart, planogram))
                     {
-                        part = _partService.GetPart(planoPart.PartNumber);
+                        part = await _partService.GetPart(planoPart.PartNumber);
                     }
                     else
                     {
@@ -737,8 +951,8 @@ namespace PlanMatr_API.Controllers.planm
                     PlanogramPart newPart = new PlanogramPart();
                     if (planogramPartId != 0)
                     {
-                        newPart = _planogramService.GetPlanogramPart(planogramPartId);
-                        _planogramService.SavePlanogramPart();
+                        newPart = await _planogramService.GetPlanogramPart(planogramPartId);
+                        await _planogramService.SavePlanogramPart(newPart);
                     }
 
                     if (newPart == null)
@@ -759,7 +973,8 @@ namespace PlanMatr_API.Controllers.planm
                     newPart.PositionY = planoPart.Position.y;
                     newPart.Notes = planoPart.Notes;
                     newPart.Label = planoPart.Label;
-                    newPart.Part = part;
+                    newPart.PartId = (long)planoPart.PartId;
+                    //newPart.Part = part;
 
                     newPart.PartStatusId = planogramPartStatusId;
 
@@ -771,7 +986,7 @@ namespace PlanMatr_API.Controllers.planm
                             throw new Exception("Debug Save Error Thrown");
 
                         newPart.DateUpdated = DateTime.Now;
-                        _planogramService.SavePlanogramPart();
+                        await _planogramService.SavePlanogramPart(newPart);
                     }
                     else
                     {
@@ -779,7 +994,7 @@ namespace PlanMatr_API.Controllers.planm
                             throw new Exception("Debug Save Error Thrown");
 
                         newPart.DateCreated = DateTime.Now;
-                        _planogramService.CreatePlanogramPart(newPart);
+                        await _planogramService.CreatePlanogramPart(newPart);
                     } //ERROR Part_CatPartId not exist
 
 
@@ -799,8 +1014,7 @@ namespace PlanMatr_API.Controllers.planm
                         {
                             if (newPart.PlanogramPartFacings != null && newPart.PlanogramPartFacings.Count > 0)
                             {
-                                var currentFacing = newPart.PlanogramPartFacings
-                                    .Where(pf => pf.Position == FacingPosition).FirstOrDefault();
+                                var currentFacing = newPart.PlanogramPartFacings.FirstOrDefault(pf => pf.Position == FacingPosition);
                                 if (currentFacing != null)
                                 {
                                     if (facingItem.ProductId != 0)
@@ -812,7 +1026,7 @@ namespace PlanMatr_API.Controllers.planm
                                     {
                                         //we need to remove this productFacing info
                                         //we need to delete the item in this position
-                                        _planogramService.DeletePlanogramPartFacing(currentFacing.Id);
+                                        await _planogramService.DeletePlanogramPartFacing(currentFacing.Id);
                                         FacingPosition++;
                                     }
 
@@ -901,21 +1115,30 @@ namespace PlanMatr_API.Controllers.planm
             }
             else
             {
-                currentFacing = _planogramService.GetPlanogramPartFacing(partFacingId);
+                currentFacing = await _planogramService.GetPlanogramPartFacing(partFacingId);
             }
 
             if (currentFacing != null)
             {
+                var currentProduct = await _productService.GetProduct(cassetteProductFacing.ProductId);
                 currentFacing.Position = facingPosition;
                 currentFacing.ProductId = cassetteProductFacing.ProductId;
+                currentFacing.ProductName = currentProduct.Name;
                 currentFacing.FacingStatusId = planogramFacingStatusId;
                 if (cassetteProductFacing.ShadeId != null)
-                    currentFacing.Shade = await _productService.GetShade(cassetteProductFacing.ShadeId ?? 0);
+                {
+                    var shade = await _productService.GetShade(cassetteProductFacing.ShadeId ?? 0);
+                    currentFacing.ShadeId = shade.Id;
+                    currentFacing.ShadeName = shade.ShadeNumber;
+                }
+
+
                 currentFacing.StockCount = stockCount;
 
-                var filter = new PlanogramPartFilter();
-                filter.PartId = newPart.Part.Id;
-                var partFactices = await _planogramService.GetPlanogramParts(filter);
+                //var filter = new PlanogramPartFilter();
+                //filter.PartId = newPart.Id;
+
+                //var partFactices = await _planogramService.GetPlanogramParts(filter);
 
             }
 
@@ -957,7 +1180,7 @@ namespace PlanMatr_API.Controllers.planm
 
                 if (shelfId.Value != 0)
                 {
-                    newShelf = _planogramService.GetPlanogramShelf((int)shelfId);
+                    newShelf = await _planogramService.GetPlanogramShelf((int)shelfId);
                 }
                 else
                 {
@@ -994,7 +1217,8 @@ namespace PlanMatr_API.Controllers.planm
                 newShelf.Width = (short)shelf.Width;
                 newShelf.PositionX = shelf.Position.x;
                 newShelf.PositionY = shelf.Position.y;
-                newShelf.Part = _partService.GetPart(shelf.PartId);
+
+                newShelf.PartId = shelf.PartId;
                 newShelf.PartStatusId = shelf.StatusId ?? 0;
                 var label = shelf.Label;
                 if (label != null)
@@ -1004,17 +1228,17 @@ namespace PlanMatr_API.Controllers.planm
                 {
                     if (shelfId != 0)
                     {
-                        _planogramService.SavePlanogramShelf();
+                        await _planogramService.UpdatePlanogramShelf(newShelf);
                     }
                     else //shelfId == 0
                     {
-                        _planogramService.CreatePlanogramShelf(newShelf);
+                        await _planogramService.CreatePlanogramShelf(newShelf);
                     }
 
                 }
                 else //no shelfId attribute
                 {
-                    _planogramService.CreatePlanogramShelf(newShelf);
+                    await _planogramService.CreatePlanogramShelf(newShelf);
                 }
 
                 return newShelf;
@@ -1037,34 +1261,37 @@ namespace PlanMatr_API.Controllers.planm
                 throw newException;
             }
         }
-        private void DeletePlanogramParts(List<PlanmPartInfo> parts)
+        private async Task DeletePlanogramParts(List<PlanmPartInfo> parts)
         {
             foreach (var delItem in parts)
             {
-                var ppart = _planogramService.GetPlanogramPart(delItem.PlanogramPartId);
-                if (ppart != null) //part hasn't already been deleted
+                if (delItem != null)
                 {
-                    List<PlanogramPartFacing> idsToDelete = new List<PlanogramPartFacing>();
-                    foreach (PlanogramPartFacing facing in ppart.PlanogramPartFacings)
+                    var ppart = await _planogramService.GetPlanogramPart((int)delItem.PlanogramPartId);
+                    if (ppart != null) //part hasn't already been deleted
                     {
-                        idsToDelete.Add(facing);
+                        List<PlanogramPartFacing> idsToDelete = new List<PlanogramPartFacing>();
+                        foreach (PlanogramPartFacing facing in ppart.PlanogramPartFacings)
+                        {
+                            idsToDelete.Add(facing);
+                        }
+                        foreach (var facing in idsToDelete)
+                        {
+                            await _planogramService.DeletePlanogramPartFacing(facing.Id);
+                        }
+                        await _planogramService.DeletePlanogramPart((int)delItem.PlanogramPartId);
                     }
-                    foreach (var facing in idsToDelete)
-                    {
-                        _planogramService.DeletePlanogramPartFacing(facing.Id);
-                    }
-                    _planogramService.DeletePlanogramPart(delItem.PlanogramPartId);
                 }
             }
         }
 
-        private void DeletePlanogramShelves(List<PlanmShelfInfo> shelves)
+        private async Task DeletePlanogramShelves(List<PlanmShelfInfo> shelves)
         {
             foreach (var delItem in shelves)
             {
                 if (delItem.Id != 0)
                 {
-                    _planogramService.DeletePlanogramShelf(delItem.Id);
+                    await _planogramService.DeletePlanogramShelf(delItem.Id);
                 }
             }
         }
