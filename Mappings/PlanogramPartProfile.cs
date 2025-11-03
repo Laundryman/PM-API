@@ -57,6 +57,8 @@ namespace PlanMatr_API.Mappings
                     opt => opt.MapFrom(src => src.PlanogramPartPlanogramPartsId))
                 .ForMember(pm => pm.facingProducts, opt => opt.MapFrom(src => src.PlanogramPartFacings))
                 .ForMember(pm => pm.products, opt => opt.MapFrom(src => src.Part.Products))
+                .ForMember(pm => pm.ProductList,
+                    opt => opt.MapFrom(src => src.Part.ProductList))
 
 
                 .ForMember(pm => pm.ShelfTypeId, opt => opt.Ignore())
