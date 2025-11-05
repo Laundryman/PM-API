@@ -52,11 +52,7 @@ namespace PlanMatr_API.Controllers
         {
             try
             {
-                var filter = new PlanogramFilter
-                {
-                    Id = planogramId
-                };
-                var preview = await _planogramService.GetPlanogramPreview(filter);
+                var preview = await _planogramService.GetPlanogramPreview(planogramId);
                 return Ok(preview.PreviewSrc);
             }
             catch (Exception Ex)

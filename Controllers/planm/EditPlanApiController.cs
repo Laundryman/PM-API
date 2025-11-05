@@ -87,8 +87,8 @@ namespace PlanMatr_API.Controllers.planm
                     Id = planogramId
                 };
                 var planogram = await _planogramService.GetPlanogram(planogramFilter);
-                var standTypeId = planogram.Stand.StandTypeId;
-                var brandId = planogram.Stand.BrandId;
+                var standTypeId = planogram.Stand.StandTypeId; //need to get from planogram when denormalised
+                var brandId = planogram.BrandId;
                 var countryId = planogram.CountryId ?? 0;
 
                 var partFilter = new PartFilter
@@ -97,21 +97,18 @@ namespace PlanMatr_API.Controllers.planm
                     CountryId = countryId,
                     StandTypeId = standTypeId
                 };
-                var menuParts = await _partService.GetPlanmMenu(partFilter);
-                var menuCats = new List<Category>();
+                var menuCats = await _partService.GetPlanmMenuCategories(partFilter);
+                //var menuCats = new List<Category>();
                 var currentCatId = 0;
-                foreach (var part in menuParts)
-                {
-                    if (part.ParentCategoryId != currentCatId)
-                    {
-                        currentCatId = part.ParentCategoryId;
-                        if (!menuCats.Any(c => c.ParentCategoryId == part.CategoryId))
-                        {
-                            var pcat = await _categoryService.GetCategory(part.ParentCategoryId);
-                            menuCats.Add(pcat);
-                        }
-                    }
-                }
+                //foreach (var cat in catList)
+                //{
+                //    currentCatId = cat.CategoryId;
+                //    if (!menuCats.Any(c => c.ParentCategoryId == cat.CategoryId))
+                //    {
+                //        var pcat = await _categoryService.GetCategory(cat.CategoryId);
+                //        menuCats.Add(pcat);
+                //    }
+                //}
 
                 //Get Parent Categories
                 var country = await _countryService.GetCountry(countryId);
@@ -408,44 +405,48 @@ namespace PlanMatr_API.Controllers.planm
             }
         }
 
-        [Route("api/v2/planx/get-part-products/{PartId}/{PlanogramId}")]
+        [Route("api/v2/planx/get-part-products/{partId}/{planogramId}")]
         [HttpGet]
-        public async Task<IActionResult> GetPartProducts(int PartId, int PlanogramId)
+        public async Task<IActionResult> GetPartProducts(int partId, int planogramId)
         {
             try
             {
 
-                var plano = await _planogramService.GetPlanogram(PlanogramId);
+                var plano = await _planogramService.GetPlanogram(planogramId);
 
 
                 int planoCountryId = (int)plano.CountryId;
                 var country = await _countryService.GetCountry(planoCountryId);
-                var part = await _partService.GetPart(PartId);
-
+                var partFilter = new PartFilter
+                {
+                    Id = partId
+                };
+                var part = await _partService.GetPart(partFilter);
+                
                 var productFilter = new ProductFilter
                 {
-                    PartId = (int)part.Id,
+                    PartId = partId,
                     CountryId = planoCountryId,
                     IsPublished = true
                 };
-                var products = await _productService.GetProducts(productFilter);
+                var products = part.Products;
 
                 var planxPartProducts = new PartProductsDto();
-                planxPartProducts.PartId = part.Id;
+                planxPartProducts.PartId = partId;
                 var pvmList = _mapper.Map<List<ProductDto>>(products);
                     //products.Select(p => (ProductViewModel)p).ToList();
                 //var pvmList = pVMs.ToList();
-                foreach (var product in pvmList)
-                {
-                    var shadeFilter = new ShadeFilter
-                    {
-                        ProductId = product.Id,
-                        Country = country,
-                        Published = true
-                    };
-                    var shades = await _productService.GetShades(shadeFilter);
-                    product.Shades = _mapper.Map<List<PlanmShadeDto>>(shades);
-                }
+                //foreach (var product in pvmList)
+                //{
+                //    var shadeFilter = new ShadeFilter
+                //    {
+                //        ProductId = product.Id,
+                //        Country = country,
+                //        Published = true
+                //    };
+                //    var shades = product.Shades;
+                //    product.Shades = _mapper.Map<List<PlanmShadeDto>>(shades);
+                //}
 
                 planxPartProducts.Products = pvmList;
                 return Ok(planxPartProducts);
@@ -454,7 +455,7 @@ namespace PlanMatr_API.Controllers.planm
             {
 
                 //log an error
-                _logger.LogError("Error getting part products for partId " + PartId + " and planogramId " + PlanogramId + "---- error message - " + ex.Message + " --- " + ex.StackTrace);
+                _logger.LogError("Error getting part products for partId " + partId + " and planogramId " + planogramId + "---- error message - " + ex.Message + " --- " + ex.StackTrace);
                 return BadRequest("Error getting part products");
 
             }
@@ -494,16 +495,16 @@ namespace PlanMatr_API.Controllers.planm
 
 
                 var planoCountryId = (int)planogramData.CountryId;
-                var planoCountry = _countryService.GetCountry(planoCountryId);
-                //var userBrands = this.MappedBrands(userProfile, _brandService);
-                //TODO should we always be making plano country = to use country whatever happens?
-                if (currPlano.StatusId == (int)StatusEnums.PlanogramStatusEnum.Archived)
-                {
-                    if (currPlano.CountryId != null)
-                    {
-                        planoCountry = _countryService.GetCountry(currPlano.CountryId ?? 0);
-                    }
-                }
+                //var planoCountry = await _countryService.GetCountry(planoCountryId);
+                ////var userBrands = this.MappedBrands(userProfile, _brandService);
+                ////TODO should we always be making plano country = to use country whatever happens?
+                //if (currPlano.StatusId == (int)StatusEnums.PlanogramStatusEnum.Archived)
+                //{
+                //    if (currPlano.CountryId != null)
+                //    {
+                //        planoCountry = await _countryService.GetCountry(currPlano.CountryId ?? 0);
+                //    }
+                //}
 
                 var brand = _brandService.GetBrand((int)brandId);
 
@@ -626,10 +627,22 @@ namespace PlanMatr_API.Controllers.planm
             try
             {
                 Planogram planogram = await _planogramService.GetPlanogram((int)planoJpeg.PlanogramId);
-                var userProfile = await this.MappedUser();
+                PlanogramPreview preview = await _planogramService.GetPlanogramPreview((int)planoJpeg.PlanogramId);
 
-                planogram.PlanogramPreviewSrc = planoJpeg.Image;
-                _planogramService.SavePlanogram(planogram);
+                if (preview != null)
+                {
+                    preview.PreviewSrc = planoJpeg.Image;
+                    _planogramService.SavePlanogramPreview(preview);
+                }
+                else
+                {
+                    preview = new PlanogramPreview();
+                    preview.PlanogramId = planoJpeg.PlanogramId;
+                    preview.PreviewSrc = planoJpeg.Image;
+                    _planogramService.CreatePlanogramPreview(preview);
+                }
+                    //_planogramService.SavePlanogram(planogram);
+                var userProfile = await this.MappedUser();
                 HttpResponseMessage message = new HttpResponseMessage(HttpStatusCode.OK);
                 var audit = new AuditLog
                 {
@@ -907,13 +920,14 @@ namespace PlanMatr_API.Controllers.planm
 
             try
             {
-                Part part = null;
+                //Part part;
 
                 int planogramPartId = (int)planoPart.PlanogramPartId;
                 int partId = (int)planoPart.PartId;
                 var planogram = await _planogramService.GetPlanogram(planogramId);
+                var part = await _partService.GetPart(partId);
 
-                if (planogram.ScratchPad == null)
+                if (planogram.ScratchPadId == null)
                 {
                     //we need to create a new scratchpad
                     ScratchPad sPad = new ScratchPad();
@@ -924,14 +938,14 @@ namespace PlanMatr_API.Controllers.planm
                     await _planogramService.SavePlanogram(planogram);
                 }
 
-                var scratchPadId = planogram.ScratchPadId;
+                //var scratchPadId = planogram.ScratchPadId;
                 // part status
                 int planogramPartStatusId = planoPart.StatusId ?? 0;
 
 
                 if (partId != 0)
                 {
-                    part = await _partService.GetPart(partId);
+                    var anotherpart = await _partService.GetPart(partId);
                 }
                 else
                 {
@@ -945,25 +959,23 @@ namespace PlanMatr_API.Controllers.planm
                     }
                 }
 
-                if (part != null)
+                if (part.Id != 0)
                 {
 
-                    PlanogramPart newPart = new PlanogramPart();
+                    PlanogramPart newPart;
                     if (planogramPartId != 0)
                     {
                         newPart = await _planogramService.GetPlanogramPart(planogramPartId);
-                        await _planogramService.SavePlanogramPart(newPart);
-                    }
-
-                    if (newPart == null)
-                    {
-                        newPart = new PlanogramPart();
-                        planogramPartId = 0;
+                        //newPart = planogramPart;
+                        //newPart.ScratchPadId = planogram.ScratchPadId;
+                        //await _planogramService.SavePlanogramPart(newPart);
                     }
                     else
                     {
-                        newPart.ScratchPadId = null; //need this to fix issue with restoring from scratchpad
+                        newPart = new PlanogramPart();
                     }
+
+                    newPart.ScratchPadId = null; //need this to fix issue with restoring from scratchpad
 
                     newPart.PlanogramId = planogramId;
                     newPart.PlanogramShelfId = planoPart.PlanogramShelfId == 0 ? null : planoPart.PlanogramShelfId;
@@ -1110,7 +1122,8 @@ namespace PlanMatr_API.Controllers.planm
             if (partFacingId == 0)
             {
                 currentFacing.PlanogramId = planogramId;
-                currentFacing.PlanogramPart = newPart;
+                currentFacing.PlanogramPartId = newPart.Id;
+                //currentFacing.PlanogramPart = newPart;
                 //currentFacing.Id = 0;
             }
             else
@@ -1149,19 +1162,19 @@ namespace PlanMatr_API.Controllers.planm
                 {
                     //we need to delete the item in this position
                     PlanogramPartFacing pfToDelete = newPart.PlanogramPartFacings.FirstOrDefault(pf => pf.Position == facingPosition);
-                    _planogramService.DeletePlanogramPartFacing(pfToDelete.Id);
+                    await _planogramService.DeletePlanogramPartFacing(pfToDelete.Id);
                 }
-                _planogramService.CreatePlanogramPartFacing(currentFacing);
+                await _planogramService.CreatePlanogramPartFacing(currentFacing);
             }
             else
             {
                 if (partFacingId == 0)
                 {
-                    _planogramService.CreatePlanogramPartFacing(currentFacing);
+                    await _planogramService.CreatePlanogramPartFacing(currentFacing);
                 }
                 else
                 {
-                    _planogramService.SavePlanogramPartFacing();
+                    await _planogramService.SavePlanogramPartFacing(currentFacing);
                 }
             }
 
@@ -1336,7 +1349,7 @@ namespace PlanMatr_API.Controllers.planm
                                     }
                                 }
 
-                                SaveCassettes(planogramShelf.PlanogramId, shelf.Parts.ToList());
+                                await SaveCassettes(planogramShelf.PlanogramId, shelf.Parts.ToList());
                             }
                         }
                     }
@@ -1345,7 +1358,7 @@ namespace PlanMatr_API.Controllers.planm
                 //save parts
                 if (parts != null)
                 {
-                    SaveCassettes(planogramId, parts.ToList());
+                   await SaveCassettes(planogramId, parts.ToList());
                 }
             }
         }
