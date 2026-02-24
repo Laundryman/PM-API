@@ -14,6 +14,8 @@ using static Microsoft.Graph.CoreConstants;
 using PlanMatr_API.Extensions;
 namespace PlanMatr_API.Controllers.planm
 {
+    [Authorize]
+    [ApiController]
     public class CreatePlanApiController : ControllerBase
     {
         private readonly IMapper _mapper;

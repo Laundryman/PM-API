@@ -24,7 +24,7 @@ using PMApplication.Entities.CountriesAggregate;
 
 namespace PlanMatr_API.Controllers.planm
 {
-    //[Authorize]
+    [Authorize]
     [ApiController]
     public class EditPlanApiController : ControllerBase
     {
@@ -434,19 +434,7 @@ namespace PlanMatr_API.Controllers.planm
                 var planxPartProducts = new PartProductsDto();
                 planxPartProducts.PartId = partId;
                 var pvmList = _mapper.Map<List<ProductDto>>(products);
-                    //products.Select(p => (ProductViewModel)p).ToList();
-                //var pvmList = pVMs.ToList();
-                //foreach (var product in pvmList)
-                //{
-                //    var shadeFilter = new ShadeFilter
-                //    {
-                //        ProductId = product.Id,
-                //        Country = country,
-                //        Published = true
-                //    };
-                //    var shades = product.Shades;
-                //    product.Shades = _mapper.Map<List<PlanmShadeDto>>(shades);
-                //}
+
 
                 planxPartProducts.Products = pvmList;
                 return Ok(planxPartProducts);
