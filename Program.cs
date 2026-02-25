@@ -29,7 +29,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 //    options.UseLazyLoadingProxies()
 //        .UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddAutoMapper(typeof(Program));
+//builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddAutoMapper(cfg => cfg.AddMaps(typeof(Program).Assembly));
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

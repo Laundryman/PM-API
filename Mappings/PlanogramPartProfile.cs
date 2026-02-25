@@ -51,7 +51,7 @@ namespace PlanMatr_API.Mappings
                 .ForMember(pm => pm.PartStatusId, opt => opt.MapFrom(src => src.PartStatusId))
                 .ForMember(pm => pm.Status, opt => opt.MapFrom<PartStatusEnumResolver>())
                 .ForMember(pm => pm.CountryList,
-                    opt => opt.MapFrom(src => src.Part.CountryList))
+                    opt => opt.MapFrom(src => src.Part.CountriesList))
                 .ForMember(pm => pm.ScratchPadId, opt => opt.MapFrom(src => src.ScratchPadId))
                 .ForMember(pm => pm.PlanogramPartPlanogramPartsId,
                     opt => opt.MapFrom(src => src.PlanogramPartPlanogramPartsId))

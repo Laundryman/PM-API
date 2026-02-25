@@ -1,12 +1,13 @@
 ﻿using PlanMatr_API.Controllers;
+using PlanMatr_API.Mappings.Resolvers;
 using PMApplication.Entities;
 using PMApplication.Entities.PartAggregate;
 using PMApplication.Interfaces;
 using PMApplication.Interfaces.RepositoryInterfaces;
 using PMApplication.Interfaces.ServiceInterfaces;
-using PMInfrastructure.Repositories;
 using PMApplication.Services;
 using PMInfrastructure.Data;
+using PMInfrastructure.Repositories;
 
 namespace PlanMatr_API.Extensions
 {
@@ -32,6 +33,13 @@ namespace PlanMatr_API.Extensions
             services.AddTransient<IPlanogramService, PlanogramService>();
             services.AddScoped<IRegionService, RegionService>();
             services.AddScoped<IStandService, StandService>();
+            services.AddScoped(typeof(ShelfPositionResolver));
+            services.AddScoped(typeof(ShelfStatusEnumResolver));
+            services.AddScoped(typeof(PartPositionResolver));
+            services.AddScoped(typeof(PartStatusEnumResolver));
+            services.AddScoped(typeof(PartProductsResolver));
+
+
             return services;
         }
 

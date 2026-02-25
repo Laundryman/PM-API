@@ -46,7 +46,7 @@ namespace PlanMatr_API.Mappings
                 .ForMember(pm => pm.ShelfLabel, opt => opt.MapFrom(src => src.Label))
                 .ForMember(pm => pm.Status, opt => opt.MapFrom<ShelfStatusEnumResolver>())
                 .ForMember(pm => pm.CountryList,
-                    opt => opt.MapFrom(src => src.Part.CountryList))
+                    opt => opt.MapFrom(src => src.Part.CountriesList))
                 .ForMember(pm => pm.ScratchPadId, opt => opt.MapFrom(src => src.ScratchPadId))
 
                 .ForMember(pm => pm.facingProducts, opt => opt.Ignore())

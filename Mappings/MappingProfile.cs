@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using PMApplication.Dtos;
 using PMApplication.Dtos.Filters;
 using PMApplication.Dtos.PlanModels;
+using PMApplication.Dtos.Categories;
 using PMApplication.Entities;
 using PMApplication.Entities.ClusterAggregate;
 using PMApplication.Entities.CountriesAggregate;
@@ -11,6 +12,7 @@ using PMApplication.Entities.PartAggregate;
 using PMApplication.Entities.PlanogramAggregate;
 using PMApplication.Entities.OrderAggregate;
 using PMApplication.Entities.StandAggregate;
+using PMApplication.Entities.ProductAggregate;
 using PMApplication.Specifications.Filters;
 
 namespace PlanMatr_API.Mappings

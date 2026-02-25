@@ -300,7 +300,7 @@ namespace PlanMatr_API.Controllers.planm
 
         [Route("api/v2/planx/get-planogram-shelves/{planogramId}")]
         [HttpGet]
-        public async Task<IActionResult> GetPlanogramShelves(int planogramId)
+        public async Task<IActionResult> GetPlanogramShelves(long planogramId)
         {
             try
             {

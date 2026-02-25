@@ -27,7 +27,7 @@ namespace PlanMatr_API.Mappings
                 .ForMember(p => p.ProductImage, opt => opt.MapFrom(s => s.Product.ProductImage))
                 .ForMember(p => p.Discontinued, opt => opt.MapFrom(s => s.Product.Discontinued))
                 .ForMember(p => p.Hero, opt => opt.MapFrom(s => s.Product.Hero))
-                .ForMember(p => p.CountryList, opt => opt.MapFrom(s => s.Product.CountryList))
+                .ForMember(p => p.CountriesList, opt => opt.MapFrom(s => s.Product.CountriesList))
                 .ForMember(p => p.ParentCategoryId, opt => opt.MapFrom(s => s.Product.ParentCategoryId))
                 .ForMember(p => p.Shades, opt => opt.MapFrom(s => s.Product.Shades));
 
