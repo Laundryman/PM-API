@@ -51,7 +51,7 @@ namespace PlanMatr_API.Controllers
                 var spec = new PartSpecification(_mapper.Map<PartFilter>(filterDto));
                 var parts = await _partRepository.ListAsync(spec);
                     var countFilter = filterDto;
-                countFilter.IsPagingEnabled = false;
+                //countFilter.IsPagingEnabled = false;
                 var countSpec = new PartSpecification(_mapper.Map<PartFilter>(countFilter));
                 int totalItems = await _partRepository.CountAsync(countSpec);
 
@@ -63,10 +63,10 @@ namespace PlanMatr_API.Controllers
                 response.Data = _mapper.Map<List<PartListDto>>(parts);
                 //update partTypenames here
                 response.Page = new PMApplication.Dtos.Page();
-                response.Page.PageNumber = filterDto.Page;
+                //response.Page.PageNumber = filterDto.Page;
                 response.Page.TotalItems = totalItems;
-                response.Page.TotalPages = (int)Math.Ceiling((decimal)totalItems / (decimal)filterDto.PageSize);
-                response.Page.Size = filterDto.PageSize;
+                //response.Page.TotalPages = (int)Math.Ceiling((decimal)totalItems / (decimal)filterDto.PageSize);
+                //response.Page.Size = filterDto.PageSize;
                 return Ok(response);
             }
             catch (Exception ex)

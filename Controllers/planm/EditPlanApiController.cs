@@ -847,7 +847,7 @@ namespace PlanMatr_API.Controllers.planm
         /// </summary>
         /// <param name="planogramId">The id of the planogram to check.</param>
         /// <returns>true or false.</returns>
-        private async Task<bool> IsLocked(int planogramId, CurrentUser user)
+        private async Task<bool> IsLocked(long planogramId, CurrentUser user)
         {
             var filter = new PlanogramLockFilter
             {
@@ -1297,12 +1297,12 @@ namespace PlanMatr_API.Controllers.planm
             }
         }
 
-        private async Task UpdateScratchPad(int planogramId, PlanmShelfInfoList scratchPad)
+        private async Task UpdateScratchPad(long planogramId, PlanmShelfInfoList scratchPad)
         {
             //Handle the planogram now
             var shelves = scratchPad.shelfInfos;
             var parts = scratchPad.partInfos;
-            int? sPadId = 0;
+            long? sPadId = 0;
             if (parts.Any() || shelves.Any())
             {
                 if (parts.Any())
