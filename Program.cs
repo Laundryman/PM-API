@@ -21,7 +21,7 @@ var builder = WebApplication.CreateBuilder(args);
 //        options => { builder.Configuration.Bind("AzureAdB2C", options); });
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAdB2C"));
+    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureEntraId"));
 // End of the Microsoft Identity platform block    
 
 // Add services to the container.
@@ -38,7 +38,16 @@ builder.Services.AddScoped(typeof(IAsyncRepository<>), typeof(EfRepository<>));
 builder.Services.AddScoped(typeof(IAsyncRepositoryLong<>), typeof(EfRepositoryLong<>));
 builder.Services.AddPMServices();
 builder.Services.AddRepositories();
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowClientApp", builder =>
+    {
+        builder.WithOrigins("https://localhost:44321")
+               .AllowAnyMethod()
+               .AllowAnyHeader()
+               .AllowCredentials();
+    });
+});
 //Add support to logging with SERILOG
 builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration));
@@ -52,6 +61,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors("AllowClientApp");
 app.UseAuthentication();
 app.UseAuthorization();
 //app.UseRouting();

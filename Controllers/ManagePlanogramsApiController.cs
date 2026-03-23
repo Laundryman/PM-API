@@ -96,7 +96,151 @@ namespace PlanMatr_API.Controllers
 
         }
 
-        
+        [Route("api/v2/planogram/submit/{planogramId}")]
+        [HttpGet]
+        public async Task<int> SubmitPlanogram(int planogramId)
+        {
+            // we can retrieve the userId from the request
+            var userProfile = await this.MappedUser();
+            string userId = userProfile.Id;
+            var planogram = await _planogramService.GetPlanogram(planogramId);
+            planogram.StatusId = (int)PlanogramStatusEnum.Submitted;
+            await _planogramService.SavePlanogram(planogram);
+
+            //Audit the action
+            var audit = new AuditLog
+            {
+                UserId = userId,
+                Date = DateTime.Now,
+                BrandId = planogram.BrandId,
+                Roles = userProfile.RoleIds,
+                UserName = userProfile.DisplayName,
+                Action = (int)LogActionEnum.EditPlano,
+                Message = userProfile.DisplayName + " submitted planogram with Id " + planogramId.ToString(),
+                PlanoId = planogramId
+            };
+            _auditService.AuditEvent(audit);
+
+            return planogramId;
+
+        }
+
+        [Route("api/v2/planogram/delete/{planogramId}")]
+        [HttpGet]
+        public async Task<int> DeletePlanogram(int planogramId)
+        {
+            // we can retrieve the userId from the request
+            var userProfile = await this.MappedUser();
+            string userId = userProfile.Id;
+            var planogram = await _planogramService.GetPlanogram(planogramId);
+            planogram.StatusId = (int)PlanogramStatusEnum.Deleted;
+            await _planogramService.SavePlanogram(planogram);
+
+            //Audit the action
+            var audit = new AuditLog
+            {
+                UserId = userId,
+                Date = DateTime.Now,
+                BrandId = planogram.BrandId,
+                Roles = userProfile.RoleIds,
+                UserName = userProfile.DisplayName,
+                Action = (int)LogActionEnum.EditPlano,
+                Message = userProfile.DisplayName + " deleted planogram with Id " + planogramId.ToString(),
+                PlanoId = planogramId
+            };
+            _auditService.AuditEvent(audit);
+
+            return planogramId;
+
+        }
+
+        [Route("api/v2/planogram/approve/{planogramId}")]
+        [HttpGet]
+        public async Task<int> ApprovePlanogram(int planogramId)
+        {
+            // we can retrieve the userId from the request
+            var userProfile = await this.MappedUser();
+            string userId = userProfile.Id;
+            var planogram = await _planogramService.GetPlanogram(planogramId);
+            planogram.StatusId = (int)PlanogramStatusEnum.Approved;
+            await _planogramService.SavePlanogram(planogram);
+
+            //Audit the action
+            var audit = new AuditLog
+            {
+                UserId = userId,
+                Date = DateTime.Now,
+                BrandId = planogram.BrandId,
+                Roles = userProfile.RoleIds,
+                UserName = userProfile.DisplayName,
+                Action = (int)LogActionEnum.EditPlano,
+                Message = userProfile.DisplayName + " approved planogram with Id " + planogramId.ToString(),
+                PlanoId = planogramId
+            };
+            _auditService.AuditEvent(audit);
+
+            return planogramId;
+
+        }
+
+        [Route("api/v2/planogram/validate/{planogramId}")]
+        [HttpGet]
+        public async Task<int> ValidatePlanogram(int planogramId)
+        {
+            // we can retrieve the userId from the request
+            var userProfile = await this.MappedUser();
+            string userId = userProfile.Id;
+            var planogram = await _planogramService.GetPlanogram(planogramId);
+            planogram.StatusId = (int)PlanogramStatusEnum.Validated;
+            await _planogramService.SavePlanogram(planogram);
+
+            //Audit the action
+            var audit = new AuditLog
+            {
+                UserId = userId,
+                Date = DateTime.Now,
+                BrandId = planogram.BrandId,
+                Roles = userProfile.RoleIds,
+                UserName = userProfile.DisplayName,
+                Action = (int)LogActionEnum.EditPlano,
+                Message = userProfile.DisplayName + " validated planogram with Id " + planogramId.ToString(),
+                PlanoId = planogramId
+            };
+            _auditService.AuditEvent(audit);
+
+            return planogramId;
+
+        }
+
+        [Route("api/v2/planogram/reject/{planogramId}")]
+        [HttpGet]
+        public async Task<int> RejectPlanogram(int planogramId)
+        {
+            // we can retrieve the userId from the request
+            var userProfile = await this.MappedUser();
+            string userId = userProfile.Id;
+            var planogram = await _planogramService.GetPlanogram(planogramId);
+            planogram.StatusId = (int)PlanogramStatusEnum.Edit;
+            await _planogramService.SavePlanogram(planogram);
+
+            //Audit the action
+            var audit = new AuditLog
+            {
+                UserId = userId,
+                Date = DateTime.Now,
+                BrandId = planogram.BrandId,
+                Roles = userProfile.RoleIds,
+                UserName = userProfile.DisplayName,
+                Action = (int)LogActionEnum.EditPlano,
+                Message = userProfile.DisplayName + " rejected planogram with Id " + planogramId.ToString(),
+                PlanoId = planogramId
+            };
+            _auditService.AuditEvent(audit);
+
+            return planogramId;
+
+        }
+
         [Route("api/v2/planogram/getCommentCount/{planogramId}/{brandId}")]
         [HttpGet]
         public async Task<IActionResult> GetCommentCount(int planogramId, int brandId)
