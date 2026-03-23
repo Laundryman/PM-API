@@ -102,3 +102,6 @@ nunit-*.xml
 /.vs/ProjectEvaluation/planmatr api.metadata.v9.bin
 /.vs/ProjectEvaluation/planmatr api.projects.v9.bin
 /.vs/ProjectEvaluation/planmatr api.strings.v9.bin
+/appsettings.json
+/Controllers/CatalogueController.cs
+/appsettings.json
