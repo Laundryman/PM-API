@@ -5,10 +5,17 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>PlanMatr_API</RootNamespace>
+    <Configurations>Debug;Release;Demo</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="Extensions\CurrentUserExtentions.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="appsettings.Debug.json" />
+    <Content Remove="appsettings.Demo.json" />
+    <Content Remove="appsettings.Release.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -32,8 +39,29 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="appsettings.Debug.json">
+      <IsTransformFile>true</IsTransformFile>
+      <DependentUpon>appsettings.json</DependentUpon>
+    </None>
+    <None Include="appsettings.Demo.json">
+      <IsTransformFile>true</IsTransformFile>
+      <DependentUpon>appsettings.json</DependentUpon>
+    </None>
+    <None Include="appsettings.Release.json">
+      <IsTransformFile>true</IsTransformFile>
+      <DependentUpon>appsettings.json</DependentUpon>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\PlanMatr\PM-Application\PMApplication.csproj" />
     <ProjectReference Include="..\..\PlanMatr\PM-Infrastructure\PMInfrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="appsettings.json">
+      <TransformOnBuild>true</TransformOnBuild>
+    </Content>
   </ItemGroup>
 
 </Project>

@@ -744,7 +744,7 @@ namespace PlanMatr_API.Controllers.planm
                 "</div>" +
                 "<div class=\"row name-row\" style=\"width:100%;display:flex;grid-auto-column:50%;\">" +
                   "<div class=\"view-name\" style=\"width:50%;text-align:left;\"><strong>Planogram</strong> View</div>" +
-                  "<div class=\"diam-logo\" style=\"width:50%; text-align:right;\"><img src = \"" + _config["AppSettings:BaseImageDomain"] + "/Content/images/DIAM_pdf_logo.png\" style=\"height:40px;\" /></div>" +
+                  "<div class=\"diam-logo\" style=\"width:50%; text-align:right;\"><img src = \"" + _config["AzureBlob:AzureBlobBaseUrl"] + _config["AzureBlob:ImageContainer"] + "/Content/images/DIAM_pdf_logo.png\" style=\"height:40px;\" /></div>" +
                 "</div>" +
               "</div>";
 
