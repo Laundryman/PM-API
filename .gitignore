@@ -105,3 +105,6 @@ nunit-*.xml
 /appsettings.json
 /Controllers/CatalogueController.cs
 /appsettings.json
+/appsettings.Debug.json
+/appsettings.Demo.json
+/appsettings.Release.json
