@@ -17,6 +17,8 @@ using static PMApplication.Enums.StatusEnums;
 
 namespace PlanMatr_API.Controllers
 {
+    [Authorize]
+
     public class ManagePlanogramsApiController : ControllerBase
     {
 

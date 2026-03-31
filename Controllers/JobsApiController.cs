@@ -1,18 +1,21 @@
-﻿using PMApplication.Entities.JobsAggregate;
-using PMApplication.Helpers;
-using PMApplication.Interfaces.ServiceInterfaces;
-using System.Net;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PlanMatr_API.Controllers.planm;
 using PlanMatr_API.Extensions;
 using PMApplication.Dtos;
+using PMApplication.Entities.JobsAggregate;
+using PMApplication.Helpers;
 using PMApplication.Interfaces.RepositoryInterfaces;
+using PMApplication.Interfaces.ServiceInterfaces;
 using PMApplication.Specifications;
 using PMApplication.Specifications.Filters;
-using AutoMapper;
-using PlanMatr_API.Controllers.planm;
+using System.Net;
 
 namespace PlanMatr_API.Controllers
 {
+    [Authorize]
+
     public class JobsApiController : ControllerBase
     {
         private readonly ICountryService _countryService;

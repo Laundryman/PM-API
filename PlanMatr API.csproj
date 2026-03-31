@@ -35,6 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Logs\" />
     <Folder Include="NewFolder\" />
   </ItemGroup>
 
@@ -46,6 +47,7 @@
     <None Include="appsettings.Demo.json">
       <IsTransformFile>true</IsTransformFile>
       <DependentUpon>appsettings.json</DependentUpon>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="appsettings.Release.json">
       <IsTransformFile>true</IsTransformFile>

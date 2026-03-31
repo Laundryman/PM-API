@@ -1,20 +1,23 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PlanMatr_API.Controllers.planm;
-using PMApplication.Entities.OrderAggregate;
-using PMApplication.Interfaces.ServiceInterfaces;
-using PMApplication.Services;
-using PMApplication.Specifications.Filters;
-using System.Net;
-using PMApplication.Enums;
 using PlanMatr_API.Extensions;
-using System.Linq;
 using PMApplication.Dtos;
 using PMApplication.Entities;
 using PMApplication.Entities.CountriesAggregate;
+using PMApplication.Entities.OrderAggregate;
+using PMApplication.Enums;
+using PMApplication.Interfaces.ServiceInterfaces;
+using PMApplication.Services;
+using PMApplication.Specifications.Filters;
+using System.Linq;
+using System.Net;
 
 namespace PlanMatr_API.Controllers
 {
+    [Authorize]
+
     public class OrdersApiController : ControllerBase
     {
 

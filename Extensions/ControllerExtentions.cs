@@ -34,7 +34,7 @@ namespace PlanMatr_API.Extensions
             //var me = _identityService.GetMe(Globals.B2cExtensionAppId);
             var identity = ((System.Security.Claims.ClaimsPrincipal)currentUser);
             var user = new CurrentUser();
-            user.BrandIds = currentUser.Claims.Where(c => c.Type == "Brands").Select(c => c.Value).FirstOrDefault();
+            user.BrandIds = tokenValues.Claims.Where(c => c.Type == "Brands").Select(c => c.Value).FirstOrDefault();
                 user.DiamCountryId = int.Parse(tokenValues.Claims.Where(c => c.Type == "DiamCountryId")
                     .Select(c => c.Value)
                     .FirstOrDefault() ?? string.Empty);

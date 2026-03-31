@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PMApplication.Dtos;
 using PMApplication.Dtos.Filters;
@@ -14,6 +15,7 @@ namespace PlanMatr_API.Controllers
 {
 
     [Route("api/part")]
+    [Authorize]
     [ApiController]
     public class PartController : ControllerBase
     {
