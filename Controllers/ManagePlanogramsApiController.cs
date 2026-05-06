@@ -250,7 +250,7 @@ namespace PlanMatr_API.Controllers
             // we can retrieve the userId from the request
             var userProfile = await this.MappedUser();
 
-            var countryId = userProfile.DiamCountryId;
+            var countryId = userProfile.CountryId;
             try
             {
                 //We're not using the country and region here: but we need to think about how we might regarding users.
@@ -375,7 +375,7 @@ namespace PlanMatr_API.Controllers
                 else if (RolesHelper.IsValidator(userProfile.RoleIds))
                 {
 
-                    planograms = await _planogramService.GetYourPlanograms((int)statusEnum, userProfile.DiamCountryId, regionId, standTypeId, brandId);
+                    planograms = await _planogramService.GetYourPlanograms((int)statusEnum, userProfile.CountryId, regionId, standTypeId, brandId);
                 }
 
                 else if (RolesHelper.IsApprover(userProfile.RoleIds))
@@ -384,7 +384,7 @@ namespace PlanMatr_API.Controllers
                 }
                 else
                 {
-                    planograms = await _planogramService.GetYourPlanograms((int)(int)statusEnum, userProfile.DiamCountryId, 0, standTypeId, brandId);
+                    planograms = await _planogramService.GetYourPlanograms((int)(int)statusEnum, userProfile.CountryId, 0, standTypeId, brandId);
                 }
 
 

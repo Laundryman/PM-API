@@ -35,7 +35,7 @@ namespace PlanMatr_API.Extensions
             var identity = ((System.Security.Claims.ClaimsPrincipal)currentUser);
             var user = new CurrentUser();
             user.BrandIds = tokenValues.Claims.Where(c => c.Type == "Brands").Select(c => c.Value).FirstOrDefault();
-                user.DiamCountryId = int.Parse(tokenValues.Claims.Where(c => c.Type == "DiamCountryId")
+                user.CountryId = int.Parse(tokenValues.Claims.Where(c => c.Type == "DiamCountryId")
                     .Select(c => c.Value)
                     .FirstOrDefault() ?? string.Empty);
             user.DisplayName = tokenValues.Claims.Where(c => c.Type == "name").Select(c => c.Value).FirstOrDefault();
@@ -45,6 +45,7 @@ namespace PlanMatr_API.Extensions
             user.Surname = tokenValues.Claims.Where(c => c.Type == "surname").Select(c => c.Value).FirstOrDefault();
             user.GivenName = tokenValues.Claims.Where(c => c.Type == "givenname").Select(c => c.Value).FirstOrDefault();
             user.RoleIds = tokenValues.Claims.Where(c => c.Type == "DiamRoles").Select(c => c.Value).FirstOrDefault();
+            user.RoleIds = tokenValues.Claims.Where(c => c.Type == "RoleId").Select(c => c.Value).FirstOrDefault();
             //var userOID = identity.Claims.FirstOrDefault((x => x.Type == ClaimTypes.NameIdentifier)).Value;// 'http://schemas.microsoft.com/identity/claims/objectidentifier']
             //var user = await identityService.GetUser(userOID, Globals.B2cExtensionAppId);
             //var mapper = MapperConfig.InitializeAutomapper();

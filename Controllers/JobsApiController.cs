@@ -126,7 +126,7 @@ namespace PlanMatr_API.Controllers
         public async Task<IActionResult> GetJobFolders(int brandId, int countryId, int regionId)
         {
             var userProfile = await this.MappedUser();
-            var getCountrySpec = new GetCountrySpec(userProfile.DiamCountryId);
+            var getCountrySpec = new GetCountrySpec(userProfile.CountryId);
             var countries = await _countryRepository.ListAsync(getCountrySpec);
             var userCountry = countries.FirstOrDefault();
             var userDefaultRegion = userCountry.Regions.First(r => r.BrandId == brandId);
