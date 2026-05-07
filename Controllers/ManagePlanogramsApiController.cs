@@ -73,12 +73,12 @@ namespace PlanMatr_API.Controllers
         {
             // we can retrieve the userId from the request
             var userProfile = await this.MappedUser();
-            string userId = userProfile.Id;
+            string? userId = userProfile?.Id;
             var planogram = await _planogramService.GetPlanogram(planogramId);
             var brandId = planogram.Stand.BrandId;
 
             planogram.Name = planoName;
-            _planogramService.SavePlanogram(planogram);
+            await _planogramService.SavePlanogram(planogram);
 
             //Audit the action
             var audit = new AuditLog
@@ -86,13 +86,13 @@ namespace PlanMatr_API.Controllers
                 UserId = userId,
                 Date = DateTime.Now,
                 BrandId = brandId,
-                Roles = userProfile.RoleIds,
-                UserName = userProfile.DisplayName,
+                Roles = userProfile?.RoleIds,
+                UserName = userProfile?.DisplayName,
                 Action = (int)LogActionEnum.EditPlano,
-                Message = userProfile.DisplayName + " renamed planogram with Id " + planogramId.ToString() + " to " + planoName,
+                Message = userProfile?.DisplayName + " renamed planogram with Id " + planogramId.ToString() + " to " + planoName,
                 PlanoId = planogramId
             };
-            _auditService.AuditEvent(audit);
+            await _auditService.AuditEvent(audit);
 
             return planogramId;
 
@@ -104,7 +104,7 @@ namespace PlanMatr_API.Controllers
         {
             // we can retrieve the userId from the request
             var userProfile = await this.MappedUser();
-            string userId = userProfile.Id;
+            string? userId = userProfile?.Id;
             var planogram = await _planogramService.GetPlanogram(planogramId);
             planogram.StatusId = (int)PlanogramStatusEnum.Submitted;
             await _planogramService.SavePlanogram(planogram);
@@ -115,13 +115,13 @@ namespace PlanMatr_API.Controllers
                 UserId = userId,
                 Date = DateTime.Now,
                 BrandId = planogram.BrandId,
-                Roles = userProfile.RoleIds,
-                UserName = userProfile.DisplayName,
+                Roles = userProfile?.RoleIds,
+                UserName = userProfile?.DisplayName,
                 Action = (int)LogActionEnum.EditPlano,
-                Message = userProfile.DisplayName + " submitted planogram with Id " + planogramId.ToString(),
+                Message = userProfile?.DisplayName + " submitted planogram with Id " + planogramId.ToString(),
                 PlanoId = planogramId
             };
-            _auditService.AuditEvent(audit);
+            await _auditService.AuditEvent(audit);
 
             return planogramId;
 
@@ -133,7 +133,7 @@ namespace PlanMatr_API.Controllers
         {
             // we can retrieve the userId from the request
             var userProfile = await this.MappedUser();
-            string userId = userProfile.Id;
+            string? userId = userProfile?.Id;
             var planogram = await _planogramService.GetPlanogram(planogramId);
             planogram.StatusId = (int)PlanogramStatusEnum.Deleted;
             await _planogramService.SavePlanogram(planogram);
@@ -144,13 +144,13 @@ namespace PlanMatr_API.Controllers
                 UserId = userId,
                 Date = DateTime.Now,
                 BrandId = planogram.BrandId,
-                Roles = userProfile.RoleIds,
-                UserName = userProfile.DisplayName,
+                Roles = userProfile?.RoleIds,
+                UserName = userProfile?.DisplayName,
                 Action = (int)LogActionEnum.EditPlano,
-                Message = userProfile.DisplayName + " deleted planogram with Id " + planogramId.ToString(),
+                Message = userProfile?.DisplayName + " deleted planogram with Id " + planogramId.ToString(),
                 PlanoId = planogramId
             };
-            _auditService.AuditEvent(audit);
+            await _auditService.AuditEvent(audit);
 
             return planogramId;
 
@@ -162,7 +162,7 @@ namespace PlanMatr_API.Controllers
         {
             // we can retrieve the userId from the request
             var userProfile = await this.MappedUser();
-            string userId = userProfile.Id;
+            string? userId = userProfile?.Id;
             var planogram = await _planogramService.GetPlanogram(planogramId);
             planogram.StatusId = (int)PlanogramStatusEnum.Approved;
             await _planogramService.SavePlanogram(planogram);
@@ -173,13 +173,13 @@ namespace PlanMatr_API.Controllers
                 UserId = userId,
                 Date = DateTime.Now,
                 BrandId = planogram.BrandId,
-                Roles = userProfile.RoleIds,
-                UserName = userProfile.DisplayName,
+                Roles = userProfile?.RoleIds,
+                UserName = userProfile?.DisplayName,
                 Action = (int)LogActionEnum.EditPlano,
-                Message = userProfile.DisplayName + " approved planogram with Id " + planogramId.ToString(),
+                Message = userProfile?.DisplayName + " approved planogram with Id " + planogramId.ToString(),
                 PlanoId = planogramId
             };
-            _auditService.AuditEvent(audit);
+            await _auditService.AuditEvent(audit);
 
             return planogramId;
 
@@ -191,7 +191,7 @@ namespace PlanMatr_API.Controllers
         {
             // we can retrieve the userId from the request
             var userProfile = await this.MappedUser();
-            string userId = userProfile.Id;
+            string? userId = userProfile?.Id;
             var planogram = await _planogramService.GetPlanogram(planogramId);
             planogram.StatusId = (int)PlanogramStatusEnum.Validated;
             await _planogramService.SavePlanogram(planogram);
@@ -202,13 +202,13 @@ namespace PlanMatr_API.Controllers
                 UserId = userId,
                 Date = DateTime.Now,
                 BrandId = planogram.BrandId,
-                Roles = userProfile.RoleIds,
-                UserName = userProfile.DisplayName,
+                Roles = userProfile?.RoleIds,
+                UserName = userProfile?.DisplayName,
                 Action = (int)LogActionEnum.EditPlano,
-                Message = userProfile.DisplayName + " validated planogram with Id " + planogramId.ToString(),
+                Message = userProfile?.DisplayName + " validated planogram with Id " + planogramId.ToString(),
                 PlanoId = planogramId
             };
-            _auditService.AuditEvent(audit);
+            await _auditService.AuditEvent(audit);
 
             return planogramId;
 
@@ -220,7 +220,7 @@ namespace PlanMatr_API.Controllers
         {
             // we can retrieve the userId from the request
             var userProfile = await this.MappedUser();
-            string userId = userProfile.Id;
+            string? userId = userProfile?.Id;
             var planogram = await _planogramService.GetPlanogram(planogramId);
             planogram.StatusId = (int)PlanogramStatusEnum.Edit;
             await _planogramService.SavePlanogram(planogram);
@@ -231,13 +231,13 @@ namespace PlanMatr_API.Controllers
                 UserId = userId,
                 Date = DateTime.Now,
                 BrandId = planogram.BrandId,
-                Roles = userProfile.RoleIds,
-                UserName = userProfile.DisplayName,
+                Roles = userProfile?.RoleIds,
+                UserName = userProfile?.DisplayName,
                 Action = (int)LogActionEnum.EditPlano,
-                Message = userProfile.DisplayName + " rejected planogram with Id " + planogramId.ToString(),
+                Message = userProfile?.DisplayName + " rejected planogram with Id " + planogramId.ToString(),
                 PlanoId = planogramId
             };
-            _auditService.AuditEvent(audit);
+            await _auditService.AuditEvent(audit);
 
             return planogramId;
 
@@ -365,27 +365,29 @@ namespace PlanMatr_API.Controllers
                 // we can retrieve the userId from the request
                 var userProfile = await this.MappedUser();
                 var statusEnum = (PlanogramStatusEnum)status;
-                string userId = userProfile.Id;
+                string? userId = userProfile?.Id;
 
-                if (RolesHelper.IsAdministrator(userProfile.RoleIds))
-                {
-                    planograms = await _planogramService.GetYourPlanograms((int)statusEnum, countryId, regionId, standTypeId, brandId);
-                }
+                //if (RolesHelper.IsAdministrator(int.Parse(userProfile.RoleId)))
+                //{
+                //    planograms = await _planogramService.GetYourPlanograms((int)statusEnum, countryId, regionId, standTypeId, brandId);
+                //}
 
-                else if (RolesHelper.IsValidator(userProfile.RoleIds))
-                {
+                planograms = await _planogramService.GetYourPlanograms((int)statusEnum, countryId, regionId, standTypeId, brandId);
 
-                    planograms = await _planogramService.GetYourPlanograms((int)statusEnum, userProfile.CountryId, regionId, standTypeId, brandId);
-                }
+                //else if (RolesHelper.IsValidator(userProfile.RoleIds))
+                //{
 
-                else if (RolesHelper.IsApprover(userProfile.RoleIds))
-                {
-                    planograms = await _planogramService.GetYourPlanograms((int)statusEnum, brandId, countryId, regionId, standTypeId);
-                }
-                else
-                {
-                    planograms = await _planogramService.GetYourPlanograms((int)(int)statusEnum, userProfile.CountryId, 0, standTypeId, brandId);
-                }
+                //    planograms = await _planogramService.GetYourPlanograms((int)statusEnum, userProfile.CountryId, regionId, standTypeId, brandId);
+                //}
+
+                //else if (RolesHelper.IsApprover(userProfile.RoleIds))
+                //{
+                //    planograms = await _planogramService.GetYourPlanograms((int)statusEnum, brandId, countryId, regionId, standTypeId);
+                //}
+                //else
+                //{
+                //    planograms = await _planogramService.GetYourPlanograms((int)(int)statusEnum, userProfile.CountryId, 0, standTypeId, brandId);
+                //}
 
 
                 return planograms;
@@ -444,7 +446,7 @@ namespace PlanMatr_API.Controllers
             Planogram planogram = await _planogramService.GetPlanogram(planogramId);
             // we can retrieve the userId from the request
             var userProfile = await this.MappedUser();
-            string userId = userProfile.Id;
+            string? userId = userProfile?.Id;
 
 
 

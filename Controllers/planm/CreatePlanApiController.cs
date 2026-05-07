@@ -132,9 +132,9 @@ namespace PlanMatr_API.Controllers.planm
                     ScratchPad sPad = new ScratchPad();
                     sPad.DateCreated = DateTime.Now;
                     sPad.DateUpdated = DateTime.Now;
-                    _planogramService.CreateScratchPad(sPad);
+                    await _planogramService.CreateScratchPad(sPad);
                     planogram.ScratchPad = sPad;
-                    _planogramService.SavePlanogram(planogram);
+                    await _planogramService.SavePlanogram(planogram);
                 }
 
                 //Audit the action
@@ -149,7 +149,7 @@ namespace PlanMatr_API.Controllers.planm
                     Message = userProfile.DisplayName + " created planogram " + planogram.Name,
                     PlanoId = planogramId
                 };
-                _auditService.AuditEvent(audit);
+                await _auditService.AuditEvent(audit);
 
                 return Ok(planogramId);
             }

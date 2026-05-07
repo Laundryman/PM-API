@@ -145,7 +145,7 @@ namespace PlanMatr_API.Controllers
                     Message = userProfile.DisplayName + " edited order with Id " + orderId.ToString(),
                     OrderId = orderId
                 };
-                _auditService.AuditEvent(audit);
+                await _auditService.AuditEvent(audit);
 
                 return Ok();
             }
@@ -198,7 +198,7 @@ namespace PlanMatr_API.Controllers
                     OrderId = orderItem.Id
                 };
 
-                _auditService.AuditEvent(audit);
+                await _auditService.AuditEvent(audit);
 
                 var order = await _orderService.GetOrder(orderItem.OrderId);
 

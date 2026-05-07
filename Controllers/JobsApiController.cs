@@ -129,16 +129,20 @@ namespace PlanMatr_API.Controllers
             var getCountrySpec = new GetCountrySpec(userProfile.CountryId);
             var countries = await _countryRepository.ListAsync(getCountrySpec);
             var userCountry = countries.FirstOrDefault();
-            var userDefaultRegion = userCountry.Regions.First(r => r.BrandId == brandId);
-            var userRoleIds = userProfile.RoleIds;
+            if (userCountry != null)
+            {
+                var userDefaultRegion = userCountry.Regions.First(r => r.BrandId == brandId);
+            }
+
+            //var userRoleIds = userProfile.RoleId;
             IReadOnlyList<JobFolderInfo> jobFolders;
 
-            int userId = userProfile.DiamUserId;
+            //int userId = userProfile.DiamUserId;
             try
             {
 
-                if (RolesHelper.IsAdminUser(userRoleIds))
-                {
+                //if (RolesHelper.IsAdminUser(int.Parse(userProfile.RoleId)))
+                //{
                     var filter = new JobFolderFilter
                     {
                         BrandId = brandId,
@@ -147,28 +151,28 @@ namespace PlanMatr_API.Controllers
                     };
                     jobFolders = await _jobFolderService.GetJobFolderInfos(filter);
 
-                }
-                else if (RolesHelper.IsClientValidator(userRoleIds))
-                {
-                    var filter = new JobFolderFilter
-                    {
-                        BrandId = brandId,
-                        CountryId = countryId,
-                        RegionId = userDefaultRegion.Id
-                    };
-                    jobFolders = await _jobFolderService.GetJobFolderInfos(filter);
-                }
-                else
-                {
-                    var filter = new JobFolderFilter
-                    {
-                        BrandId = brandId,
-                        CountryId = userCountry.Id,
-                        RegionId = userDefaultRegion.Id
-                    };
-                    jobFolders = await _jobFolderService.GetJobFolderInfos(filter);
+                //}
+                //else if (RolesHelper.IsValidator(userProfile.Permissions))
+                //{
+                //    var filter = new JobFolderFilter
+                //    {
+                //        BrandId = brandId,
+                //        CountryId = countryId,
+                //        RegionId = regionId
+                //    };
+                //    jobFolders = await _jobFolderService.GetJobFolderInfos(filter);
+                //}
+                //else
+                //{
+                //    var filter = new JobFolderFilter
+                //    {
+                //        BrandId = brandId,
+                //        CountryId = countryId,
+                //        RegionId = regionId
+                //    };
+                //    jobFolders = await _jobFolderService.GetJobFolderInfos(filter);
 
-                }
+                //}
                 return Ok(jobFolders);
             }
             catch (Exception Ex)

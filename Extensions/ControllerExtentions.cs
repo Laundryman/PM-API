@@ -56,16 +56,26 @@ namespace PlanMatr_API.Extensions
             return Task.FromResult(user);
         }
 
-        public static List<Brand> MappedBrands(this ControllerBase controller, CurrentUser user, IBrandService brandService)
+        public static List<Brand>? MappedBrands(this ControllerBase controller, CurrentUser user, IBrandService brandService)
         {
-            var brandIds = user.BrandIds.Split(',');
-            var brands = new List<Brand>();
-            for (int i = 0; i < brandIds.Length; i++)
+            if (user.BrandIds != null)
             {
-                var brand = brandService.GetBrand(int.Parse(brandIds[i])).Result;
-                brands.Add(brand);
+                var brandIds = user.BrandIds.Split(',');
+                var brands = new List<Brand>();
+                if (brandIds != null)
+                {
+                    for (int i = 0; i < brandIds.Length; i++)
+                    {
+                        var brand = brandService.GetBrand(int.Parse(brandIds[i])).Result;
+                        brands.Add(brand);
+                    }
+                }
+                return brands;
             }
-            return brands;
+            else
+            {
+                return null;
+            }
         }
     }
 
