@@ -45,7 +45,10 @@ namespace PlanMatr_API.Extensions
             user.Surname = tokenValues.Claims.Where(c => c.Type == "surname").Select(c => c.Value).FirstOrDefault();
             user.GivenName = tokenValues.Claims.Where(c => c.Type == "givenname").Select(c => c.Value).FirstOrDefault();
             user.RoleIds = tokenValues.Claims.Where(c => c.Type == "DiamRoles").Select(c => c.Value).FirstOrDefault();
-            user.RoleIds = tokenValues.Claims.Where(c => c.Type == "RoleId").Select(c => c.Value).FirstOrDefault();
+            user.RoleId = tokenValues.Claims.Where(c => c.Type == "RoleId").Select(c => c.Value).FirstOrDefault();
+            user.Permissions = tokenValues.Claims.Where(c => c.Type == "Permissions").Select(c => c.Value).FirstOrDefault();
+            user.CountryList = tokenValues.Claims.Where(c => c.Type == "CountryList").Select(c => c.Value).FirstOrDefault();
+            user.RegionList = tokenValues.Claims.Where(c => c.Type == "RegionList").Select(c => c.Value).FirstOrDefault();
             //var userOID = identity.Claims.FirstOrDefault((x => x.Type == ClaimTypes.NameIdentifier)).Value;// 'http://schemas.microsoft.com/identity/claims/objectidentifier']
             //var user = await identityService.GetUser(userOID, Globals.B2cExtensionAppId);
             //var mapper = MapperConfig.InitializeAutomapper();
