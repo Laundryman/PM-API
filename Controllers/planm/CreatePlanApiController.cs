@@ -107,9 +107,9 @@ namespace PlanMatr_API.Controllers.planm
         }
 
         //[Authorize]
-        [Route("api/v2/planogram/create/{clusterId}/{planoName}/{brandId}")]
+        [Route("api/v2/planogram/create/{clusterId}/{planoName}/{brandId}/{countryId}")]
         [HttpGet]
-        public async Task<IActionResult> CreatePlanogram(long clusterId, string planoName, int brandId)
+        public async Task<IActionResult> CreatePlanogram(long clusterId, string planoName, int brandId, int countryId)
         {
             try
             {
@@ -122,7 +122,7 @@ namespace PlanMatr_API.Controllers.planm
                     Id = clusterId,
                 };
 
-                var planogramId = await _planogramService.CreatePlanogramFromCluster(filter, planoName, userProfile, brandId);
+                var planogramId = await _planogramService.CreatePlanogramFromCluster(filter, planoName, userProfile, brandId, countryId);
 
 
                 var planogram = await _planogramService.GetPlanogram(planogramId);

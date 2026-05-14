@@ -237,7 +237,7 @@ namespace PlanMatr_API.Controllers
             var totalQuantity = allOrderItems.Sum(x => x.Quantity);
             var totalPrice = allOrderItems.Sum(x => x.Price * x.Quantity);
 
-            orderModel.TotalPrice = totalPrice;
+            if (totalPrice != null) orderModel.TotalPrice = (decimal)totalPrice;
             orderModel.TotalQuantity = totalQuantity;
 
             orderModel.IndividualOrderItems = allOrderItems.Where(x => x.PlanogramId == null);
@@ -260,9 +260,12 @@ namespace PlanMatr_API.Controllers
 
             foreach (var planogram in partialPlanoModels)
             {
-                var orderItems = allOrderItems.Where(x => x.PlanogramId == planogram.PlanogramId && (!x.IsFullPlano.HasValue || !x.IsFullPlano.Value));
+                var orderItems = allOrderItems.Where(x => x.PlanogramId == planogram.PlanogramId && (!x.IsFullPlano.HasValue || !x.IsFullPlano.Value)).ToList();
                 planogram.OrderItems = orderItems;
-                planogram.PlanogramTotalValue = planogram.OrderItems.Sum(item => (item.Price * item.Quantity));
+  
+                    var totValue = orderItems.Sum(item => (item.Price * item.Quantity));
+  
+                planogram.PlanogramTotalValue = (decimal)planogram.OrderItems.Sum(item => (item.Price * item.Quantity));
             }
 
 
@@ -287,8 +290,8 @@ namespace PlanMatr_API.Controllers
             foreach (var planogram in fullPlanoModels)
             {
                 var orderItems = allOrderItems.Where(x => x.PlanogramId == planogram.PlanogramId && (x.IsFullPlano.HasValue && x.IsFullPlano.Value));
-                planogram.OrderItems = orderItems;
-                planogram.PlanogramTotalValue = planogram.OrderItems.Sum(item => (item.Price * item.Quantity));
+                planogram.OrderItems = orderItems.ToList();
+                planogram.PlanogramTotalValue = (decimal)planogram.OrderItems.Sum(item => (item.Price * item.Quantity));
             }
 
             planoModels.AddRange(partialPlanoModels);

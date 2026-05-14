@@ -356,7 +356,7 @@ namespace PlanMatr_API.Controllers
         //
         [Route("api/v2/planogram/get/yourplanograms/{status}/{countryId}/{regionId}/{standTypeId}/{brandId}")]
         [HttpGet]
-        public async Task<IEnumerable<PlanogramInfo>> GetYourPlanograms(int status, int countryId, int regionId, int standTypeId, int brandId)
+        public async Task<IActionResult> GetYourPlanograms(int status, int countryId, int regionId, int standTypeId, int brandId)
         {
             IEnumerable<PlanogramInfo> planograms;
 
@@ -367,12 +367,19 @@ namespace PlanMatr_API.Controllers
                 var statusEnum = (PlanogramStatusEnum)status;
                 string? userId = userProfile?.Id;
 
+                int[] userCountries = userProfile.CountryList.Split(",").Select(int.Parse).ToArray();
                 //if (RolesHelper.IsAdministrator(int.Parse(userProfile.RoleId)))
                 //{
                 //    planograms = await _planogramService.GetYourPlanograms((int)statusEnum, countryId, regionId, standTypeId, brandId);
                 //}
 
                 planograms = await _planogramService.GetYourPlanograms((int)statusEnum, countryId, regionId, standTypeId, brandId);
+                if (!RolesHelper.IsAdministrator(int.Parse(userProfile.RoleId)) && countryId == 0)
+                {
+                    //filter planograms for allowed countries for non admin users
+                        var userPlanograms = planograms.Where(p => userCountries.Contains(p.CountryId ?? 0));
+                        return Ok(userPlanograms);
+                }
 
                 //else if (RolesHelper.IsValidator(userProfile.RoleIds))
                 //{
@@ -390,12 +397,12 @@ namespace PlanMatr_API.Controllers
                 //}
 
 
-                return planograms;
+                return Ok(planograms);
             }
             catch (Exception ex)
             {
                 _logger.LogError("Error getting planograms - message = {0}", ex.Message);
-                throw;
+                return StatusCode(ex.HResult, ex.Message);
             }
 
         }
