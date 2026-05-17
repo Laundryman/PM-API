@@ -29,11 +29,12 @@ namespace PlanMatr_API.Controllers
         private readonly IProductService _productService;
         private readonly IPlanogramService _planogramService;
         private readonly ICountryService _countryService;
+        private readonly IRegionService _regionService;
         private readonly IAuditService _auditService;
         private readonly IConfiguration _config;
         private readonly IWebHostEnvironment _env;
 
-        public ManagePlanogramsApiController(IMapper mapper, ILogger<EditPlanApiController> logger, IBrandService brandService, IPartService partService, IProductService productService, IPlanogramService planogramService, ICountryService countryService, IAuditService auditService, IConfiguration config, IWebHostEnvironment env)
+        public ManagePlanogramsApiController(IMapper mapper, ILogger<EditPlanApiController> logger, IBrandService brandService, IPartService partService, IProductService productService, IPlanogramService planogramService, ICountryService countryService, IAuditService auditService, IConfiguration config, IWebHostEnvironment env, IRegionService regionService)
         {
             _mapper = mapper;
             _logger = logger;
@@ -45,6 +46,7 @@ namespace PlanMatr_API.Controllers
             _auditService = auditService;
             _config = config;
             _env = env;
+            _regionService = regionService;
         }
 
         
@@ -367,7 +369,6 @@ namespace PlanMatr_API.Controllers
                 var statusEnum = (PlanogramStatusEnum)status;
                 string? userId = userProfile?.Id;
 
-                int[] userCountries = userProfile.CountryList.Split(",").Select(int.Parse).ToArray();
                 //if (RolesHelper.IsAdministrator(int.Parse(userProfile.RoleId)))
                 //{
                 //    planograms = await _planogramService.GetYourPlanograms((int)statusEnum, countryId, regionId, standTypeId, brandId);
@@ -377,7 +378,24 @@ namespace PlanMatr_API.Controllers
                 if (!RolesHelper.IsAdministrator(int.Parse(userProfile.RoleId)) && countryId == 0)
                 {
                     //filter planograms for allowed countries for non admin users
-                        var userPlanograms = planograms.Where(p => userCountries.Contains(p.CountryId ?? 0));
+                        int[] userCountries = userProfile.CountryList.Split(",").Select(int.Parse).ToArray();
+                    int[] userRegions = userProfile.RegionList.Split(",").Select(int.Parse).ToArray();
+                    var regions = await _regionService.GetRegions(new RegionFilter { idList = userProfile.RegionList, BrandId = brandId});
+                    IEnumerable<int> brandCountryList = new List<int>();
+                    foreach (var region in regions)
+                    {
+                        foreach (int cid in userCountries)
+                        {
+                            int[] regionCountryList = region.CountryList.Split(",").Select(int.Parse).ToArray();
+                            if (regionCountryList.Contains(cid))
+                            {
+                                // Do something if the region contains the country
+                                brandCountryList = brandCountryList.Append(cid);
+                            }
+                        }
+                    }
+
+                    var userPlanograms = planograms.Where(p => brandCountryList.Contains(p.CountryId ?? 0));
                         return Ok(userPlanograms);
                 }
 
