@@ -27,7 +27,7 @@ namespace PlanMatr_API.Extensions
         {
             // we can retrieve the userId from the request
             var currentUser = controller.User;
-            var idToken = controller.Request.Headers["x-user-info"];
+            var idToken = controller.Request.Headers["ClaimsAuth"].ToString();
             var tokenHandler = new JwtSecurityTokenHandler();
             var tokenValues = tokenHandler.ReadJwtToken(idToken);
 
@@ -35,7 +35,7 @@ namespace PlanMatr_API.Extensions
             var identity = ((System.Security.Claims.ClaimsPrincipal)currentUser);
             var user = new CurrentUser();
             user.BrandIds = tokenValues.Claims.Where(c => c.Type == "Brands").Select(c => c.Value).FirstOrDefault();
-                user.CountryId = int.Parse(tokenValues.Claims.Where(c => c.Type == "DiamCountryId")
+                user.CountryId = int.Parse(tokenValues.Claims.Where(c => c.Type == "CountryId")
                     .Select(c => c.Value)
                     .FirstOrDefault() ?? string.Empty);
             user.DisplayName = tokenValues.Claims.Where(c => c.Type == "name").Select(c => c.Value).FirstOrDefault();
@@ -44,7 +44,7 @@ namespace PlanMatr_API.Extensions
             user.Id = tokenValues.Claims.Where(c => c.Type == ClaimTypes.NameIdentifier).Select(c => c.Value).FirstOrDefault();
             user.Surname = tokenValues.Claims.Where(c => c.Type == "surname").Select(c => c.Value).FirstOrDefault();
             user.GivenName = tokenValues.Claims.Where(c => c.Type == "givenname").Select(c => c.Value).FirstOrDefault();
-            user.RoleIds = tokenValues.Claims.Where(c => c.Type == "DiamRoles").Select(c => c.Value).FirstOrDefault();
+            user.RoleIds = tokenValues.Claims.Where(c => c.Type == "Roles").Select(c => c.Value).FirstOrDefault();
             user.RoleId = tokenValues.Claims.Where(c => c.Type == "RoleId").Select(c => c.Value).FirstOrDefault();
             user.Permissions = tokenValues.Claims.Where(c => c.Type == "Permissions").Select(c => c.Value).FirstOrDefault();
             user.CountryList = tokenValues.Claims.Where(c => c.Type == "CountryList").Select(c => c.Value).FirstOrDefault();

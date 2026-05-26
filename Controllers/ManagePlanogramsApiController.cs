@@ -1,24 +1,26 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using PlanMatr_API.Extensions;
-using PMApplication.Entities.PlanogramAggregate;
-using PMApplication.Interfaces.ServiceInterfaces;
-using System.Net;
-using System.Text.Json;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using PlanMatr_API.Controllers.planm;
+using PlanMatr_API.Extensions;
 using PMApplication.Dtos;
+using PMApplication.Dtos.Filters;
 using PMApplication.Dtos.PlanModels;
 using PMApplication.Entities;
+using PMApplication.Entities.PlanogramAggregate;
 using PMApplication.Helpers;
+using PMApplication.Interfaces.RepositoryInterfaces;
+using PMApplication.Interfaces.ServiceInterfaces;
 using PMApplication.Services;
 using PMApplication.Specifications.Filters;
+using System.Net;
+using System.Text.Json;
 using static PMApplication.Enums.StatusEnums;
 
 namespace PlanMatr_API.Controllers
 {
     [Authorize]
-
+    [Route("api/planograms/[action]")]
     public class ManagePlanogramsApiController : ControllerBase
     {
 
@@ -28,13 +30,15 @@ namespace PlanMatr_API.Controllers
         private readonly IPartService _partService;
         private readonly IProductService _productService;
         private readonly IPlanogramService _planogramService;
+        private readonly IPlanogramRepository _planogramRepository;
+
         private readonly ICountryService _countryService;
         private readonly IRegionService _regionService;
         private readonly IAuditService _auditService;
         private readonly IConfiguration _config;
         private readonly IWebHostEnvironment _env;
 
-        public ManagePlanogramsApiController(IMapper mapper, ILogger<EditPlanApiController> logger, IBrandService brandService, IPartService partService, IProductService productService, IPlanogramService planogramService, ICountryService countryService, IAuditService auditService, IConfiguration config, IWebHostEnvironment env, IRegionService regionService)
+        public ManagePlanogramsApiController(IMapper mapper, ILogger<EditPlanApiController> logger, IBrandService brandService, IPartService partService, IProductService productService, IPlanogramService planogramService, ICountryService countryService, IAuditService auditService, IConfiguration config, IWebHostEnvironment env, IRegionService regionService, IPlanogramRepository planogramRepository)
         {
             _mapper = mapper;
             _logger = logger;
@@ -47,10 +51,11 @@ namespace PlanMatr_API.Controllers
             _config = config;
             _env = env;
             _regionService = regionService;
+            _planogramRepository = planogramRepository;
         }
 
         
-        [Route("api/v2/planx/get-planogram-preview/{planogramId}")]
+        //[Route("api/v2/planx/get-planogram-preview/{planogramId}")]
         [HttpGet]
         public async Task<IActionResult> GetPlanogramPreview(int planogramId)
         {
@@ -69,7 +74,7 @@ namespace PlanMatr_API.Controllers
             }
         }
 
-        [Route("api/v2/planogram/rename/{planogramId}/{planoName}")]
+        //[Route("api/v2/planogram/rename/{planogramId}/{planoName}")]
         [HttpGet]
         public async Task<int> RenamePlanogram(int planogramId, string planoName)
         {
@@ -100,7 +105,7 @@ namespace PlanMatr_API.Controllers
 
         }
 
-        [Route("api/v2/planogram/submit/{planogramId}")]
+        //[Route("api/v2/planogram/submit/{planogramId}")]
         [HttpGet]
         public async Task<int> SubmitPlanogram(int planogramId)
         {
@@ -129,7 +134,7 @@ namespace PlanMatr_API.Controllers
 
         }
 
-        [Route("api/v2/planogram/delete/{planogramId}")]
+        //[Route("api/v2/planogram/delete/{planogramId}")]
         [HttpGet]
         public async Task<int> DeletePlanogram(int planogramId)
         {
@@ -158,7 +163,7 @@ namespace PlanMatr_API.Controllers
 
         }
 
-        [Route("api/v2/planogram/approve/{planogramId}")]
+        //[Route("api/v2/planogram/approve/{planogramId}")]
         [HttpGet]
         public async Task<int> ApprovePlanogram(int planogramId)
         {
@@ -187,7 +192,7 @@ namespace PlanMatr_API.Controllers
 
         }
 
-        [Route("api/v2/planogram/validate/{planogramId}")]
+        //[Route("api/v2/planogram/validate/{planogramId}")]
         [HttpGet]
         public async Task<int> ValidatePlanogram(int planogramId)
         {
@@ -216,7 +221,7 @@ namespace PlanMatr_API.Controllers
 
         }
 
-        [Route("api/v2/planogram/reject/{planogramId}")]
+        //[Route("api/v2/planogram/reject/{planogramId}")]
         [HttpGet]
         public async Task<int> RejectPlanogram(int planogramId)
         {
@@ -245,7 +250,7 @@ namespace PlanMatr_API.Controllers
 
         }
 
-        [Route("api/v2/planogram/getCommentCount/{planogramId}/{brandId}")]
+        //[Route("api/v2/planogram/getCommentCount/{planogramId}/{brandId}")]
         [HttpGet]
         public async Task<IActionResult> GetCommentCount(int planogramId, int brandId)
         {
@@ -295,7 +300,7 @@ namespace PlanMatr_API.Controllers
         }
 
         
-        [Route("api/v2/planogram/get/jsonskulist/{planogramId}")]
+        //[Route("api/v2/planogram/get/jsonskulist/{planogramId}")]
         [HttpGet]
 
         public async Task<IActionResult> GetJsonSkuList(int planogramId)
@@ -352,11 +357,49 @@ namespace PlanMatr_API.Controllers
             }
 
         }
+        [HttpPost]
+        public async Task<IActionResult> SearchPlanograms([FromBody]PlanogramFilterDto filterDto)
+        {
+            try
+            {
+                var userProfile = await this.MappedUser();
+                var userRegions = userProfile.RegionList.Split(",").Select(int.Parse).ToList();
+                var userCountries = userProfile.CountryList.Split(",").Select(int.Parse).ToList();
+                var regions = await _regionService.GetRegions(new RegionFilter { idList = userProfile.RegionList, BrandId = filterDto.BrandId ?? 0 });
+                var filterCountryList = new List<int>();
+                foreach (var region in regions)
+                {
+                    var regionCountryList = region.CountryList.Split(",").Select(int.Parse).ToList();
+                    for (int i = 0; i < regionCountryList.Count; i++)
+                    {
+                        if (userCountries.Contains(regionCountryList[i]))
+                        {
+                            filterCountryList.Add(regionCountryList[i]);
+                        }
+                    }
+                }
+                filterDto.CountriesList = string.Join(",", filterCountryList);
+                var planograms = await _planogramRepository.SearchPlanograms(filterDto);
 
+                return Ok(planograms);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning($"Something went wrong inside SearchProducts action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
 
-        //[Authorize]
-        //
-        [Route("api/v2/planogram/get/yourplanograms/{status}/{countryId}/{regionId}/{standTypeId}/{brandId}")]
+        /// <summary>
+        /// Deprecated - 
+        /// </summary>
+        /// <param name="status"></param>
+        /// <param name="countryId"></param>
+        /// <param name="regionId"></param>
+        /// <param name="standTypeId"></param>
+        /// <param name="brandId"></param>
+        /// <returns></returns>
+        //[Route("api/v2/planogram/get/yourplanograms/{status}/{countryId}/{regionId}/{standTypeId}/{brandId}")]
         [HttpGet]
         public async Task<IActionResult> GetYourPlanograms(int status, int countryId, int regionId, int standTypeId, int brandId)
         {
@@ -426,7 +469,7 @@ namespace PlanMatr_API.Controllers
         }
 
         
-        [Route("api/v2/planogram/get/archived/job/{isPowerUser}/{jobId}/{jobCode}/{brandId}/{countryId}/{regionId}/{standTypeId}/{isDiamUser}")]
+        //[Route("api/v2/planogram/get/archived/job/{isPowerUser}/{jobId}/{jobCode}/{brandId}/{countryId}/{regionId}/{standTypeId}/{isDiamUser}")]
         [HttpGet]
         public async Task<IEnumerable<PlanogramInfo>> GetArchivedPlanogramsByJob(int isPowerUser, int jobId, string jobCode, int brandId, int countryId, int regionId, int standTypeId, int isDiamUser)
         {
@@ -462,7 +505,7 @@ namespace PlanMatr_API.Controllers
 
         }
 
-        [Route("api/v2/planogram/lock/{planogramId}")]
+        //[Route("api/v2/planogram/lock/{planogramId}")]
         [HttpGet]
 
         public async Task<IActionResult> LockPlanogram(long planogramId = 0)
@@ -501,7 +544,7 @@ namespace PlanMatr_API.Controllers
 
         }
 
-        [Route("api/v2/planx/get-plano-lock/{planogramId}/{userId}/{userName}")]
+        //[Route("api/v2/planx/get-plano-lock/{planogramId}/{userId}/{userName}")]
         [HttpGet]
         public async Task<IActionResult> GetPlanoLock(int planogramId, string userId, string userName)
         {

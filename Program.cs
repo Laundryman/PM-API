@@ -1,12 +1,14 @@
+using Azure.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Azure;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Identity.Web;
 using PlanMatr_API.Extensions;
 using PMApplication.Interfaces;
 using PMInfrastructure.Data;
 using PMInfrastructure.Repositories;
 using Serilog;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Identity.Web;
-using Microsoft.Extensions.Configuration;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,7 +32,18 @@ builder.Services.AddAutoMapper(cfg =>
     cfg.AddMaps(typeof(Program).Assembly);
 });
 
-//builder.Services.AddAutoMapper(cfg => cfg.AddMaps(typeof(Program).Assembly));
+builder.Services.AddAzureClients(clientBuilder =>
+{
+    var tenantId = Environment.GetEnvironmentVariable("AZURE_TENANT_ID", EnvironmentVariableTarget.Machine);
+    var clientId = Environment.GetEnvironmentVariable("AZURE_CLIENT_ID", EnvironmentVariableTarget.Machine);
+    var clientSecret = Environment.GetEnvironmentVariable("AZURE_CLIENT_SECRET", EnvironmentVariableTarget.Machine);
+    //Planmatr-Demo1 Application on LMXIDENTITY tennant that has the store
+    clientBuilder.AddBlobServiceClient(
+        new Uri("https://planmatrstore.blob.core.windows.net"));
+
+    clientBuilder.UseCredential(new ClientSecretCredential(tenantId, clientId, clientSecret));
+}); 
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -42,7 +55,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowClientApp", builder =>
     {
-        builder.WithOrigins("https://localhost:44321", "https://brand.demo.planmatr.com")
+        builder.WithOrigins("https://localhost:44321", "https://brand.demo.planmatr.com", "https://localhost:53682")
                .AllowAnyMethod()
                .AllowAnyHeader()
                .AllowCredentials();
