@@ -14,7 +14,7 @@ using PMApplication.Specifications.Filters;
 namespace PlanMatr_API.Controllers
 {
 
-    [Route("api/part")]
+    [Route("api/part/[action]")]
     [Authorize]
     [ApiController]
     public class PartController : ControllerBase
@@ -78,8 +78,8 @@ namespace PlanMatr_API.Controllers
             }
         }
 
-        [HttpGet("{id}", Name = "PartById")]
-        public async Task<IActionResult> GetPartById(int id)
+        [HttpGet]
+        public async Task<IActionResult> GetPart(int id)
         {
             try
             {

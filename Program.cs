@@ -55,7 +55,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowClientApp", builder =>
     {
-        builder.WithOrigins("https://localhost:44321", "https://brand.demo.planmatr.com", "https://localhost:53682")
+        builder.WithOrigins("https://localhost:44321", "https://brand.demo.planmatr.com", "https://localhost:53682", "https://localhost:5173")
                .AllowAnyMethod()
                .AllowAnyHeader()
                .AllowCredentials();

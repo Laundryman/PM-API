@@ -55,6 +55,7 @@ namespace PlanMatr_API.Mappings
                 .ForMember(pm => pm.ScratchPadId, opt => opt.MapFrom(src => src.ScratchPadId))
                 .ForMember(pm => pm.PlanogramPartPlanogramPartsId,
                     opt => opt.MapFrom(src => src.PlanogramPartPlanogramPartsId))
+                .ForMember(pm => pm.Facings, opt => opt.MapFrom(src => src.Part.Facings))
                 .ForMember(pm => pm.facingProducts, opt => opt.MapFrom(src => src.PlanogramPartFacings))
                 .ForMember(pm => pm.products, opt => opt.MapFrom(src => src.Part.Products))
                 .ForMember(pm => pm.ProductList,

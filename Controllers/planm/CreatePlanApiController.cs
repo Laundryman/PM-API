@@ -2,127 +2,137 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using PlanMatr_API.Extensions;
+using PMApplication.Dtos;
+using PMApplication.Dtos.Filters;
+using PMApplication.Dtos.PlanModels;
+using PMApplication.Dtos.StandTypes;
+using PMApplication.Entities;
+using PMApplication.Entities.ClusterAggregate;
+using PMApplication.Entities.PlanogramAggregate;
+using PMApplication.Entities.StandAggregate;
+using PMApplication.Extensions;
+using PMApplication.Interfaces;
+using PMApplication.Interfaces.RepositoryInterfaces;
 using PMApplication.Interfaces.ServiceInterfaces;
 using PMApplication.Services;
+using PMApplication.Specifications;
 using PMApplication.Specifications.Filters;
-using PMApplication.Extensions;
-using PMApplication.Entities.ClusterAggregate;
-using PMApplication.Dtos.PlanModels;
-using PMApplication.Entities.PlanogramAggregate;
-using PMApplication.Entities;
 using static Microsoft.Graph.CoreConstants;
-using PlanMatr_API.Extensions;
 namespace PlanMatr_API.Controllers.planm
 {
-    [Authorize]
+    //[Authorize]
+    [Route("api/planograms/create/[action]")]
     [ApiController]
     public class CreatePlanApiController : ControllerBase
     {
         private readonly IMapper _mapper;
         private readonly ILogger<PartController> _logger;
-        private readonly IBrandService _brandService;
-        private readonly IClusterService _clusterService;
-        private readonly IStandService _standService;
-        private readonly IPartService _partService;
-        private readonly IProductService _productService;
         private readonly IPlanogramService _planogramService;
-        private readonly ICountryService _countryService;
         private readonly IAuditService _auditService;
-        private readonly IConfiguration _config;
-        private readonly IWebHostEnvironment _env;
+        private readonly IAsyncRepository<StandType> _asyncStandTypeRepository;
+        private readonly IAsyncRepository<Stand> _asyncStandRepository;
+        private readonly IClusterRepository _clusterRepository;
 
-        public CreatePlanApiController(IMapper mapper, ILogger<PartController> logger, IBrandService brandService, IPartService partService, IProductService productService, IPlanogramService planogramService, ICountryService countryService, IAuditService auditService, IConfiguration config, IWebHostEnvironment env, IStandService standService, IClusterService clusterService)
+
+        public CreatePlanApiController(IMapper mapper, ILogger<PartController> logger, IPlanogramService planogramService, IAuditService auditService, IAsyncRepository<StandType> asyncStandTypeRepository, IAsyncRepository<Stand> asyncStandRepository, IClusterRepository clusterRepository)
         {
             _mapper = mapper;
             _logger = logger;
-            _brandService = brandService;
-            _partService = partService;
-            _productService = productService;
             _planogramService = planogramService;
-            _countryService = countryService;
             _auditService = auditService;
-            _config = config;
-            _env = env;
-            _standService = standService;
-            _clusterService = clusterService;
+            _asyncStandTypeRepository = asyncStandTypeRepository;
+            _asyncStandRepository = asyncStandRepository;
+            _clusterRepository = clusterRepository;
         }
 
-        #region API V2
+        #region API
 
-        /// <summary>
-        /// Gets Stands that are published and have clusters using the new branded standtypes
-        /// </summary>
-        /// <param name="brandId">The Id of the brand</param>
-        /// <param name="countryID">The Id of the country</param>
-        /// <param name="standTypeId">The Id of the standType</param>
-        /// <returns></returns>
-
-        [Route("api/v2/stand/getBrandedWithClusters/{brandId}/{countryCode}/{standTypeId}")]
-        [HttpGet]
-        public async Task<IActionResult> GetBrandStandsWithClustersSecure(int brandId, int countryCode, int standTypeId)
+        [HttpPost]
+        public async Task<IActionResult> GetStands(StandFilterDto filterDto)
         {
-            var country = await _countryService.GetCountry(countryCode);
-            //var stands = _standService.GetBrandStandsWithClustersForCountry(brandId, country.CountryId, standTypeId).ToSelectListItems(-1);
-            var standFilter = new StandFilter();
-
-            standFilter.BrandId = brandId;
-            standFilter.CountryId = country.Id;
-            standFilter.StandTypeId = standTypeId;
-
-            var standList = await _standService.GetStands(standFilter);
-            if (countryCode != 0)
+            try
             {
-                standList = standList.Where(s => s.Countries.Any()).ToList();
+                var spec = new StandSpecification(_mapper.Map<StandFilter>(filterDto));
+                var stands = await _asyncStandRepository.ListAsync(spec);
+
+                var mappedStands = _mapper.Map<List<StandDto>>(stands);
+                return Ok(mappedStands);
             }
+            catch (Exception ex)
+            {
+                _logger.LogWarning($"Something went wrong inside GetStands action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }   
 
-            var stands = standList;
-            return Ok(stands.ToSelectListItems(-1));
-
-        }
-
-        [Route("api/v2/clusters/get/{brandId}/{standId}")]
-        [HttpGet]
-        public async Task<IEnumerable<PlanmClusterDto>> GetClusters(int brandId, int standId)
+        [HttpPost]
+        public async Task<IActionResult> GetStandTypes(StandTypeFilterDto filterDto)
         {
-            var clusterFilter = new ClusterFilter();
-            clusterFilter.StandId = standId;
-            clusterFilter.BrandId = brandId;
-            var clusters = await _clusterService.GetClusters(clusterFilter);
-            List<PlanmClusterDto> clusterList = new List<PlanmClusterDto>();
-            foreach (Cluster cluster in clusters)
+            try
             {
-                PlanmClusterDto pm = new PlanmClusterDto(); //plano's and clusters are very similar.
+                var spec = new StandTypeSpecification(_mapper.Map<StandTypeFilter>(filterDto));
+                var standTypes = await _asyncStandTypeRepository.ListAsync(spec);
 
-                _mapper.Map(cluster, pm);
-                pm.Id = cluster.Id;
-                pm.standName = cluster.Stand.Name;
-                pm.standType = cluster.Stand.StandType.Name;
-                pm.standWidth = cluster.Stand.Width;
-                pm.standHeight = cluster.Stand.Height;
-                clusterList.Add(pm);
+                if (filterDto.GetParents)
+                {
+                    var mappedPTypes = _mapper.Map<List<ParentStandTypeDto>>(standTypes);
+                    return Ok(mappedPTypes);
+                }
+
+                var mappedTypes = _mapper.Map<List<StandTypeDto>>(standTypes);
+                return Ok(mappedTypes.Where(st => st.StandCount > 0));
             }
-
-            return clusterList;
-
+            catch (Exception ex)
+            {
+                _logger.LogWarning($"Something went wrong inside GetStandTypes action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
         }
 
-        //[Authorize]
-        [Route("api/v2/planogram/create/{clusterId}/{planoName}/{brandId}/{countryId}")]
-        [HttpGet]
-        public async Task<IActionResult> CreatePlanogram(long clusterId, string planoName, int brandId, int countryId)
+        [HttpPost]
+        public async Task<IActionResult> GetLayouts(LayoutFilterDto filterDto)
+        {
+            //need to update the cluster table/cluster nomenclature to change the name to layout 
+            try
+            {
+                var spec = new ClusterSpecification(_mapper.Map<ClusterFilter>(filterDto));
+                var clusters = await _clusterRepository.ListAsync(spec);
+
+                var mappedTypes = _mapper.Map<List<PlanmClusterDto>>(clusters);
+                return Ok(mappedTypes);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning($"Something went wrong inside GetLayouts action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        //[Route("api/v2/planogram/create/{clusterId}/{planoName}/{brandId}/{countryId}")]
+        [HttpPost]
+        public async Task<IActionResult> CreatePlanogram(CreatePlanogramDto newPlanogramDetails)
         {
             try
             {
                 var userProfile = await this.MappedUser();
 
+                if (newPlanogramDetails.BrandId == 0 || newPlanogramDetails.ClusterId == 0 ||
+                    newPlanogramDetails.CountryId == 0 || newPlanogramDetails.RegionId == 0
+                    || newPlanogramDetails.StandId == 0 || newPlanogramDetails.StandTypeId == 0)
+                {
+                    throw new Exception("Planogram information incomplete");
+                }
+                    
+
                 string? userId = userProfile.Id;
 
                 var filter = new ClusterFilter
                 {
-                    Id = clusterId,
+                    Id = newPlanogramDetails.ClusterId,
                 };
 
-                var planogramId = await _planogramService.CreatePlanogramFromCluster(filter, planoName, userProfile, brandId, countryId);
+                var planogramId = await _planogramService.CreatePlanogramFromCluster(filter, newPlanogramDetails, userProfile);
 
 
                 var planogram = await _planogramService.GetPlanogram(planogramId);
@@ -142,7 +152,7 @@ namespace PlanMatr_API.Controllers.planm
                 {
                     UserId = userId,
                     Date = DateTime.Now,
-                    BrandId = brandId,
+                    BrandId = newPlanogramDetails.BrandId,
                     Roles = userProfile.RoleIds,
                     UserName = userProfile.DisplayName,
                     Action = (int)LogActionEnum.CreatePlano,

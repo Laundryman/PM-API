@@ -13,7 +13,7 @@ using PMApplication.Specifications.Filters;
 
 namespace PlanMatr_API.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [Route("api/brands/[action]")]
     [ApiController]
     public class BrandController : ControllerBase

@@ -4,6 +4,7 @@ using PMApplication.Dtos;
 using PMApplication.Dtos.Filters;
 using PMApplication.Dtos.PlanModels;
 using PMApplication.Dtos.Categories;
+using PMApplication.Dtos.StandTypes;
 using PMApplication.Entities;
 using PMApplication.Entities.ClusterAggregate;
 using PMApplication.Entities.CountriesAggregate;
@@ -29,6 +30,7 @@ namespace PlanMatr_API.Mappings
 
             CreateMap<Category, CategoryMenuDto>();
             CreateMap<Cluster, PlanmClusterDto>();
+            CreateMap<LayoutFilterDto, ClusterFilter>();
             CreateMap<CountriesFilterDto, CountryFilter>();
             CreateMap<Country, CountryDto>();
             CreateMap<JobFolderDto, JobFolder>();
@@ -66,9 +68,13 @@ namespace PlanMatr_API.Mappings
             CreateMap<PlanmShadeDto, Shade>();
             CreateMap<Shade, PlanmShadeDto>();
             CreateMap<PlanmStandDto, Stand>();
-            CreateMap<Stand, PlanmStandDto>();
             CreateMap<PlanmStandColumnDto, StandColumn>();
             CreateMap<PlanmStandRowDto, StandRow>();
+            CreateMap<Stand, PlanmStandDto>();
+            CreateMap<Stand, StandDto>();
+            CreateMap<StandFilterDto, StandFilter>();
+            CreateMap<StandTypeFilterDto,StandTypeFilter>();
+            //CreateMap<StandType, StandTypeDto>();
             CreateMap<StandRow, PlanmStandRowDto>();
             CreateMap<StandColumn,PlanmStandColumnDto>();
             CreateMap<StandRow, PlanmStandRowDto>();

@@ -38,6 +38,7 @@ namespace PlanMatr_API.Extensions
             services.AddScoped(typeof(PartPositionResolver));
             services.AddScoped(typeof(PartStatusEnumResolver));
             services.AddScoped(typeof(PartProductsResolver));
+            services.AddScoped(typeof(StandCountResolver));
 
 
             return services;

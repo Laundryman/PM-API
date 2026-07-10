@@ -19,7 +19,7 @@ using static PMApplication.Enums.StatusEnums;
 
 namespace PlanMatr_API.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [Route("api/planograms/[action]")]
     public class ManagePlanogramsApiController : ControllerBase
     {
@@ -303,7 +303,7 @@ namespace PlanMatr_API.Controllers
         //[Route("api/v2/planogram/get/jsonskulist/{planogramId}")]
         [HttpGet]
 
-        public async Task<IActionResult> GetJsonSkuList(int planogramId)
+        public async Task<IActionResult> GetSkuList(int planogramId)
         {
 
             try
@@ -546,7 +546,7 @@ namespace PlanMatr_API.Controllers
 
         //[Route("api/v2/planx/get-plano-lock/{planogramId}/{userId}/{userName}")]
         [HttpGet]
-        public async Task<IActionResult> GetPlanoLock(int planogramId, string userId, string userName)
+        public async Task<IActionResult> GetPlanoLock(int planogramId)
         {
             try
             {

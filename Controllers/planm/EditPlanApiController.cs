@@ -25,6 +25,8 @@ using PMApplication.Entities.CountriesAggregate;
 namespace PlanMatr_API.Controllers.planm
 {
     [Authorize]
+    [Route("api/planograms/edit/[action]")]
+
     [ApiController]
     public class EditPlanApiController : ControllerBase
     {
@@ -74,13 +76,17 @@ namespace PlanMatr_API.Controllers.planm
         }
 
 
-        [Route("api/v2/planx/get-menu-categories/{planogramId}")]
+        //[Route("api/v2/planx/get-menu-categories/{planogramId}")]
         [HttpGet]
-        public async Task<IActionResult> GetMenuCategories(int planogramId)
+        public async Task<IActionResult> GetMenuCategories(long planogramId)
         {
             var menu = new PlanmMenuDto();
             try
             {
+                if (planogramId == 0)
+                {
+                    return BadRequest("Invalid planogram ID.");
+                }
 
                 var planogramFilter = new PlanogramFilter
                 {
@@ -130,7 +136,7 @@ namespace PlanMatr_API.Controllers.planm
             catch (Exception ex)
             {
                 //log an error
-                _logger.LogError("Could not get menu");
+                _logger.LogError("Could not get menu for planogramId " + planogramId + "---- error message - " + ex.Message + " --- " + ex.StackTrace);
                 return BadRequest("Could not get Menu");
             }
             finally
@@ -139,9 +145,9 @@ namespace PlanMatr_API.Controllers.planm
             }
         }
 
-        [Route("api/v2/planx/get-menu/{planogramId}")]
+        //[Route("api/v2/planx/get-menu/{planogramId}")]
         [HttpGet]
-        public async Task<IActionResult> GetMenu(int planogramId)
+        public async Task<IActionResult> GetMenu(long planogramId)
         {
             var filter = new PlanogramFilter
             {
@@ -155,6 +161,10 @@ namespace PlanMatr_API.Controllers.planm
             var menu = new MenuDto();
             try
             {
+                if (planogramId == 0)
+                {
+                    return BadRequest("Invalid planogram ID.");
+                }
 
                 var partFilter = new PartFilter
                 {
@@ -182,7 +192,7 @@ namespace PlanMatr_API.Controllers.planm
         }
 
 
-        [Route("api/v2/planx/get-planogram/{PlanogramId}")]
+        //[Route("api/v2/planx/get-planogram/{PlanogramId}")]
         [HttpGet]
         public async Task<IActionResult> GetPlanogram(long PlanogramId)
         {
@@ -214,13 +224,16 @@ namespace PlanMatr_API.Controllers.planm
             }
         }
 
-        [Route("api/v2/planx/get-planogram-scratchpad/{planogramId}")]
+        //[Route("api/v2/planx/get-planogram-scratchpad/{planogramId}")]
         [HttpGet]
-        public async Task<IActionResult> GetPlanogramScratchPad(int planogramId)
+        public async Task<IActionResult> GetPlanogramScratchPad(long planogramId)
         {
             try
             {
-
+                if (planogramId == 0)
+                {
+                    return BadRequest("Invalid planogram ID.");
+                }
                 var plano = await _planogramService.GetPlanogram(planogramId);
 
                 var planoCountryId = plano.CountryId;
@@ -260,16 +273,16 @@ namespace PlanMatr_API.Controllers.planm
 
         }
 
-        [Route("api/v2/planx/get-stand/{standId}")]
+        //[Route("api/v2/planx/get-stand/{Id}")]
         [HttpGet]
-        public async Task<IActionResult> GetStand(int standId)
+        public async Task<IActionResult> GetStand(int Id)
         {
             //var stand = new PlanXStandViewModel();
             try
             {
                 var StandFilter = new StandFilter
                 {
-                    Id = standId,
+                    Id = Id,
                     includeColumnUprights = true
                 };
                 var stand = await _standService.GetStand((StandFilter));
@@ -292,18 +305,22 @@ namespace PlanMatr_API.Controllers.planm
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error getting stand for standId " + standId + "---- error message - " + ex.Message + " --- " + ex.StackTrace);
+                _logger.LogError("Error getting stand for standId " + Id + "---- error message - " + ex.Message + " --- " + ex.StackTrace);
                 return StatusCode(500, "Internal server error getting stand");
             }
 
         }
 
-        [Route("api/v2/planx/get-planogram-shelves/{planogramId}")]
+        //[Route("api/v2/planx/get-planogram-shelves/{planogramId}")]
         [HttpGet]
         public async Task<IActionResult> GetPlanogramShelves(long planogramId)
         {
             try
             {
+                if (planogramId == 0)
+                {
+                    throw new Exception("No planogramId passed to method");
+                }
                 //var plano = await _planogramService.GetPlanogram(planogramId);
                 var filter = new PlanogramFilter()
                 {
@@ -321,8 +338,8 @@ namespace PlanMatr_API.Controllers.planm
             catch (Exception ex)
             {
                 //log an error
-
-                return BadRequest("Error getting planogram shelves");
+                _logger.LogError("Error getting planogramShelves for Planogram with PlanogramId = " + planogramId + "---- error message: " + ex.Message);
+                return BadRequest("Error getting planogram shelves " + ex.Message);
             }
             finally
             {
@@ -330,17 +347,22 @@ namespace PlanMatr_API.Controllers.planm
             }
         }
 
-        [Route("api/v2/planx/get-planogram-parts/{planogramId}")]
+        //[Route("api/v2/planx/get-planogram-parts/{planogramId}")]
         [HttpGet]
-        public async Task<IActionResult> GetPlanogramParts(int planogramId)
+        public async Task<IActionResult> GetPlanogramParts(long planogramId)
         {
             var menu = new PlanmMenuDto();
             try
             {
+                if (planogramId == 0)
+                {
+                    throw new Exception("No planogramId passed to method");
+                }
 
                 var planoFilter = new PlanogramPartFilter
                 {
-                    PlanogramId = planogramId
+                    PlanogramId = planogramId,
+                    LoadChildren = true
                 };
                 var plano = await _planogramService.GetPlanogram(planogramId);
                 var planogramParts = await _planogramService.GetPlanogramParts(planoFilter);
@@ -363,7 +385,8 @@ namespace PlanMatr_API.Controllers.planm
             }
             catch (Exception ex)
             {
-                return BadRequest("Error getting parts");
+                _logger.LogError("Error getting parts for Planogram with PlanogramId = " + planogramId + "---- error message: " + ex.Message);
+                return BadRequest("Error getting parts " + ex.Message);
             }
             finally
             {
@@ -375,10 +398,13 @@ namespace PlanMatr_API.Controllers.planm
         [HttpGet]
         public async Task<IActionResult> GetNewPlanogramParts(int planogramId)
         {
-            //var menu = new PlanmMenuDto();
             try
             {
-                //var plano = _planogramService.GetPlanogram(planogramId);
+                if (planogramId == 0)
+                {
+                    throw new Exception("No planogramId passed to method");
+                }
+
                 var filter = new PlanogramPartFilter
                 {
                     PlanogramId = planogramId,
@@ -407,7 +433,7 @@ namespace PlanMatr_API.Controllers.planm
 
         [Route("api/v2/planx/get-part-products/{partId}/{planogramId}")]
         [HttpGet]
-        public async Task<IActionResult> GetPartProducts(int partId, int planogramId)
+        public async Task<IActionResult> GetPartProducts(int partId, long planogramId)
         {
             try
             {
