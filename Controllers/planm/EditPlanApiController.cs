@@ -394,7 +394,7 @@ namespace PlanMatr_API.Controllers.planm
             }
         }
 
-        [Route("api/v2/planx/get-new-parts/{planogramId}")]
+        
         [HttpGet]
         public async Task<IActionResult> GetNewPlanogramParts(int planogramId)
         {
@@ -479,7 +479,6 @@ namespace PlanMatr_API.Controllers.planm
             }
         }
 
-        [Route("api/v2/planx/save-planogram")]
         [HttpPost]
         public async Task<IActionResult> SavePlanogram(PlanmPlanogramInfo planogramData)
         {
@@ -634,9 +633,8 @@ namespace PlanMatr_API.Controllers.planm
 
 
 
-        [Route("api/v2/planx/save-planogram-jpeg-image")]
         [HttpPost]
-        public async Task<IActionResult> SavePlanogramJPEG(PlanmImageDto planoJpeg)
+        public async Task<IActionResult> SavePlanogramJpeg(PlanmImageDto planoJpeg)
         {
             try
             {

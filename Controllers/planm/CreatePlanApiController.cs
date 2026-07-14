@@ -21,7 +21,7 @@ using PMApplication.Specifications.Filters;
 using static Microsoft.Graph.CoreConstants;
 namespace PlanMatr_API.Controllers.planm
 {
-    //[Authorize]
+    [Authorize]
     [Route("api/planograms/create/[action]")]
     [ApiController]
     public class CreatePlanApiController : ControllerBase
