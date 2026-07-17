@@ -431,7 +431,7 @@ namespace PlanMatr_API.Controllers.planm
             }
         }
 
-        [Route("api/v2/planx/get-part-products/{partId}/{planogramId}")]
+        
         [HttpGet]
         public async Task<IActionResult> GetPartProducts(int partId, long planogramId)
         {
@@ -1071,7 +1071,7 @@ namespace PlanMatr_API.Controllers.planm
                             }
                             else
                             {
-                                if (facingItem.ProductId != 0)
+                                if (facingItem.ProductId != 0 && facingItem.ProductId != null)
                                 {
                                     FacingPosition = await InsertFacing(facingItem, planogramId, part.Stock, newPart,
                                         FacingPosition);
@@ -1145,9 +1145,9 @@ namespace PlanMatr_API.Controllers.planm
 
             if (currentFacing != null)
             {
-                var currentProduct = await _productService.GetProduct(cassetteProductFacing.ProductId);
+                var currentProduct = await _productService.GetProduct(cassetteProductFacing.ProductId ?? 0);
                 currentFacing.Position = facingPosition;
-                currentFacing.ProductId = cassetteProductFacing.ProductId;
+                currentFacing.ProductId = cassetteProductFacing.ProductId ?? 0;
                 currentFacing.ProductName = currentProduct.Name;
                 currentFacing.FacingStatusId = planogramFacingStatusId;
                 if (cassetteProductFacing.ShadeId != null)

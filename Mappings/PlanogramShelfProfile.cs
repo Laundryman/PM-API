@@ -55,7 +55,7 @@ namespace PlanMatr_API.Mappings
                 .ForMember(pm => pm.PlanogramPartPlanogramPartsId, opt => opt.Ignore())
                 .ForMember(pm => pm.ClusterShelfId, opt => opt.Ignore())
                 .ForMember(pm => pm.PlanogramColumnId, opt => opt.Ignore())
-                .ForMember(pm => pm.PlanxShelfId, opt => opt.Ignore())
+                .ForMember(pm => pm.PlanmatrShelfId, opt => opt.Ignore())
                 .ForMember(pm => pm.PartStatusId, opt => opt.Ignore())
                 .ForMember(pm => pm.PlanxPartAllowed, opt => opt.Ignore())
                 .ForMember(pm => pm.NonMarket, opt => opt.Ignore())
