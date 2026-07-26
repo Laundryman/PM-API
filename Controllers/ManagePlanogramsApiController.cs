@@ -1,18 +1,24 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Graph.Models;
 using PlanMatr_API.Controllers.planm;
 using PlanMatr_API.Extensions;
 using PMApplication.Dtos;
 using PMApplication.Dtos.Filters;
 using PMApplication.Dtos.PlanModels;
 using PMApplication.Entities;
+using PMApplication.Entities.PartAggregate;
 using PMApplication.Entities.PlanogramAggregate;
+using PMApplication.Enums;
 using PMApplication.Helpers;
+using PMApplication.Interfaces;
 using PMApplication.Interfaces.RepositoryInterfaces;
 using PMApplication.Interfaces.ServiceInterfaces;
 using PMApplication.Services;
+using PMApplication.Specifications;
 using PMApplication.Specifications.Filters;
+using PMInfrastructure.Repositories;
 using System.Net;
 using System.Text.Json;
 using static PMApplication.Enums.StatusEnums;
@@ -31,6 +37,7 @@ namespace PlanMatr_API.Controllers
         private readonly IProductService _productService;
         private readonly IPlanogramService _planogramService;
         private readonly IPlanogramRepository _planogramRepository;
+        private readonly IAsyncRepositoryLong<Planogram> _planogramAsyncRepository;
 
         private readonly ICountryService _countryService;
         private readonly IRegionService _regionService;
@@ -38,7 +45,7 @@ namespace PlanMatr_API.Controllers
         private readonly IConfiguration _config;
         private readonly IWebHostEnvironment _env;
 
-        public ManagePlanogramsApiController(IMapper mapper, ILogger<EditPlanApiController> logger, IBrandService brandService, IPartService partService, IProductService productService, IPlanogramService planogramService, ICountryService countryService, IAuditService auditService, IConfiguration config, IWebHostEnvironment env, IRegionService regionService, IPlanogramRepository planogramRepository)
+        public ManagePlanogramsApiController(IMapper mapper, ILogger<EditPlanApiController> logger, IBrandService brandService, IPartService partService, IProductService productService, IPlanogramService planogramService, ICountryService countryService, IAuditService auditService, IConfiguration config, IWebHostEnvironment env, IRegionService regionService, IPlanogramRepository planogramRepository, IAsyncRepositoryLong<Planogram> planogramAsyncRepository)
         {
             _mapper = mapper;
             _logger = logger;
@@ -52,6 +59,7 @@ namespace PlanMatr_API.Controllers
             _env = env;
             _regionService = regionService;
             _planogramRepository = planogramRepository;
+            _planogramAsyncRepository = planogramAsyncRepository;
         }
 
         
@@ -308,8 +316,17 @@ namespace PlanMatr_API.Controllers
 
             try
             {
-                //SystemLog.DebugFormat("GetJsonSkuList with planogramId " + planogramId.ToString());
-                Planogram planogram = await _planogramService.GetPlanogram(planogramId);
+                var filter = new PlanogramFilter
+                {
+                    Id = planogramId,
+                    LoadRelatedEntities = true
+
+                };
+
+                var spec = new PlanogramSpecification(filter);
+
+                var planogram = await _planogramAsyncRepository.FirstOrDefaultAsync(spec);
+
 
                 var hasColumns = planogram.Stand.ColumnList.Count != 0;
                 var skuList = await _planogramService.GetSkuList(planogram.Id, planogram.UserId, hasColumns);
@@ -400,114 +417,151 @@ namespace PlanMatr_API.Controllers
         /// <param name="brandId"></param>
         /// <returns></returns>
         //[Route("api/v2/planogram/get/yourplanograms/{status}/{countryId}/{regionId}/{standTypeId}/{brandId}")]
-        [HttpGet]
-        public async Task<IActionResult> GetYourPlanograms(int status, int countryId, int regionId, int standTypeId, int brandId)
-        {
-            IEnumerable<PlanogramInfo> planograms;
+        //[HttpGet]
+        //[Obsolete("This method is deprecated, please use SearchPlanograms instead.")]
+        //public async Task<IActionResult> GetYourPlanograms(int status, int countryId, int regionId, int standTypeId, int brandId)
+        //{
+        //    IEnumerable<PlanogramInfo> planograms;
 
-            try
-            {
-                // we can retrieve the userId from the request
-                var userProfile = await this.MappedUser();
-                var statusEnum = (PlanogramStatusEnum)status;
-                string? userId = userProfile?.Id;
+        //    try
+        //    {
+        //        // we can retrieve the userId from the request
+        //        var userProfile = await this.MappedUser();
+        //        var statusEnum = (PlanogramStatusEnum)status;
+        //        string? userId = userProfile?.Id;
 
-                //if (RolesHelper.IsAdministrator(int.Parse(userProfile.RoleId)))
-                //{
-                //    planograms = await _planogramService.GetYourPlanograms((int)statusEnum, countryId, regionId, standTypeId, brandId);
-                //}
+        //        //if (RolesHelper.IsAdministrator(int.Parse(userProfile.RoleId)))
+        //        //{
+        //        //    planograms = await _planogramService.GetYourPlanograms((int)statusEnum, countryId, regionId, standTypeId, brandId);
+        //        //}
 
-                planograms = await _planogramService.GetYourPlanograms((int)statusEnum, countryId, regionId, standTypeId, brandId);
-                if (!RolesHelper.IsAdministrator(int.Parse(userProfile.RoleId)) && countryId == 0)
-                {
-                    //filter planograms for allowed countries for non admin users
-                        int[] userCountries = userProfile.CountryList.Split(",").Select(int.Parse).ToArray();
-                    int[] userRegions = userProfile.RegionList.Split(",").Select(int.Parse).ToArray();
-                    var regions = await _regionService.GetRegions(new RegionFilter { idList = userProfile.RegionList, BrandId = brandId});
-                    IEnumerable<int> brandCountryList = new List<int>();
-                    foreach (var region in regions)
-                    {
-                        foreach (int cid in userCountries)
-                        {
-                            int[] regionCountryList = region.CountryList.Split(",").Select(int.Parse).ToArray();
-                            if (regionCountryList.Contains(cid))
-                            {
-                                // Do something if the region contains the country
-                                brandCountryList = brandCountryList.Append(cid);
-                            }
-                        }
-                    }
+        //        planograms = await _planogramService.GetYourPlanograms((int)statusEnum, countryId, regionId, standTypeId, brandId);
+        //        if (!RolesHelper.IsAdministrator(int.Parse(userProfile.RoleId)) && countryId == 0)
+        //        {
+        //            //filter planograms for allowed countries for non admin users
+        //                int[] userCountries = userProfile.CountryList.Split(",").Select(int.Parse).ToArray();
+        //            int[] userRegions = userProfile.RegionList.Split(",").Select(int.Parse).ToArray();
+        //            var regions = await _regionService.GetRegions(new RegionFilter { idList = userProfile.RegionList, BrandId = brandId});
+        //            IEnumerable<int> brandCountryList = new List<int>();
+        //            foreach (var region in regions)
+        //            {
+        //                foreach (int cid in userCountries)
+        //                {
+        //                    int[] regionCountryList = region.CountryList.Split(",").Select(int.Parse).ToArray();
+        //                    if (regionCountryList.Contains(cid))
+        //                    {
+        //                        // Do something if the region contains the country
+        //                        brandCountryList = brandCountryList.Append(cid);
+        //                    }
+        //                }
+        //            }
 
-                    var userPlanograms = planograms.Where(p => brandCountryList.Contains(p.CountryId ?? 0));
-                        return Ok(userPlanograms);
-                }
+        //            var userPlanograms = planograms.Where(p => brandCountryList.Contains(p.CountryId ?? 0));
+        //                return Ok(userPlanograms);
+        //        }
 
-                //else if (RolesHelper.IsValidator(userProfile.RoleIds))
-                //{
+        //        //else if (RolesHelper.IsValidator(userProfile.RoleIds))
+        //        //{
 
-                //    planograms = await _planogramService.GetYourPlanograms((int)statusEnum, userProfile.CountryId, regionId, standTypeId, brandId);
-                //}
+        //        //    planograms = await _planogramService.GetYourPlanograms((int)statusEnum, userProfile.CountryId, regionId, standTypeId, brandId);
+        //        //}
 
-                //else if (RolesHelper.IsApprover(userProfile.RoleIds))
-                //{
-                //    planograms = await _planogramService.GetYourPlanograms((int)statusEnum, brandId, countryId, regionId, standTypeId);
-                //}
-                //else
-                //{
-                //    planograms = await _planogramService.GetYourPlanograms((int)(int)statusEnum, userProfile.CountryId, 0, standTypeId, brandId);
-                //}
+        //        //else if (RolesHelper.IsApprover(userProfile.RoleIds))
+        //        //{
+        //        //    planograms = await _planogramService.GetYourPlanograms((int)statusEnum, brandId, countryId, regionId, standTypeId);
+        //        //}
+        //        //else
+        //        //{
+        //        //    planograms = await _planogramService.GetYourPlanograms((int)(int)statusEnum, userProfile.CountryId, 0, standTypeId, brandId);
+        //        //}
 
 
-                return Ok(planograms);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("Error getting planograms - message = {0}", ex.Message);
-                return StatusCode(ex.HResult, ex.Message);
-            }
+        //        return Ok(planograms);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError("Error getting planograms - message = {0}", ex.Message);
+        //        return StatusCode(ex.HResult, ex.Message);
+        //    }
 
-        }
+        //}
 
-        
+
         //[Route("api/v2/planogram/get/archived/job/{isPowerUser}/{jobId}/{jobCode}/{brandId}/{countryId}/{regionId}/{standTypeId}/{isDiamUser}")]
-        [HttpGet]
-        public async Task<IEnumerable<PlanogramInfo>> GetArchivedPlanogramsByJob(int isPowerUser, int jobId, string jobCode, int brandId, int countryId, int regionId, int standTypeId, int isDiamUser)
-        {
+        //[HttpGet]
+        //public async Task<IEnumerable<PlanogramInfo>> GetArchivedPlanogramsByJob(int isPowerUser, int jobId, string jobCode, int brandId, int countryId, int regionId, int standTypeId, int isDiamUser)
+        //{
 
-            // we can retrieve the userId from the request
+        //    // we can retrieve the userId from the request
+        //    try
+        //    {
+        //        // we can retrieve the userId from the request
+        //        var userProfile = await this.MappedUser();
+
+        //        //var userProfile = await this.MappedUser(_identityService);
+        //        string userId = String.Empty; //userProfile.Id;
+        //        var brand = await _brandService.GetBrand(brandId);
+        //        var userBrands = this.MappedBrands(userProfile, _brandService);
+
+        //        if (userBrands.Contains(brand))
+        //        {
+        //            var hostUrl = Request.Scheme + "://" + Request.Host + "/user_uploads/planograms/";    //.RequestUri.Scheme + "://" + Request.RequestUri.Authority + "/user_uploads/planograms/";
+
+        //            var planograms = await _planogramService.GetArchivedPlanograms(userId, jobId, brandId, countryId, regionId, standTypeId, isDiamUser == 1, hostUrl);
+        //            return planograms;
+
+        //        }
+        //        else
+        //        {
+        //            return null;
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return null;
+        //    }
+
+        //}
+
+
+        /// <summary>
+        /// Update to clone planogram will take account of IsUpdate to copy notes and update colours.
+        /// </summary>
+        /// <param name="planogramId"></param>
+        /// <param name="name"></param>
+        /// <param name="userId"></param>
+        /// <param name="IsUpdate"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<IActionResult> ClonePlanogram([FromBody] ClonePlanogramDto clonePlanogramDto)
+        {
             try
             {
-                // we can retrieve the userId from the request
+                //Planogram originalPlanogram = await _planogramRepository.GetByIdAsync(clonePlanogramDto.Id);
+
+                //Planogram newPlanogram = new Planogram();
+
+
                 var userProfile = await this.MappedUser();
+                var userRegions = userProfile.RegionList.Split(",").Select(int.Parse).ToList();
+                var userCountries = userProfile.CountryList.Split(",").Select(int.Parse).ToList();
+                var regions = await _regionService.GetRegions(new RegionFilter { idList = userProfile.RegionList, BrandId = clonePlanogramDto.BrandId });
+                var filterCountryList = new List<int>();
 
-                //var userProfile = await this.MappedUser(_identityService);
-                string userId = String.Empty; //userProfile.Id;
-                var brand = await _brandService.GetBrand(brandId);
-                var userBrands = this.MappedBrands(userProfile, _brandService);
+                var clonedPlanogramId = await _planogramService.ClonePlanogram(clonePlanogramDto.Id, clonePlanogramDto.Name, userProfile, clonePlanogramDto.IsUpdate ?? false);
 
-                if (userBrands.Contains(brand))
-                {
-                    var hostUrl = Request.Scheme + "://" + Request.Host + "/user_uploads/planograms/";    //.RequestUri.Scheme + "://" + Request.RequestUri.Authority + "/user_uploads/planograms/";
 
-                    var planograms = await _planogramService.GetArchivedPlanograms(userId, jobId, brandId, countryId, regionId, standTypeId, isDiamUser == 1, hostUrl);
-                    return planograms;
-
-                }
-                else
-                {
-                    return null;
-                }
+                return Ok(clonedPlanogramId);
             }
             catch (Exception ex)
             {
-                return null;
-            }
+                _logger.LogWarning($"Something went wrong inside ClonePlanogram action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
 
+            }
         }
 
-        //[Route("api/v2/planogram/lock/{planogramId}")]
         [HttpGet]
-
         public async Task<IActionResult> LockPlanogram(long planogramId = 0)
         {
             //var planoRepoService = dpRes.GetService<IPlanogramRepository>();

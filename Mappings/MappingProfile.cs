@@ -34,6 +34,10 @@ namespace PlanMatr_API.Mappings
             CreateMap<CountriesFilterDto, CountryFilter>();
             CreateMap<Country, CountryDto>();
             CreateMap<JobFolderDto, JobFolder>();
+            CreateMap<JobFolder, JobFolderDto>();
+            CreateMap<JobDto, Job>();
+            CreateMap<Job, JobDto>();
+
             //.ForMember(dest => dest.Countries, opt => opt.MapFrom(src =>  src.Countries))
             CreateMap<PartFilterDto, PartFilter>();
             CreateMap<PartFilter, PartFilterDto>();

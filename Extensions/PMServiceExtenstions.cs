@@ -17,6 +17,7 @@ namespace PlanMatr_API.Extensions
         {
             // Register your application services here
             //Example: services.AddScoped<IYourService, YourServiceImplementation>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IAuditService, AuditService>();
             services.AddScoped<IBrandService, BrandService>();
             services.AddTransient<ICategoryService, CategoryService>();
