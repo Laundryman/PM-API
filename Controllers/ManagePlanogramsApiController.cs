@@ -70,7 +70,17 @@ namespace PlanMatr_API.Controllers
             try
             {
                 var preview = await _planogramService.GetPlanogramPreview(planogramId);
-                return Ok(preview.PreviewSrc);
+                if (preview != null)
+                {
+                    return Ok(preview.PreviewSrc);
+                }
+                else
+                {
+                    return Ok(string.Empty);
+                    
+                } 
+
+
             }
             catch (Exception Ex)
             {

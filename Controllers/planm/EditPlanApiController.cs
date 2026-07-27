@@ -1,26 +1,29 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using PMApplication.Entities.PartAggregate;
-using PMApplication.Entities;
-using PMApplication.Interfaces;
-using PMApplication.Interfaces.ServiceInterfaces;
-using PMApplication.Dtos;
-using PMApplication.Dtos.PlanModels;
-using System.Net;
-using System.Net.Http.Headers;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using PlanMatr_API.Exceptions;
-using PMApplication.Entities.PlanogramAggregate;
-using PlanMatr_API.Extensions;
-using PMApplication.Enums;
-using PMApplication.Services;
-using PMApplication.Specifications.Filters;
-using System.Web;
+using Azure.Storage.Blobs;
 using IronPdf.Engines.Chrome;
 using IronPdf.Rendering;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using PlanMatr_API.Exceptions;
+using PlanMatr_API.Extensions;
+using PMApplication.Dtos;
+using PMApplication.Dtos.PlanModels;
+using PMApplication.Entities;
 using PMApplication.Entities.CountriesAggregate;
+using PMApplication.Entities.PartAggregate;
+using PMApplication.Entities.PlanogramAggregate;
+using PMApplication.Enums;
+using PMApplication.Interfaces;
+using PMApplication.Interfaces.ServiceInterfaces;
+using PMApplication.Services;
+using PMApplication.Specifications.Filters;
+using System.Net;
+using System.Net.Http.Headers;
+using System.Runtime.InteropServices.JavaScript;
+using System.Text.RegularExpressions;
+using System.Web;
 
 namespace PlanMatr_API.Controllers.planm
 {
@@ -41,29 +44,20 @@ namespace PlanMatr_API.Controllers.planm
         private readonly IConfiguration _config;
         private readonly IWebHostEnvironment _env;
         private readonly ICategoryService _categoryService;
-        //private readonly IAIdentityService _identityService;
-        //private readonly IProductService _productService;
         private readonly IStandService _standService;
+        private readonly BlobServiceClient _blobServiceClient;
+        private readonly IConfiguration _configuration;
 
         public EditPlanApiController(IPartService partService,
-                //ICategoryService categoryService,
                 IStandService standService,
                 IBrandService brandService,
-                //ICountryService countryService,
-                //IProductService productService,
                 IPlanogramService planogramService,
-                //IAIdentityService identityService, 
-                IMapper mapper, ILogger<EditPlanApiController> logger, ICountryService countryService, IAuditService auditService, IConfiguration config, IProductService productService, IWebHostEnvironment env, ICategoryService categoryService)
-            //IPlanogramVersionService versionService)
+                IMapper mapper, ILogger<EditPlanApiController> logger, ICountryService countryService, IAuditService auditService, IConfiguration config, IProductService productService, IWebHostEnvironment env, ICategoryService categoryService, BlobServiceClient blobServiceClient, IConfiguration configuration)
         {
             this._partService = partService;
             this._standService = standService;
-            //this._categoryService = categoryService;
-            //this._productService = productService;
-            //this._countryService = countryService;
             this._brandService = brandService;
             this._planogramService = planogramService;
-            //this._identityService = identityService;
             _mapper = mapper;
             _logger = logger;
             _countryService = countryService;
@@ -72,7 +66,8 @@ namespace PlanMatr_API.Controllers.planm
             _productService = productService;
             _env = env;
             _categoryService = categoryService;
-            //this._versionService = versionService;
+            _blobServiceClient = blobServiceClient;
+            _configuration = configuration;
         }
 
 
@@ -644,14 +639,14 @@ namespace PlanMatr_API.Controllers.planm
                 if (preview != null)
                 {
                     preview.PreviewSrc = planoJpeg.Image;
-                    _planogramService.SavePlanogramPreview(preview);
+                    await _planogramService.SavePlanogramPreview(preview);
                 }
                 else
                 {
                     preview = new PlanogramPreview();
                     preview.PlanogramId = planoJpeg.PlanogramId;
                     preview.PreviewSrc = planoJpeg.Image;
-                    _planogramService.CreatePlanogramPreview(preview);
+                    await _planogramService.CreatePlanogramPreview(preview);
                 }
                     //_planogramService.SavePlanogram(planogram);
                 var userProfile = await this.MappedUser();
@@ -1406,8 +1401,56 @@ namespace PlanMatr_API.Controllers.planm
                 return false;
             }
         }
+        /// <summary>
+        /// Converts a Data URI to a JPEG file and uploads it to Azure Blob Storage.
+        /// </summary>
+        /// <param name="dataURI"></param>
+        /// <param name="planogramName"></param>
+        /// <returns></returns>
+        private async Task<FileInfo> ConvertDataURItoJPEG(string dataURI, string planogramName)
+        {
+            if (dataURI != null)
+            {
+                string filename;
 
+                var base64Data = Regex.Match(dataURI, @"data:image/(?<type>.+?),(?<data>.+)").Groups["data"].Value;
+                var binData = Convert.FromBase64String(base64Data);
+
+
+                filename = planogramName;
+
+                // Here you would typically save the file to a storage location and update the BrandLogo property
+                // For demonstration, we'll just set a placeholder path
+                var fileByteArray = System.IO.File.ReadAllBytes(filename);
+                var fileStream = new MemoryStream(fileByteArray);
+                IFormFile newImageFile = new FormFile(fileStream, 0, fileByteArray.Length, "file", filename);
+
+                //var fileType = newImageFile.file.FileName.Split('.')[1];
+                var blobService = new AzureBlobService(_blobServiceClient);
+                var storeName = _configuration["AzureBlob:StoreName"];
+                var brandContainerName = _configuration["AzureBlob:BrandStoreContainer"];
+                if (storeName != null && brandContainerName != null)
+                {
+                    var blobServiceClient = blobService.GetBlobServiceClient(storeName);
+                    var containerClient = blobService.GetBlobContainerClient(blobServiceClient, brandContainerName);
+                    await blobService.UploadFormFileAsync(containerClient, newImageFile, filename);
+                }
+                if (!System.IO.File.Exists(filename))
+                {
+                    //using (var stream = new MemoryStream(binData))
+                    //{
+                    System.IO.File.WriteAllBytes(filename, binData);
+                    //}
+                }
+
+                return new FileInfo(filename);
+
+            }
+            return null;
+        }
         #endregion PlanogramFunctions
+
+        
 
 
     }
