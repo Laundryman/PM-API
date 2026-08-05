@@ -25,7 +25,7 @@ using static PMApplication.Enums.StatusEnums;
 
 namespace PlanMatr_API.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [Route("api/planograms/[action]")]
     public class ManagePlanogramsApiController : ControllerBase
     {
@@ -94,15 +94,14 @@ namespace PlanMatr_API.Controllers
 
         //[Route("api/v2/planogram/rename/{planogramId}/{planoName}")]
         [HttpGet]
-        public async Task<int> RenamePlanogram(int planogramId, string planoName)
+        public async Task<int> Rename(int planogramId, string name)
         {
             // we can retrieve the userId from the request
             var userProfile = await this.MappedUser();
             string? userId = userProfile?.Id;
             var planogram = await _planogramService.GetPlanogram(planogramId);
-            var brandId = planogram.Stand.BrandId;
 
-            planogram.Name = planoName;
+            planogram.Name = name;
             await _planogramService.SavePlanogram(planogram);
 
             //Audit the action
@@ -110,11 +109,11 @@ namespace PlanMatr_API.Controllers
             {
                 UserId = userId,
                 Date = DateTime.Now,
-                BrandId = brandId,
+                BrandId = planogram.BrandId,
                 Roles = userProfile?.RoleIds,
                 UserName = userProfile?.DisplayName,
-                Action = (int)LogActionEnum.EditPlano,
-                Message = userProfile?.DisplayName + " renamed planogram with Id " + planogramId.ToString() + " to " + planoName,
+                Action = (int)LogActionEnum.RenamePlano,
+                Message = userProfile?.DisplayName + " renamed planogram with Id " + planogramId.ToString() + " to " + name,
                 PlanoId = planogramId
             };
             await _auditService.AuditEvent(audit);
@@ -142,7 +141,7 @@ namespace PlanMatr_API.Controllers
                 BrandId = planogram.BrandId,
                 Roles = userProfile?.RoleIds,
                 UserName = userProfile?.DisplayName,
-                Action = (int)LogActionEnum.EditPlano,
+                Action = (int)LogActionEnum.SubmitPlano,
                 Message = userProfile?.DisplayName + " submitted planogram with Id " + planogramId.ToString(),
                 PlanoId = planogramId
             };
@@ -181,7 +180,39 @@ namespace PlanMatr_API.Controllers
 
         }
 
-        //[Route("api/v2/planogram/approve/{planogramId}")]
+        [HttpGet]
+        public async Task<int> ArchivePlanogram(int planogramId, int jobId)
+        {
+            // we can retrieve the userId from the request
+            var userProfile = await this.MappedUser();
+            string? userId = userProfile?.Id;
+            var planogram = await _planogramService.GetPlanogram(planogramId);
+            planogram.Archived = true;
+            planogram.ArchivedBy = userProfile?.DisplayName;
+            planogram.ArchivedDate = DateTime.Now;
+            planogram.JobId = jobId;
+
+            //planogram.StatusId = (int)PlanogramStatusEnum.Edit;
+            await _planogramService.SavePlanogram(planogram);
+
+            //Audit the action
+            var audit = new AuditLog
+            {
+                UserId = userId,
+                Date = DateTime.Now,
+                BrandId = planogram.BrandId,
+                Roles = userProfile?.RoleIds,
+                UserName = userProfile?.DisplayName,
+                Action = (int)LogActionEnum.ArchivePlano,
+                Message = userProfile?.DisplayName + " archived planogram with Id " + planogramId.ToString(),
+                PlanoId = planogramId
+            };
+            await _auditService.AuditEvent(audit);
+
+            return planogramId;
+
+        }
+
         [HttpGet]
         public async Task<int> ApprovePlanogram(int planogramId)
         {
@@ -200,7 +231,44 @@ namespace PlanMatr_API.Controllers
                 BrandId = planogram.BrandId,
                 Roles = userProfile?.RoleIds,
                 UserName = userProfile?.DisplayName,
-                Action = (int)LogActionEnum.EditPlano,
+                Action = (int)LogActionEnum.ApprovePlano,
+                Message = userProfile?.DisplayName + " approved planogram with Id " + planogramId.ToString(),
+                PlanoId = planogramId
+            };
+            await _auditService.AuditEvent(audit);
+
+            return planogramId;
+
+        }
+
+        [HttpGet]
+        public async Task<int> RestorePlanogram(int planogramId, int statusId)
+        {
+            // we can retrieve the userId from the request
+            var userProfile = await this.MappedUser();
+            string? userId = userProfile?.Id;
+            var planogram = await _planogramService.GetPlanogram(planogramId);
+            planogram.JobId = null;
+            planogram.StatusId = statusId;
+            planogram.Archived = false;
+            planogram.ArchivedBy = null;
+            planogram.ArchivedByName = null;
+            planogram.ArchivedDate = null;
+            planogram.LastUpdatedBy = userProfile.Id;
+                planogram.LubName = userProfile.DisplayName;
+                planogram.DateUpdated = DateTime.Now;
+
+            await _planogramService.SavePlanogram(planogram);
+
+            //Audit the action
+            var audit = new AuditLog
+            {
+                UserId = userId,
+                Date = DateTime.Now,
+                BrandId = planogram.BrandId,
+                Roles = userProfile?.RoleIds,
+                UserName = userProfile?.DisplayName,
+                Action = (int)LogActionEnum.RestorePlano,
                 Message = userProfile?.DisplayName + " approved planogram with Id " + planogramId.ToString(),
                 PlanoId = planogramId
             };
@@ -229,7 +297,7 @@ namespace PlanMatr_API.Controllers
                 BrandId = planogram.BrandId,
                 Roles = userProfile?.RoleIds,
                 UserName = userProfile?.DisplayName,
-                Action = (int)LogActionEnum.EditPlano,
+                Action = (int)LogActionEnum.ValidatePlano,
                 Message = userProfile?.DisplayName + " validated planogram with Id " + planogramId.ToString(),
                 PlanoId = planogramId
             };
@@ -239,7 +307,7 @@ namespace PlanMatr_API.Controllers
 
         }
 
-        //[Route("api/v2/planogram/reject/{planogramId}")]
+
         [HttpGet]
         public async Task<int> RejectPlanogram(int planogramId)
         {
@@ -258,7 +326,7 @@ namespace PlanMatr_API.Controllers
                 BrandId = planogram.BrandId,
                 Roles = userProfile?.RoleIds,
                 UserName = userProfile?.DisplayName,
-                Action = (int)LogActionEnum.EditPlano,
+                Action = (int)LogActionEnum.RejectPlano,
                 Message = userProfile?.DisplayName + " rejected planogram with Id " + planogramId.ToString(),
                 PlanoId = planogramId
             };
@@ -390,22 +458,49 @@ namespace PlanMatr_API.Controllers
             try
             {
                 var userProfile = await this.MappedUser();
-                var userRegions = userProfile.RegionList.Split(",").Select(int.Parse).ToList();
-                var userCountries = userProfile.CountryList.Split(",").Select(int.Parse).ToList();
-                var regions = await _regionService.GetRegions(new RegionFilter { idList = userProfile.RegionList, BrandId = filterDto.BrandId ?? 0 });
+                var countriesList = new List<int>();
+                var regionsList = new List<int>();
+                if (!string.IsNullOrEmpty(filterDto.RegionsList))
+                    regionsList = filterDto.RegionsList.Split(",").Select(int.Parse).ToList();
+                if (!string.IsNullOrEmpty(filterDto.CountriesList))
+                    countriesList = filterDto.CountriesList.Split(",").Select(int.Parse).ToList();
+
+                // Only use the user's regions and countries if the filterDto does not provide them
+
+                if (regionsList == null || regionsList.Count == 0)
+                {
+                    regionsList = userProfile.RegionList.Split(",").Select(int.Parse).ToList();
+                }
+
+                if (countriesList == null || countriesList.Count == 0)
+                {
+                    countriesList = userProfile.CountryList.Split(",").Select(int.Parse).ToList();
+                }
+                var regions = await _regionService.GetRegions(new RegionFilter { idList = filterDto.RegionsList, BrandId = filterDto.BrandId ?? 0 });
                 var filterCountryList = new List<int>();
+                var filterRegionList = new List<int>();
                 foreach (var region in regions)
                 {
-                    var regionCountryList = region.CountryList.Split(",").Select(int.Parse).ToList();
-                    for (int i = 0; i < regionCountryList.Count; i++)
+                    if (region.CountryList != null)
                     {
-                        if (userCountries.Contains(regionCountryList[i]))
+                        var regionCountryList = region.CountryList.Split(",").Select(int.Parse).ToList();
+                        for (int i = 0; i < regionCountryList.Count; i++)
                         {
-                            filterCountryList.Add(regionCountryList[i]);
+                            if (countriesList.Contains(regionCountryList[i]))
+                            {
+                                filterCountryList.Add(regionCountryList[i]);
+                            }
+                        }
+
+                        if (regionsList.Contains(region.Id))
+                        {
+                            filterRegionList.Add(region.Id);
                         }
                     }
                 }
+
                 filterDto.CountriesList = string.Join(",", filterCountryList);
+                filterDto.RegionsList = string.Join(",", filterRegionList);
                 var planograms = await _planogramRepository.SearchPlanograms(filterDto);
 
                 return Ok(planograms);
@@ -608,6 +703,34 @@ namespace PlanMatr_API.Controllers
 
         }
 
+        [HttpGet]
+        public async Task<IActionResult> UnLock(long planogramId = 0)
+        {
+            //var planoRepoService = dpRes.GetService<IPlanogramRepository>();
+            Planogram planogram = await _planogramService.GetPlanogram(planogramId);
+            // we can retrieve the userId from the request
+            var userProfile = await this.MappedUser();
+            string? userId = userProfile?.Id;
+
+
+
+            try
+            {
+                var filter = new PlanogramLockFilter
+                {
+                    PlanogramId = planogramId,
+                    //User = userProfile
+                };
+                await _planogramService.UnLockPlanogram(filter);
+                return Ok("success");
+            }
+            catch (Exception Ex)
+            {
+                _logger.LogError(Ex.Message);
+                return BadRequest(Ex.Message);
+            }
+
+        }
         //[Route("api/v2/planx/get-plano-lock/{planogramId}/{userId}/{userName}")]
         [HttpGet]
         public async Task<IActionResult> GetPlanoLock(int planogramId)

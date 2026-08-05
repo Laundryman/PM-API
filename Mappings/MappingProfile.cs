@@ -4,6 +4,7 @@ using PMApplication.Dtos;
 using PMApplication.Dtos.Filters;
 using PMApplication.Dtos.PlanModels;
 using PMApplication.Dtos.Categories;
+using PMApplication.Dtos.Notes;
 using PMApplication.Dtos.StandTypes;
 using PMApplication.Entities;
 using PMApplication.Entities.ClusterAggregate;
@@ -43,9 +44,9 @@ namespace PlanMatr_API.Mappings
             CreateMap<PartFilter, PartFilterDto>();
             CreateMap<Part, PartListDto>();
             CreateMap<Part, PartDto>();
-            CreateMap<Planogram, PlanmPlanogramDto>();
+            //CreateMap<Planogram, PlanmPlanogramDto>();
             CreateMap<PlanmPlanogramDto, Planogram>();
-
+            CreateMap<PlanogramNote, PlanogramNoteDto>();
             //CreateMap<PlanogramShelf, PartInfoDto>();
             //CreateMap<PlanogramShelf, PartInfoDto>();
             //CreateMap<PartInfoDto, PlanogramPart>();

@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Azure.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -42,7 +43,7 @@ builder.Services.AddAzureClients(clientBuilder =>
         new Uri("https://planmatrstore.blob.core.windows.net"));
 
     clientBuilder.UseCredential(new ClientSecretCredential(tenantId, clientId, clientSecret));
-}); 
+});
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

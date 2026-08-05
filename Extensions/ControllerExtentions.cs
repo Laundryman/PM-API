@@ -4,6 +4,7 @@ using PMApplication.Entities;
 using PMApplication.Interfaces.ServiceInterfaces;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using static System.Net.WebRequestMethods;
 
 namespace PlanMatr_API.Extensions
 {
@@ -41,7 +42,7 @@ namespace PlanMatr_API.Extensions
             user.DisplayName = tokenValues.Claims.Where(c => c.Type == "name").Select(c => c.Value).FirstOrDefault();
             user.UserName = tokenValues.Claims.Where(c => c.Type == "name").Select(c => c.Value).FirstOrDefault();
             user.Email = tokenValues.Claims.Where(c => c.Type == "UserEmailAddress").Select(c => c.Value).FirstOrDefault();
-            user.Id = tokenValues.Claims.Where(c => c.Type == ClaimTypes.NameIdentifier).Select(c => c.Value).FirstOrDefault();
+            user.Id = currentUser.Claims.Where(c => c.Type == "http://schemas.microsoft.com/identity/claims/objectidentifier").Select(c => c.Value).FirstOrDefault();
             user.Surname = tokenValues.Claims.Where(c => c.Type == "surname").Select(c => c.Value).FirstOrDefault();
             user.GivenName = tokenValues.Claims.Where(c => c.Type == "givenname").Select(c => c.Value).FirstOrDefault();
             user.RoleIds = tokenValues.Claims.Where(c => c.Type == "Roles").Select(c => c.Value).FirstOrDefault();
