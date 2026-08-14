@@ -27,7 +27,7 @@ namespace PlanMatr_API.Controllers.planm
     public class CreatePlanApiController : ControllerBase
     {
         private readonly IMapper _mapper;
-        private readonly ILogger<PartController> _logger;
+        private readonly ILogger<CreatePlanApiController> _logger;
         private readonly IPlanogramService _planogramService;
         private readonly IAuditService _auditService;
         private readonly IAsyncRepository<StandType> _asyncStandTypeRepository;
@@ -35,7 +35,7 @@ namespace PlanMatr_API.Controllers.planm
         private readonly IClusterRepository _clusterRepository;
 
 
-        public CreatePlanApiController(IMapper mapper, ILogger<PartController> logger, IPlanogramService planogramService, IAuditService auditService, IAsyncRepository<StandType> asyncStandTypeRepository, IAsyncRepository<Stand> asyncStandRepository, IClusterRepository clusterRepository)
+        public CreatePlanApiController(IMapper mapper, ILogger<CreatePlanApiController> logger, IPlanogramService planogramService, IAuditService auditService, IAsyncRepository<StandType> asyncStandTypeRepository, IAsyncRepository<Stand> asyncStandRepository, IClusterRepository clusterRepository)
         {
             _mapper = mapper;
             _logger = logger;
