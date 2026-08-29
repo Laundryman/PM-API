@@ -70,7 +70,7 @@ namespace PlanMatr_API.Mappings.Resolvers
                     var newRow = new PlanmStandRowDto
                     {
                         Height = (int)source.DefaultRowHeight,
-                        RowId = i,
+                        Id = i,
                         Position = i,
                         StandId = source.Id
                     };
@@ -85,7 +85,7 @@ namespace PlanMatr_API.Mappings.Resolvers
                     var newRow = new PlanmStandRowDto
                     {
                         Height = row.Height,
-                        RowId = row.RowId,
+                        Id = row.Id,
                         Position = row.Position,
                         StandId = row.StandId
                     };

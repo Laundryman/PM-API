@@ -153,10 +153,13 @@ namespace PlanMatr_API.Controllers
             try
             {
                 var userProfile = await this.MappedUser();
-                var userRegions = userProfile.RegionList.Split(",").Select(int.Parse).ToList();
                 var spec = new RegionSpecification(_mapper.Map<RegionFilter>(filterDto));
                 var regions = await _regionRepository.ListAsync(spec);
+                if (userProfile.RegionList != null)
+                {
+                    var userRegions = userProfile.RegionList.Split(",").Select(int.Parse).ToList();
                 regions = regions.Where(r => userRegions.Contains(r.Id)).ToList();
+                }
 
                 var response = _mapper.Map<List<RegionDto>>(regions);
                 return Ok(response);
