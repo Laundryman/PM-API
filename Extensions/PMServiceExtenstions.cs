@@ -53,8 +53,8 @@ namespace PlanMatr_API.Extensions
             services.AddTransient<IBrandRepository, BrandRepository>();
             services.AddTransient<ICategoryRepository, CategoryRepository>();
             services.AddTransient<IClusterRepository, ClusterRepository>();
-            //services.AddTransient<IClusterShelfRepository, ClusterShelfRepository>();
-            //services.AddTransient<IClusterPartRepository, ClusterPartRepository>();
+            services.AddTransient<IClusterShelfRepository, ClusterShelfRepository>();
+            services.AddTransient<IClusterPartRepository, ClusterPartRepository>();
             services.AddTransient<ICountryRepository, CountryRepository>();
             //services.AddTransient<IEmailRepository, EmailRepository>();
             //services.AddTransient<IHeroProductRepository, HeroProductRepository>();
