@@ -458,6 +458,15 @@ namespace PlanMatr_API.Controllers
             try
             {
                 var userProfile = await this.MappedUser();
+                if (userProfile.RoleId != null)
+                {
+                    if (int.Parse(userProfile.RoleId) != (int)RoleEnum.Administrator)
+                    {
+                        filterDto.IncludeDeleted = false;
+                    }
+                }
+
+
                 var countriesList = new List<int>();
                 var regionsList = new List<int>();
                 if (!string.IsNullOrEmpty(filterDto.RegionsList))
@@ -469,19 +478,33 @@ namespace PlanMatr_API.Controllers
 
                 if (regionsList == null || regionsList.Count == 0)
                 {
-                    regionsList = userProfile.RegionList.Split(",").Select(int.Parse).ToList();
+                    if (userProfile.RegionList != null)
+                    {
+                        regionsList = userProfile.RegionList.Split(",").Select(int.Parse).ToList();
+                    }
+                    else
+                    {
+                        regionsList = new List<int>();
+                    }
                 }
 
                 if (countriesList == null || countriesList.Count == 0)
                 {
-                    countriesList = userProfile.CountryList.Split(",").Select(int.Parse).ToList();
+                    if (userProfile.CountryList != null)
+                    {
+                        countriesList = userProfile.CountryList.Split(",").Select(int.Parse).ToList();
+                    }
+                    else
+                    {
+                        countriesList = new List<int>();
+                    }
                 }
                 var regions = await _regionService.GetRegions(new RegionFilter { idList = filterDto.RegionsList, BrandId = filterDto.BrandId ?? 0 });
                 var filterCountryList = new List<int>();
                 var filterRegionList = new List<int>();
                 foreach (var region in regions)
                 {
-                    if (region.CountryList != null)
+                    if (!string.IsNullOrEmpty(region.CountryList))
                     {
                         var regionCountryList = region.CountryList.Split(",").Select(int.Parse).ToList();
                         for (int i = 0; i < regionCountryList.Count; i++)
