@@ -11,6 +11,7 @@ using PMApplication.Entities;
 using PMApplication.Entities.ClusterAggregate;
 using PMApplication.Entities.PlanogramAggregate;
 using PMApplication.Entities.StandAggregate;
+using PMApplication.Enums;
 using PMApplication.Extensions;
 using PMApplication.Interfaces;
 using PMApplication.Interfaces.RepositoryInterfaces;
@@ -33,9 +34,11 @@ namespace PlanMatr_API.Controllers.planm
         private readonly IAsyncRepository<StandType> _asyncStandTypeRepository;
         private readonly IAsyncRepository<Stand> _asyncStandRepository;
         private readonly IClusterRepository _clusterRepository;
+        private readonly IBrandService _brandService;
+        private readonly ICountryService _countryService;
+        private readonly IRegionService _regionService;
 
-
-        public CreatePlanApiController(IMapper mapper, ILogger<CreatePlanApiController> logger, IPlanogramService planogramService, IAuditService auditService, IAsyncRepository<StandType> asyncStandTypeRepository, IAsyncRepository<Stand> asyncStandRepository, IClusterRepository clusterRepository)
+        public CreatePlanApiController(IMapper mapper, ILogger<CreatePlanApiController> logger, IPlanogramService planogramService, IAuditService auditService, IAsyncRepository<StandType> asyncStandTypeRepository, IAsyncRepository<Stand> asyncStandRepository, IClusterRepository clusterRepository, IBrandService brandService, ICountryService countryService, IRegionService regionService)
         {
             _mapper = mapper;
             _logger = logger;
@@ -44,6 +47,9 @@ namespace PlanMatr_API.Controllers.planm
             _asyncStandTypeRepository = asyncStandTypeRepository;
             _asyncStandRepository = asyncStandRepository;
             _clusterRepository = clusterRepository;
+            _brandService = brandService;
+            _countryService = countryService;
+            _regionService = regionService;
         }
 
         #region API
@@ -147,17 +153,34 @@ namespace PlanMatr_API.Controllers.planm
                     await _planogramService.SavePlanogram(planogram);
                 }
 
+                var brand = await _brandService.GetBrand(planogram.BrandId ?? 0);
+                var country = await _countryService.GetCountry(planogram.CountryId ?? 0);
+                var region = await _regionService.GetRegion(planogram.RegionId ?? 0);
+                var role = (RoleEnum)int.Parse(userProfile?.RoleId ?? "0");
+
                 //Audit the action
                 var audit = new AuditLog
                 {
-                    UserId = userId,
-                    Date = DateTime.Now,
-                    BrandId = newPlanogramDetails.BrandId,
-                    Roles = userProfile.RoleIds,
-                    UserName = userProfile.DisplayName,
-                    Action = (int)LogActionEnum.CreatePlano,
                     Message = userProfile.DisplayName + " created planogram " + planogram.Name,
-                    PlanoId = planogramId
+                    Action = (int)LogActionEnum.CreatePlano,
+
+                    ActionName = nameof(LogActionEnum.CreatePlano),
+                    ActionType = 1,
+
+                    UserName = userProfile?.DisplayName,
+                    UserId = userProfile.Id,
+                    Date = DateTime.Now,
+                    BrandId = planogram.BrandId,
+                    BrandName = brand?.Name,
+                    RoleId = int.Parse(userProfile?.RoleId ?? "0"),
+                    RoleName = nameof(role),
+                    PlanoId = planogramId,
+                    PlanoName = planogram.Name,
+                    CountryId = planogram.CountryId,
+                    RegionId = planogram.RegionId,
+                    CountryName = country?.Name,
+                    RegionName = region?.Name,
+
                 };
                 await _auditService.AuditEvent(audit);
 

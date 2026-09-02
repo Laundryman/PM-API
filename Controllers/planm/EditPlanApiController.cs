@@ -19,6 +19,9 @@ using PMApplication.Interfaces;
 using PMApplication.Interfaces.ServiceInterfaces;
 using PMApplication.Services;
 using PMApplication.Specifications.Filters;
+using System.Data;
+using System.Diagnostics.Metrics;
+using System.Drawing;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Runtime.InteropServices.JavaScript;
@@ -40,6 +43,7 @@ namespace PlanMatr_API.Controllers.planm
         private readonly IProductService _productService;
         private readonly IPlanogramService _planogramService;
         private readonly ICountryService _countryService;
+        private readonly IRegionService _regionService;
         private readonly IAuditService _auditService;
         private readonly IConfiguration _config;
         private readonly IWebHostEnvironment _env;
@@ -52,7 +56,7 @@ namespace PlanMatr_API.Controllers.planm
                 IStandService standService,
                 IBrandService brandService,
                 IPlanogramService planogramService,
-                IMapper mapper, ILogger<EditPlanApiController> logger, ICountryService countryService, IAuditService auditService, IConfiguration config, IProductService productService, IWebHostEnvironment env, ICategoryService categoryService, BlobServiceClient blobServiceClient, IConfiguration configuration)
+                IMapper mapper, ILogger<EditPlanApiController> logger, ICountryService countryService, IAuditService auditService, IConfiguration config, IProductService productService, IWebHostEnvironment env, ICategoryService categoryService, BlobServiceClient blobServiceClient, IConfiguration configuration, IRegionService regionService)
         {
             this._partService = partService;
             this._standService = standService;
@@ -68,6 +72,7 @@ namespace PlanMatr_API.Controllers.planm
             _categoryService = categoryService;
             _blobServiceClient = blobServiceClient;
             _configuration = configuration;
+            _regionService = regionService;
         }
 
 
@@ -514,7 +519,7 @@ namespace PlanMatr_API.Controllers.planm
                 //    }
                 //}
 
-                var brand = _brandService.GetBrand((int)brandId);
+                var brand = await _brandService.GetBrand((int)brandId);
 
                 //////////////////////////////////////////////////////////////////
                 //Finish user checks
@@ -538,17 +543,35 @@ namespace PlanMatr_API.Controllers.planm
                     //planogram.Status = status; //redundant?
                 }
                 await _planogramService.SavePlanogram(planogram);
+
+
+                //var brand = await _brandService.GetBrand(planogram.BrandId ?? 0);
+                var country = await _countryService.GetCountry(planogram.CountryId ?? 0);
+                var region = await _regionService.GetRegion(planogram.RegionId ?? 0);
+                var role = (RoleEnum)int.Parse(userProfile?.RoleId ?? "0");
                 //Audit the action
                 var audit = new AuditLog
                 {
+                    Message = userProfile.DisplayName + " edited planogram with Id " + planogramId.ToString(),
+                    Action = (int)LogActionEnum.EditPlano,
+
+                    ActionName = nameof(LogActionEnum.EditPlano),
+                    ActionType = 1,
+
+                    UserName = userProfile?.DisplayName,
                     UserId = userProfile.Id,
                     Date = DateTime.Now,
                     BrandId = planogram.BrandId,
-                    Roles = userProfile.RoleIds,
-                    UserName = userProfile.DisplayName,
-                    Action = (int)LogActionEnum.EditPlano,
-                    Message = userProfile.DisplayName + " edited planogram with Id " + planogramId.ToString(),
-                    PlanoId = (int)planogramId
+                    BrandName = brand?.Name,
+                    RoleId = int.Parse(userProfile?.RoleId ?? "0"),
+                    RoleName = nameof(role),
+                    PlanoId = planogramId,
+                    PlanoName = planogram.Name,
+                    CountryId = planogram.CountryId,
+                    RegionId = planogram.RegionId,
+                    CountryName = country?.Name,
+                    RegionName = region?.Name,
+
                 };
 
                 await _auditService.AuditEvent(audit);
@@ -648,19 +671,36 @@ namespace PlanMatr_API.Controllers.planm
                     preview.PreviewSrc = planoJpeg.Image;
                     await _planogramService.CreatePlanogramPreview(preview);
                 }
+
                     //_planogramService.SavePlanogram(planogram);
                 var userProfile = await this.MappedUser();
                 HttpResponseMessage message = new HttpResponseMessage(HttpStatusCode.OK);
+
+                var brand = await _brandService.GetBrand(planogram.BrandId ?? 0);
+                var country = await _countryService.GetCountry(planogram.CountryId ?? 0);
+                var region = await _regionService.GetRegion(planogram.RegionId ?? 0);
+                var role = (RoleEnum)int.Parse(userProfile?.RoleId ?? "0");
                 var audit = new AuditLog
                 {
+                    Message = userProfile.DisplayName + " edited planogram with Id " + planogram.Id,
+                    Action = (int)LogActionEnum.EditPlano,
+
+                    ActionName = nameof(LogActionEnum.CreatePlano),
+                    ActionType = 1,
+
+                    UserName = userProfile?.DisplayName,
                     UserId = userProfile.Id,
                     Date = DateTime.Now,
                     BrandId = planogram.BrandId,
-                    Roles = userProfile.RoleIds,
-                    UserName = userProfile.DisplayName,
-                    Action = (int)LogActionEnum.EditPlano,
-                    Message = userProfile.DisplayName + " edited planogram with Id " + planogram.Id,
-                    PlanoId = planogram.Id
+                    BrandName = brand?.Name,
+                    RoleId = int.Parse(userProfile?.RoleId ?? "0"),
+                    RoleName = nameof(role),
+                    PlanoId = planoJpeg.PlanogramId,
+                    PlanoName = planogram.Name,
+                    CountryId = planogram.CountryId,
+                    RegionId = planogram.RegionId,
+                    CountryName = country?.Name,
+                    RegionName = region?.Name,
                 };
 
                 var auditEvent = await _auditService.AuditEvent(audit);
