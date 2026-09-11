@@ -41,16 +41,11 @@ namespace PlanMatr_API.Controllers
         {
             try
             {
-                var userProfile = await this.MappedUser();
-                var userCountries = userProfile.CountryList.Split(",").Select(int.Parse).ToList();
-
                 var filter = new CountryFilter();
                 filter.RegionId = regionId;
                 var spec = new CountrySpecification(filter);
                 var countries = await _countryRepository.ListAsync(spec);
                 
-                countries = countries.Where(c => userCountries.Contains(c.Id)).ToList();
-
                 _logger.LogInformation($"Returned all countries from database.");
 
                 var response = _mapper.Map<List<CountryDto>>(countries);

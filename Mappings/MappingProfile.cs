@@ -30,6 +30,8 @@ namespace PlanMatr_API.Mappings
             CreateMap<Category, CategoryDto>();
 
             CreateMap<Category, CategoryMenuDto>();
+            CreateMap<Category, ParentCategoryDto>();
+
             CreateMap<Cluster, PlanmClusterDto>();
             CreateMap<LayoutFilterDto, ClusterFilter>();
             CreateMap<CountriesFilterDto, CountryFilter>();
@@ -79,6 +81,8 @@ namespace PlanMatr_API.Mappings
             CreateMap<Stand, StandDto>();
             CreateMap<StandFilterDto, StandFilter>();
             CreateMap<StandTypeFilterDto,StandTypeFilter>();
+            CreateMap<StandType, ParentStandTypeDto>();
+
             //CreateMap<StandType, StandTypeDto>();
             CreateMap<StandRow, PlanmStandRowDto>();
             CreateMap<StandColumn,PlanmStandColumnDto>();
