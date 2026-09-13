@@ -23,6 +23,7 @@ namespace PlanMatr_API.Extensions
             services.AddTransient<ICategoryService, CategoryService>();
             services.AddScoped<IClusterService, ClusterService>();
             services.AddScoped<ICountryService, CountryService>();
+            services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IJobService, JobService>();
             services.AddTransient<IJobFolderService, JobFolderService>();
             services.AddScoped<IOrderService, OrderService>();
@@ -56,7 +57,7 @@ namespace PlanMatr_API.Extensions
             services.AddTransient<IClusterShelfRepository, ClusterShelfRepository>();
             services.AddTransient<IClusterPartRepository, ClusterPartRepository>();
             services.AddTransient<ICountryRepository, CountryRepository>();
-            //services.AddTransient<IEmailRepository, EmailRepository>();
+            services.AddTransient<IEmailRepository, EmailRepository>();
             //services.AddTransient<IHeroProductRepository, HeroProductRepository>();
             services.AddTransient<IJobRepository, JobRepository>();
             services.AddTransient<IJobFolderRepository, JobFolderRepository>();

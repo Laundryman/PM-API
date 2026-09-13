@@ -1,0 +1,34 @@
+﻿
+
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+    <div class="email-body">
+        @*To: SenderList (region specific?)
+        from: noreply@diamdiagramm.com
+        Subject: Planogram XXX submitted for approval*@
+
+        <h2>Dear Model.RecipientName</h2>
+
+        <p>Model.FirstName Model.LastName has just submitted an order</p>
+
+        <table>
+            <tr><td>Order:</td><td>Order.OrderTitle</td></tr>
+            <tr><td>Brand:</td><td>BrandName</td></tr>
+        </table>
+
+        <p>Download the order: <a href="@System.Uri.UnescapeDataString(Model.SuppliedEmailBodyContent)" alt="">Order.OrderTitle</a>
+        </p>
+
+        <p>
+            Regards<br />
+
+            Diam Planogram Team
+        </p>
+
+
+    </div>
+</body>
+</html>

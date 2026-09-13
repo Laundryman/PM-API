@@ -23,9 +23,12 @@ using PMInfrastructure.Repositories;
 using System.Data;
 using System.Diagnostics.Metrics;
 using System.Drawing;
+using System.Linq.Expressions;
 using System.Net;
 using System.Text.Json;
+using Microsoft.AspNetCore.Http.HttpResults;
 using static PMApplication.Enums.StatusEnums;
+using static PMApplication.Enums.EmailTrigger;
 
 namespace PlanMatr_API.Controllers
 {
@@ -46,10 +49,11 @@ namespace PlanMatr_API.Controllers
         private readonly ICountryService _countryService;
         private readonly IRegionService _regionService;
         private readonly IAuditService _auditService;
+        private readonly IEmailService _emailService;
         private readonly IConfiguration _config;
         private readonly IWebHostEnvironment _env;
 
-        public ManagePlanogramsApiController(IMapper mapper, ILogger<EditPlanApiController> logger, IBrandService brandService, IPartService partService, IProductService productService, IPlanogramService planogramService, ICountryService countryService, IAuditService auditService, IConfiguration config, IWebHostEnvironment env, IRegionService regionService, IPlanogramRepository planogramRepository, IAsyncRepositoryLong<Planogram> planogramAsyncRepository)
+        public ManagePlanogramsApiController(IMapper mapper, ILogger<EditPlanApiController> logger, IBrandService brandService, IPartService partService, IProductService productService, IPlanogramService planogramService, ICountryService countryService, IAuditService auditService, IConfiguration config, IWebHostEnvironment env, IRegionService regionService, IPlanogramRepository planogramRepository, IAsyncRepositoryLong<Planogram> planogramAsyncRepository, IEmailService emailService)
         {
             _mapper = mapper;
             _logger = logger;
@@ -64,6 +68,7 @@ namespace PlanMatr_API.Controllers
             _regionService = regionService;
             _planogramRepository = planogramRepository;
             _planogramAsyncRepository = planogramAsyncRepository;
+            _emailService = emailService;
         }
 
         
@@ -98,367 +103,444 @@ namespace PlanMatr_API.Controllers
 
         //[Route("api/v2/planogram/rename/{planogramId}/{planoName}")]
         [HttpGet]
-        public async Task<int> Rename(int planogramId, string name)
+        public async Task<IActionResult> Rename(int planogramId, string name)
         {
-            // we can retrieve the userId from the request
-            var userProfile = await this.MappedUser();
-            string? userId = userProfile?.Id;
-            var planogram = await _planogramService.GetPlanogram(planogramId);
-            var brand = await _brandService.GetBrand(planogram.BrandId ?? 0);
-            var country = await _countryService.GetCountry(planogram.CountryId ?? 0);
-            var region = await _regionService.GetRegion(planogram.RegionId ?? 0);
-            planogram.Name = name;
-            await _planogramService.SavePlanogram(planogram);
-            var role = (RoleEnum)int.Parse(userProfile?.RoleId ?? "0");
-
-            //Audit the action
-            var audit = new AuditLog
+            try
             {
-                Message = userProfile?.DisplayName + " renamed planogram with Id " + planogramId.ToString() + " to " + name,
-                Action = (int)LogActionEnum.RenamePlano,
-                ActionName = nameof(LogActionEnum.RenamePlano),
-                ActionType = 1,
+                // we can retrieve the userId from the request
+                var userProfile = await this.MappedUser();
+                string? userId = userProfile?.Id;
+                var planogram = await _planogramService.GetPlanogram(planogramId);
+                var brand = await _brandService.GetBrand(planogram.BrandId ?? 0);
+                var country = await _countryService.GetCountry(planogram.CountryId ?? 0);
+                var region = await _regionService.GetRegion(planogram.RegionId ?? 0);
+                planogram.Name = name;
+                await _planogramService.SavePlanogram(planogram);
+                var role = (RoleEnum)int.Parse(userProfile?.RoleId ?? "0");
 
-                UserName = userProfile?.DisplayName,
-                UserId = userId,
-                Date = DateTime.Now,
-                BrandId = planogram.BrandId,
-                BrandName = brand?.Name,
-                RoleId = int.Parse(userProfile?.RoleId ?? "0"),
-                RoleName = nameof(role),
-                PlanoId = planogramId,
-                PlanoName = planogram.Name,
-                CountryId = planogram.CountryId,
-                RegionId = planogram.RegionId,
-                CountryName = country?.Name,
-                RegionName = region?.Name,
-            };
-            await _auditService.AuditEvent(audit);
+                //Audit the action
+                var audit = new AuditLog
+                {
+                    Message = userProfile?.DisplayName + " renamed planogram with Id " + planogramId.ToString() +
+                              " to " + name,
+                    Action = (int)LogActionEnum.RenamePlano,
+                    ActionName = nameof(LogActionEnum.RenamePlano),
+                    ActionType = 1,
 
-            return planogramId;
+                    UserName = userProfile?.DisplayName,
+                    UserId = userId,
+                    Date = DateTime.Now,
+                    BrandId = planogram.BrandId,
+                    BrandName = brand?.Name,
+                    RoleId = int.Parse(userProfile?.RoleId ?? "0"),
+                    RoleName = nameof(role),
+                    PlanoId = planogramId,
+                    PlanoName = planogram.Name,
+                    CountryId = planogram.CountryId,
+                    RegionId = planogram.RegionId,
+                    CountryName = country?.Name,
+                    RegionName = region?.Name,
+                };
+                await _auditService.AuditEvent(audit);
 
+                return Ok(planogramId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "error renaming planogram with id " + planogramId);
+                return StatusCode(500, "error renaming planogram with id " + planogramId);
+            }
         }
 
         //[Route("api/v2/planogram/submit/{planogramId}")]
         [HttpGet]
-        public async Task<int> SubmitPlanogram(int planogramId)
+        public async Task<IActionResult> SubmitPlanogram(int planogramId)
         {
-            // we can retrieve the userId from the request
-            var userProfile = await this.MappedUser();
-            string? userId = userProfile?.Id;
-            var planogram = await _planogramService.GetPlanogram(planogramId);
-            var brand = await _brandService.GetBrand(planogram.BrandId ?? 0);
-            var country = await _countryService.GetCountry(planogram.CountryId ?? 0);
-            var region = await _regionService.GetRegion(planogram.RegionId ?? 0);
-            planogram.StatusId = (int)PlanogramStatusEnum.Submitted;
-            await _planogramService.SavePlanogram(planogram);
-            var role = (RoleEnum)int.Parse(userProfile?.RoleId ?? "0");
-
-            //Audit the action
-            var audit = new AuditLog
+            try
             {
-                Message = userProfile?.DisplayName + " submitted planogram with Id " + planogramId.ToString(),
-                Action = (int)LogActionEnum.SubmitPlano,
+                // we can retrieve the userId from the request
+                var userProfile = await this.MappedUser();
+                string? userId = userProfile?.Id;
+                var planogram = await _planogramService.GetPlanogram(planogramId);
+                var brand = await _brandService.GetBrand(planogram.BrandId ?? 0);
+                var country = await _countryService.GetCountry(planogram.CountryId ?? 0);
+                var region = await _regionService.GetRegion(planogram.RegionId ?? 0);
+                planogram.StatusId = (int)PlanogramStatusEnum.Submitted;
+                await _planogramService.SavePlanogram(planogram);
+                var role = (RoleEnum)int.Parse(userProfile?.RoleId ?? "0");
 
-                ActionName = nameof(LogActionEnum.SubmitPlano),
-                ActionType = 1,
+                var email = new Email();
+                email.PlanogramId = planogramId;
+                email.PlanogramName = planogram.Name;
+                email.CountryName = country?.Name;
+                email.BrandId = brand.Id;
+                email.BrandName = brand?.Name;
+                email.EmailTrigger = (int)EmailTrigger.PlanogramSubmitted;
+                email.EmailSubject = "Planogram Submitted";
+                email.FirstName = userProfile.GivenName;
+                email.LastName = userProfile.Surname;
 
-                UserName = userProfile?.DisplayName,
-                UserId = userId,
-                Date = DateTime.Now,
-                BrandId = planogram.BrandId,
-                BrandName = brand?.Name,
-                RoleId = int.Parse(userProfile?.RoleId ?? "0"),
-                RoleName = nameof(role),
-                PlanoId = planogramId,
-                PlanoName = planogram.Name,
-                CountryId = planogram.CountryId,
-                RegionId = planogram.RegionId,
-                CountryName = country?.Name,
-                RegionName = region?.Name,
+                await _emailService.SendEmailAsync(email);
+                //Audit the action
+                var audit = new AuditLog
+                {
+                    Message = userProfile?.DisplayName + " submitted planogram with Id " + planogramId.ToString(),
+                    Action = (int)LogActionEnum.SubmitPlano,
 
-            };
-            await _auditService.AuditEvent(audit);
+                    ActionName = nameof(LogActionEnum.SubmitPlano),
+                    ActionType = 1,
 
-            return planogramId;
+                    UserName = userProfile?.DisplayName,
+                    UserId = userId,
+                    Date = DateTime.Now,
+                    BrandId = planogram.BrandId,
+                    BrandName = brand?.Name,
+                    RoleId = int.Parse(userProfile?.RoleId ?? "0"),
+                    RoleName = nameof(role),
+                    PlanoId = planogramId,
+                    PlanoName = planogram.Name,
+                    CountryId = planogram.CountryId,
+                    RegionId = planogram.RegionId,
+                    CountryName = country?.Name,
+                    RegionName = region?.Name,
+
+                };
+                await _auditService.AuditEvent(audit);
+
+                return Ok(planogramId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "error submitting planogram with id " + planogramId);
+                return StatusCode(500, "Error submitting planogram with id " + planogramId);
+            }
 
         }
 
         //[Route("api/v2/planogram/delete/{planogramId}")]
         [HttpGet]
-        public async Task<int> DeletePlanogram(int planogramId)
+        public async Task<IActionResult> DeletePlanogram(int planogramId)
         {
-            // we can retrieve the userId from the request
-            var userProfile = await this.MappedUser();
-            string? userId = userProfile?.Id;
-            var planogram = await _planogramService.GetPlanogram(planogramId);
-            var brand = await _brandService.GetBrand(planogram.BrandId ?? 0);
-            var country = await _countryService.GetCountry(planogram.CountryId ?? 0);
-            var region = await _regionService.GetRegion(planogram.RegionId ?? 0);
-            planogram.StatusId = (int)PlanogramStatusEnum.Deleted;
-            await _planogramService.SavePlanogram(planogram);
-            var role = (RoleEnum)int.Parse(userProfile?.RoleId ?? "0");
-
-            //Audit the action
-            var audit = new AuditLog
+            try
             {
-                Message = userProfile?.DisplayName + " deleted planogram with Id " + planogramId.ToString(),
-                Action = (int)LogActionEnum.EditPlano,
+                // we can retrieve the userId from the request
+                var userProfile = await this.MappedUser();
+                string? userId = userProfile?.Id;
+                var planogram = await _planogramService.GetPlanogram(planogramId);
+                var brand = await _brandService.GetBrand(planogram.BrandId ?? 0);
+                var country = await _countryService.GetCountry(planogram.CountryId ?? 0);
+                var region = await _regionService.GetRegion(planogram.RegionId ?? 0);
+                planogram.StatusId = (int)PlanogramStatusEnum.Deleted;
+                await _planogramService.SavePlanogram(planogram);
+                var role = (RoleEnum)int.Parse(userProfile?.RoleId ?? "0");
 
-                ActionName = nameof(LogActionEnum.EditPlano),
-                ActionType = 1,
+                //Audit the action
+                var audit = new AuditLog
+                {
+                    Message = userProfile?.DisplayName + " deleted planogram with Id " + planogramId.ToString(),
+                    Action = (int)LogActionEnum.EditPlano,
 
-                UserName = userProfile?.DisplayName,
-                UserId = userId,
-                Date = DateTime.Now,
-                BrandId = planogram.BrandId,
-                BrandName = brand?.Name,
-                RoleId = int.Parse(userProfile?.RoleId ?? "0"),
-                RoleName = nameof(role),
-                PlanoId = planogramId,
-                PlanoName = planogram.Name,
-                CountryId = planogram.CountryId,
-                RegionId = planogram.RegionId,
-                CountryName = country?.Name,
-                RegionName = region?.Name,
-            };
-            await _auditService.AuditEvent(audit);
+                    ActionName = nameof(LogActionEnum.EditPlano),
+                    ActionType = 1,
 
-            return planogramId;
+                    UserName = userProfile?.DisplayName,
+                    UserId = userId,
+                    Date = DateTime.Now,
+                    BrandId = planogram.BrandId,
+                    BrandName = brand?.Name,
+                    RoleId = int.Parse(userProfile?.RoleId ?? "0"),
+                    RoleName = nameof(role),
+                    PlanoId = planogramId,
+                    PlanoName = planogram.Name,
+                    CountryId = planogram.CountryId,
+                    RegionId = planogram.RegionId,
+                    CountryName = country?.Name,
+                    RegionName = region?.Name,
+                };
+                await _auditService.AuditEvent(audit);
+
+                return Ok(planogramId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "error deleting planogram with id " + planogramId);
+                return StatusCode(500, "error deleting planogram with id " + planogramId);
+            }
 
         }
 
         [HttpGet]
-        public async Task<int> ArchivePlanogram(int planogramId, int jobId)
+        public async Task<IActionResult> ArchivePlanogram(int planogramId, int jobId)
         {
-            // we can retrieve the userId from the request
-            var userProfile = await this.MappedUser();
-            string? userId = userProfile?.Id;
-            var planogram = await _planogramService.GetPlanogram(planogramId);
-            var brand = await _brandService.GetBrand(planogram.BrandId ?? 0);
-            var country = await _countryService.GetCountry(planogram.CountryId ?? 0);
-            var region = await _regionService.GetRegion(planogram.RegionId ?? 0);
-            planogram.Archived = true;
-            planogram.ArchivedBy = userProfile?.DisplayName;
-            planogram.ArchivedDate = DateTime.Now;
-            planogram.JobId = jobId;
-
-
-            //planogram.StatusId = (int)PlanogramStatusEnum.Edit;
-            await _planogramService.SavePlanogram(planogram);
-
-            var role = (RoleEnum)int.Parse(userProfile?.RoleId ?? "0");
-
-
-            //Audit the action
-            var audit = new AuditLog
+            try
             {
-                Message = userProfile?.DisplayName + " archived planogram with Id " + planogramId.ToString(),
-                Action = (int)LogActionEnum.ArchivePlano,
+                // we can retrieve the userId from the request
+                var userProfile = await this.MappedUser();
+                string? userId = userProfile?.Id;
+                var planogram = await _planogramService.GetPlanogram(planogramId);
+                var brand = await _brandService.GetBrand(planogram.BrandId ?? 0);
+                var country = await _countryService.GetCountry(planogram.CountryId ?? 0);
+                var region = await _regionService.GetRegion(planogram.RegionId ?? 0);
+                planogram.Archived = true;
+                planogram.ArchivedBy = userProfile?.DisplayName;
+                planogram.ArchivedDate = DateTime.Now;
+                planogram.JobId = jobId;
 
-                ActionName = nameof(LogActionEnum.ArchivePlano),
-                ActionType = 1,
 
-                UserName = userProfile?.DisplayName,
-                UserId = userId,
-                Date = DateTime.Now,
-                BrandId = planogram.BrandId,
-                BrandName = brand?.Name,
-                RoleId = int.Parse(userProfile?.RoleId ?? "0"),
-                RoleName = nameof(role),
-                PlanoId = planogramId,
-                PlanoName = planogram.Name,
-                CountryId = planogram.CountryId,
-                RegionId = planogram.RegionId,
-                CountryName = country?.Name,
-                RegionName = region?.Name,
-            };
-            await _auditService.AuditEvent(audit);
+                //planogram.StatusId = (int)PlanogramStatusEnum.Edit;
+                await _planogramService.SavePlanogram(planogram);
 
-            return planogramId;
+                var role = (RoleEnum)int.Parse(userProfile?.RoleId ?? "0");
+
+
+                //Audit the action
+                var audit = new AuditLog
+                {
+                    Message = userProfile?.DisplayName + " archived planogram with Id " + planogramId.ToString(),
+                    Action = (int)LogActionEnum.ArchivePlano,
+
+                    ActionName = nameof(LogActionEnum.ArchivePlano),
+                    ActionType = 1,
+
+                    UserName = userProfile?.DisplayName,
+                    UserId = userId,
+                    Date = DateTime.Now,
+                    BrandId = planogram.BrandId,
+                    BrandName = brand?.Name,
+                    RoleId = int.Parse(userProfile?.RoleId ?? "0"),
+                    RoleName = nameof(role),
+                    PlanoId = planogramId,
+                    PlanoName = planogram.Name,
+                    CountryId = planogram.CountryId,
+                    RegionId = planogram.RegionId,
+                    CountryName = country?.Name,
+                    RegionName = region?.Name,
+                };
+                await _auditService.AuditEvent(audit);
+
+                return Ok(planogramId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "error Archiving planogram with id " + planogramId);
+                return StatusCode(500, "error archiving planogram with id " + planogramId);
+            }
+
 
         }
 
         [HttpGet]
-        public async Task<int> ApprovePlanogram(int planogramId)
+        public async Task<IActionResult> ApprovePlanogram(int planogramId)
         {
-            // we can retrieve the userId from the request
-            var userProfile = await this.MappedUser();
-            string? userId = userProfile?.Id;
-            var planogram = await _planogramService.GetPlanogram(planogramId);
-            var brand = await _brandService.GetBrand(planogram.BrandId ?? 0);
-            var country = await _countryService.GetCountry(planogram.CountryId ?? 0);
-            var region = await _regionService.GetRegion(planogram.RegionId ?? 0);
-            planogram.StatusId = (int)PlanogramStatusEnum.Approved;
-            await _planogramService.SavePlanogram(planogram);
-            var role = (RoleEnum)int.Parse(userProfile?.RoleId ?? "0");
-
-            //Audit the action
-            var audit = new AuditLog
+            try
             {
-                Message = userProfile?.DisplayName + " approved planogram with Id " + planogramId.ToString(),
-                Action = (int)LogActionEnum.ApprovePlano,
+                // we can retrieve the userId from the request
+                var userProfile = await this.MappedUser();
+                string? userId = userProfile?.Id;
+                var planogram = await _planogramService.GetPlanogram(planogramId);
+                var brand = await _brandService.GetBrand(planogram.BrandId ?? 0);
+                var country = await _countryService.GetCountry(planogram.CountryId ?? 0);
+                var region = await _regionService.GetRegion(planogram.RegionId ?? 0);
+                planogram.StatusId = (int)PlanogramStatusEnum.Approved;
+                await _planogramService.SavePlanogram(planogram);
+                var role = (RoleEnum)int.Parse(userProfile?.RoleId ?? "0");
 
-                ActionName = nameof(LogActionEnum.ApprovePlano),
-                ActionType = 1,
+                //Audit the action
+                var audit = new AuditLog
+                {
+                    Message = userProfile?.DisplayName + " approved planogram with Id " + planogramId.ToString(),
+                    Action = (int)LogActionEnum.ApprovePlano,
 
-                UserName = userProfile?.DisplayName,
-                UserId = userId,
-                Date = DateTime.Now,
-                BrandId = planogram.BrandId,
-                BrandName = brand?.Name,
-                RoleId = int.Parse(userProfile?.RoleId ?? "0"),
-                RoleName = nameof(role),
-                PlanoId = planogramId,
-                PlanoName = planogram.Name,
-                CountryId = planogram.CountryId,
-                RegionId = planogram.RegionId,
-                CountryName = country?.Name,
-                RegionName = region?.Name,
-            };
-            await _auditService.AuditEvent(audit);
+                    ActionName = nameof(LogActionEnum.ApprovePlano),
+                    ActionType = 1,
 
-            return planogramId;
+                    UserName = userProfile?.DisplayName,
+                    UserId = userId,
+                    Date = DateTime.Now,
+                    BrandId = planogram.BrandId,
+                    BrandName = brand?.Name,
+                    RoleId = int.Parse(userProfile?.RoleId ?? "0"),
+                    RoleName = nameof(role),
+                    PlanoId = planogramId,
+                    PlanoName = planogram.Name,
+                    CountryId = planogram.CountryId,
+                    RegionId = planogram.RegionId,
+                    CountryName = country?.Name,
+                    RegionName = region?.Name,
+                };
+                await _auditService.AuditEvent(audit);
+
+                return Ok(planogramId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "error approving planogram with id " + planogramId);
+                return StatusCode(500, "error approving planogram with id " + planogramId);
+
+            }
 
         }
 
         [HttpGet]
-        public async Task<int> RestorePlanogram(int planogramId, int statusId)
+        public async Task<IActionResult> RestorePlanogram(int planogramId, int statusId)
         {
-            // we can retrieve the userId from the request
-            var userProfile = await this.MappedUser();
-            string? userId = userProfile?.Id;
-            var planogram = await _planogramService.GetPlanogram(planogramId);
-            var brand = await _brandService.GetBrand(planogram.BrandId ?? 0);
-            var country = await _countryService.GetCountry(planogram.CountryId ?? 0);
-            var region = await _regionService.GetRegion(planogram.RegionId ?? 0);
-            planogram.JobId = null;
-            planogram.StatusId = statusId;
-            planogram.Archived = false;
-            planogram.ArchivedBy = null;
-            planogram.ArchivedByName = null;
-            planogram.ArchivedDate = null;
-            planogram.LastUpdatedBy = userProfile.Id;
+            try
+            {
+                // we can retrieve the userId from the request
+                var userProfile = await this.MappedUser();
+                string? userId = userProfile?.Id;
+                var planogram = await _planogramService.GetPlanogram(planogramId);
+                var brand = await _brandService.GetBrand(planogram.BrandId ?? 0);
+                var country = await _countryService.GetCountry(planogram.CountryId ?? 0);
+                var region = await _regionService.GetRegion(planogram.RegionId ?? 0);
+                planogram.JobId = null;
+                planogram.StatusId = statusId;
+                planogram.Archived = false;
+                planogram.ArchivedBy = null;
+                planogram.ArchivedByName = null;
+                planogram.ArchivedDate = null;
+                planogram.LastUpdatedBy = userProfile.Id;
                 planogram.LubName = userProfile.DisplayName;
                 planogram.DateUpdated = DateTime.Now;
 
-            await _planogramService.SavePlanogram(planogram);
-            var role = (RoleEnum)int.Parse(userProfile?.RoleId ?? "0");
+                await _planogramService.SavePlanogram(planogram);
+                var role = (RoleEnum)int.Parse(userProfile?.RoleId ?? "0");
 
-            //Audit the action
-            var audit = new AuditLog
+                //Audit the action
+                var audit = new AuditLog
+                {
+                    Message = userProfile?.DisplayName + " restore planogram with Id " + planogramId.ToString(),
+                    Action = (int)LogActionEnum.RestorePlano,
+
+                    ActionName = nameof(LogActionEnum.RestorePlano),
+                    ActionType = 1,
+
+                    UserName = userProfile?.DisplayName,
+                    UserId = userId,
+                    Date = DateTime.Now,
+                    BrandId = planogram.BrandId,
+                    BrandName = brand?.Name,
+                    RoleId = int.Parse(userProfile?.RoleId ?? "0"),
+                    RoleName = nameof(role),
+                    PlanoId = planogramId,
+                    PlanoName = planogram.Name,
+                    CountryId = planogram.CountryId,
+                    RegionId = planogram.RegionId,
+                    CountryName = country?.Name,
+                    RegionName = region?.Name,
+                };
+                await _auditService.AuditEvent(audit);
+
+                return Ok(planogramId);
+            }
+            catch (Exception ex)
             {
-                Message = userProfile?.DisplayName + " approved planogram with Id " + planogramId.ToString(),
-                Action = (int)LogActionEnum.RestorePlano,
-
-                ActionName = nameof(LogActionEnum.RestorePlano),
-                ActionType = 1,
-
-                UserName = userProfile?.DisplayName,
-                UserId = userId,
-                Date = DateTime.Now,
-                BrandId = planogram.BrandId,
-                BrandName = brand?.Name,
-                RoleId = int.Parse(userProfile?.RoleId ?? "0"),
-                RoleName = nameof(role),
-                PlanoId = planogramId,
-                PlanoName = planogram.Name,
-                CountryId = planogram.CountryId,
-                RegionId = planogram.RegionId,
-                CountryName = country?.Name,
-                RegionName = region?.Name,
-            };
-            await _auditService.AuditEvent(audit);
-
-            return planogramId;
+                _logger.LogError(ex, "error restoring planogram with id " + planogramId);
+                return StatusCode(500, "error restoring planogram with id " + planogramId);
+            }
 
         }
 
         //[Route("api/v2/planogram/validate/{planogramId}")]
         [HttpGet]
-        public async Task<int> ValidatePlanogram(int planogramId)
+        public async Task<IActionResult> ValidatePlanogram(int planogramId)
         {
-            // we can retrieve the userId from the request
-            var userProfile = await this.MappedUser();
-            string? userId = userProfile?.Id;
-            var planogram = await _planogramService.GetPlanogram(planogramId);
-            var brand = await _brandService.GetBrand(planogram.BrandId ?? 0);
-            var country = await _countryService.GetCountry(planogram.CountryId ?? 0);
-            var region = await _regionService.GetRegion(planogram.RegionId ?? 0);
-            planogram.StatusId = (int)PlanogramStatusEnum.Validated;
-            await _planogramService.SavePlanogram(planogram);
-            var role = (RoleEnum)int.Parse(userProfile?.RoleId ?? "0");
-
-            //Audit the action
-            var audit = new AuditLog
+            try
             {
-                Message = userProfile?.DisplayName + " validated planogram with Id " + planogramId.ToString(),
-                Action = (int)LogActionEnum.ValidatePlano,
+                // we can retrieve the userId from the request
+                var userProfile = await this.MappedUser();
+                string? userId = userProfile?.Id;
+                var planogram = await _planogramService.GetPlanogram(planogramId);
+                var brand = await _brandService.GetBrand(planogram.BrandId ?? 0);
+                var country = await _countryService.GetCountry(planogram.CountryId ?? 0);
+                var region = await _regionService.GetRegion(planogram.RegionId ?? 0);
+                planogram.StatusId = (int)PlanogramStatusEnum.Validated;
+                await _planogramService.SavePlanogram(planogram);
+                var role = (RoleEnum)int.Parse(userProfile?.RoleId ?? "0");
 
-                ActionName = nameof(LogActionEnum.ValidatePlano),
-                ActionType = 1,
+                //Audit the action
+                var audit = new AuditLog
+                {
+                    Message = userProfile?.DisplayName + " validated planogram with Id " + planogramId.ToString(),
+                    Action = (int)LogActionEnum.ValidatePlano,
 
-                UserName = userProfile?.DisplayName,
-                UserId = userId,
-                Date = DateTime.Now,
-                BrandId = planogram.BrandId,
-                BrandName = brand?.Name,
-                RoleId = int.Parse(userProfile?.RoleId ?? "0"),
-                RoleName = nameof(role),
-                PlanoId = planogramId,
-                PlanoName = planogram.Name,
-                CountryId = planogram.CountryId,
-                RegionId = planogram.RegionId,
-                CountryName = country?.Name,
-                RegionName = region?.Name,
-            };
-            await _auditService.AuditEvent(audit);
+                    ActionName = nameof(LogActionEnum.ValidatePlano),
+                    ActionType = 1,
 
-            return planogramId;
+                    UserName = userProfile?.DisplayName,
+                    UserId = userId,
+                    Date = DateTime.Now,
+                    BrandId = planogram.BrandId,
+                    BrandName = brand?.Name,
+                    RoleId = int.Parse(userProfile?.RoleId ?? "0"),
+                    RoleName = nameof(role),
+                    PlanoId = planogramId,
+                    PlanoName = planogram.Name,
+                    CountryId = planogram.CountryId,
+                    RegionId = planogram.RegionId,
+                    CountryName = country?.Name,
+                    RegionName = region?.Name,
+                };
+                await _auditService.AuditEvent(audit);
 
+                return Ok(planogramId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "error validating planogram with id " + planogramId);
+                return StatusCode(500, "error validating planogram with id " + planogramId);
+            }
         }
 
 
         [HttpGet]
-        public async Task<int> RejectPlanogram(int planogramId)
+        public async Task<IActionResult> RejectPlanogram(int planogramId)
         {
-            // we can retrieve the userId from the request
-            var userProfile = await this.MappedUser();
-            string? userId = userProfile?.Id;
-            var planogram = await _planogramService.GetPlanogram(planogramId);
-            var brand = await _brandService.GetBrand(planogram.BrandId ?? 0);
-            var country = await _countryService.GetCountry(planogram.CountryId ?? 0);
-            var region = await _regionService.GetRegion(planogram.RegionId ?? 0);
-            planogram.StatusId = (int)PlanogramStatusEnum.Edit;
-            await _planogramService.SavePlanogram(planogram);
-            var role = (RoleEnum)int.Parse(userProfile?.RoleId ?? "0");
-
-            //Audit the action
-            var audit = new AuditLog
+            try
             {
-                Message = userProfile?.DisplayName + " rejected planogram with Id " + planogramId.ToString(),
-                Action = (int)LogActionEnum.RejectPlano,
+                // we can retrieve the userId from the request
+                var userProfile = await this.MappedUser();
+                string? userId = userProfile?.Id;
+                var planogram = await _planogramService.GetPlanogram(planogramId);
+                var brand = await _brandService.GetBrand(planogram.BrandId ?? 0);
+                var country = await _countryService.GetCountry(planogram.CountryId ?? 0);
+                var region = await _regionService.GetRegion(planogram.RegionId ?? 0);
+                planogram.StatusId = (int)PlanogramStatusEnum.Edit;
+                await _planogramService.SavePlanogram(planogram);
+                var role = (RoleEnum)int.Parse(userProfile?.RoleId ?? "0");
 
-                ActionName = nameof(LogActionEnum.RejectPlano),
-                ActionType = 1,
+                //Audit the action
+                var audit = new AuditLog
+                {
+                    Message = userProfile?.DisplayName + " rejected planogram with Id " + planogramId.ToString(),
+                    Action = (int)LogActionEnum.RejectPlano,
 
-                UserName = userProfile?.DisplayName,
-                UserId = userId,
-                Date = DateTime.Now,
-                BrandId = planogram.BrandId,
-                BrandName = brand?.Name,
-                RoleId = int.Parse(userProfile?.RoleId ?? "0"),
-                RoleName = nameof(role),
-                PlanoId = planogramId,
-                PlanoName = planogram.Name,
-                CountryId = planogram.CountryId,
-                RegionId = planogram.RegionId,
-                CountryName = country?.Name,
-                RegionName = region?.Name,
-            };
-            await _auditService.AuditEvent(audit);
+                    ActionName = nameof(LogActionEnum.RejectPlano),
+                    ActionType = 1,
 
-            return planogramId;
+                    UserName = userProfile?.DisplayName,
+                    UserId = userId,
+                    Date = DateTime.Now,
+                    BrandId = planogram.BrandId,
+                    BrandName = brand?.Name,
+                    RoleId = int.Parse(userProfile?.RoleId ?? "0"),
+                    RoleName = nameof(role),
+                    PlanoId = planogramId,
+                    PlanoName = planogram.Name,
+                    CountryId = planogram.CountryId,
+                    RegionId = planogram.RegionId,
+                    CountryName = country?.Name,
+                    RegionName = region?.Name,
+                };
+                await _auditService.AuditEvent(audit);
+
+                return Ok(planogramId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "error rejecting planogram with id " + planogramId);
+                return StatusCode(500, "error rejecting planogram with id " + planogramId);
+            }
 
         }
 
